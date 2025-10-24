@@ -46,6 +46,7 @@ export const menuSections: MenuSection[] = [
       { labelKey: 'stockStatus', href: '/stock-status' },
       { labelKey: 'stockSettings', href: '/stock-settings' },
       { labelKey: 'inboundOutbound', href: '/inbound-outbound' },
+      { labelKey: 'inboundApproval', href: '/inbound/approval' },
       { labelKey: 'advanced', href: '/advanced-inventory' },
       { labelKey: 'returnPicking', href: '/return-picking' },
     ],

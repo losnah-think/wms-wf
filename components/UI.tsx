@@ -113,9 +113,10 @@ export interface TableProps {
   columns: TableColumn[]
   data: any[]
   className?: string
+  onRowClick?: (row: any, rowIndex: number) => void
 }
 
-export const Table: React.FC<TableProps> = ({ columns, data, className = '' }) => {
+export const Table: React.FC<TableProps> = ({ columns, data, className = '', onRowClick }) => {
   return (
     <div className={`${styles.tableWrapper} ${className}`}>
       <table className={styles.table}>
@@ -133,7 +134,11 @@ export const Table: React.FC<TableProps> = ({ columns, data, className = '' }) =
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
+            <tr 
+              key={rowIndex}
+              onClick={() => onRowClick?.(row, rowIndex)}
+              style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+            >
               {columns.map((column) => (
                 <td
                   key={column.key}
