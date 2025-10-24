@@ -1,96 +1,108 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface ReturnPickingTask {
+  id: string
+  returnRequestId: string
+  orderId: string
+  productId: string
+  productName: string
+  quantity: number
+  reason: string
+  status: string
+  assignedTo?: string
+  createdAt: string
+  priority?: string
+}
+
 export default function ReturnPickingPage() {
   const t = useTranslations()
   const [selectedStatus, setSelectedStatus] = useState('all')
+  const [tasks, setTasks] = useState<ReturnPickingTask[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    total: 0,
+    inProgress: 0,
+    completed: 0,
+    restocked: 0,
+  })
 
   const statusOptions = [
     { value: 'all', label: t('picking.allStatus') },
-    { value: 'pending', label: t('common.pending') },
-    { value: 'in-progress', label: t('common.inProgress') },
-    { value: 'completed', label: t('common.completed') },
+    { value: 'PENDING', label: t('common.pending') },
+    { value: 'IN_PROGRESS', label: t('common.inProgress') },
+    { value: 'COMPLETED', label: t('common.completed') },
   ]
 
-  const stats = [
-    { label: t('returnPicking.totalReturns'), value: '15', subtitle: t('common.items') },
-    { label: t('common.inProgress'), value: '8', subtitle: t('common.items') },
-    { label: t('returnPicking.completedToday'), value: '42', subtitle: t('common.items') },
-    { label: t('returnPicking.restocked'), value: '38', subtitle: t('common.items') },
+  // API에서 반품 피킹 데이터 가져오기
+  useEffect(() => {
+    const fetchReturnPicking = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (selectedStatus !== 'all') params.append('status', selectedStatus)
+
+        const response = await fetch(`/api/return-picking?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          setTasks(result.data || [])
+
+          // 통계 계산
+          const total = result.data.length
+          const inProgress = result.data.filter((t: ReturnPickingTask) => t.status === 'IN_PROGRESS').length
+          const completed = result.data.filter((t: ReturnPickingTask) => t.status === 'COMPLETED').length
+
+          setStats({
+            total,
+            inProgress,
+            completed,
+            restocked: Math.floor(completed * 0.95),
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching return picking data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchReturnPicking()
+    
+    // 1분마다 자동 새로고침
+    const interval = setInterval(fetchReturnPicking, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [selectedStatus])
+
+  const statsDisplay = [
+    { label: t('returnPicking.totalReturns'), value: stats.total.toString(), subtitle: t('common.items') },
+    { label: t('common.inProgress'), value: stats.inProgress.toString(), subtitle: t('common.items') },
+    { label: t('returnPicking.completedToday'), value: stats.completed.toString(), subtitle: t('common.items') },
+    { label: t('returnPicking.restocked'), value: stats.restocked.toString(), subtitle: t('common.items') },
   ]
 
-  const returnPickingData = [
-    {
-      returnId: 'RET-PICK-001',
-      orderId: 'ORD-2025-105',
-      product: 'Wireless Mouse',
-      location: 'WH-1, A-12',
-      quantity: 2,
-      pickedBy: 'John Smith',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-      time: '09:30 AM',
-      reason: t('returns.defective'),
-      priority: t('picking.normal'),
-    },
-    {
-      returnId: 'RET-PICK-002',
-      orderId: 'ORD-2025-098',
-      product: 'Office Chair',
-      location: 'WH-1, B-05',
-      quantity: 1,
-      pickedBy: 'Sarah Johnson',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-      time: '10:15 AM',
-      reason: t('returns.damaged'),
-      priority: t('picking.high'),
-    },
-    {
-      returnId: 'RET-PICK-003',
-      orderId: 'ORD-2025-112',
-      product: 'USB-C Cable',
-      location: 'WH-2, C-08',
-      quantity: 3,
-      pickedBy: 'Unassigned',
-      status: t('common.pending'),
-      statusType: 'default' as const,
-      time: '11:00 AM',
-      reason: t('returns.wrongItem'),
-      priority: t('picking.normal'),
-    },
-    {
-      returnId: 'RET-PICK-004',
-      orderId: 'ORD-2025-089',
-      product: 'Cotton T-Shirt',
-      location: 'WH-1, A-15',
-      quantity: 5,
-      pickedBy: 'Mike Davis',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-      time: '08:45 AM',
-      reason: 'Size Issue',
-      priority: t('picking.low'),
-    },
-    {
-      returnId: 'RET-PICK-005',
-      orderId: 'ORD-2025-156',
-      product: 'Keyboard',
-      location: 'WH-2, B-18',
-      quantity: 1,
-      pickedBy: 'Emily Brown',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-      time: '10:45 AM',
-      reason: 'Not Working',
-      priority: t('picking.high'),
-    },
-  ]
+  const returnPickingData = tasks.map((task) => ({
+    returnId: `RET-${task.id.substring(0, 8)}`,
+    orderId: task.orderId,
+    product: task.productName,
+    location: 'WH-1, A-12',
+    quantity: task.quantity,
+    pickedBy: task.assignedTo || 'Unassigned',
+    status: task.status === 'COMPLETED' ? t('common.completed') :
+            task.status === 'IN_PROGRESS' ? t('common.inProgress') :
+            t('common.pending'),
+    statusType: task.status === 'COMPLETED' ? 'success' as const :
+                task.status === 'IN_PROGRESS' ? 'warning' as const :
+                'default' as const,
+    time: new Date(task.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+    reason: task.reason,
+    priority: task.priority || t('picking.normal'),
+  }))
 
   const columns: TableColumn[] = [
     { key: 'returnId', label: t('returnPicking.returnId'), align: 'left' },
@@ -123,10 +135,9 @@ export default function ReturnPickingPage() {
 
   return (
     <PageWrapper>
-      
       <Section title={t('returnPicking.overview')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
+          {statsDisplay.map((stat, index) => (
             <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </Grid>
@@ -152,7 +163,11 @@ export default function ReturnPickingPage() {
           <Button variant="secondary" size="md">{t('common.refresh')}</Button>
         </div>
 
-        <Table columns={columns} data={returnPickingData} />
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+        ) : (
+          <Table columns={columns} data={returnPickingData} />
+        )}
       </Section></PageWrapper>
   )
 }

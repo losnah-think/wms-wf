@@ -1,70 +1,101 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface Transaction {
+  id: string
+  type: 'INBOUND' | 'OUTBOUND'
+  productId: string
+  productName: string
+  quantity: number
+  status: string
+  createdAt: string
+}
+
 export default function InboundOutboundPage() {
   const t = useTranslations()
   const [selectedType, setSelectedType] = useState('all')
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    todayInbound: 0,
+    todayOutbound: 0,
+    pending: 0,
+    completed: 0,
+  })
 
   const typeOptions = [
     { value: 'all', label: t('inboundOutbound.allTransactions') },
-    { value: 'inbound', label: t('inboundOutbound.inboundOnly') },
-    { value: 'outbound', label: t('inboundOutbound.outboundOnly') },
+    { value: 'INBOUND', label: t('inboundOutbound.inboundOnly') },
+    { value: 'OUTBOUND', label: t('inboundOutbound.outboundOnly') },
   ]
 
-  const stats = [
-    { label: t('inboundOutbound.todayInbound'), value: '48', subtitle: t('inboundOutbound.transactions') },
-    { label: t('inboundOutbound.todayOutbound'), value: '73', subtitle: t('inboundOutbound.transactions') },
-    { label: t('common.pending'), value: '12', subtitle: t('common.items') },
-    { label: t('common.completed'), value: '109', subtitle: t('common.today') },
+  // API에서 입출고 데이터 가져오기
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (selectedType !== 'all') params.append('type', selectedType)
+
+        const response = await fetch(`/api/inbound-outbound?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          setTransactions(result.data || [])
+
+          // 통계 계산
+          const inbound = result.data.filter((t: Transaction) => t.type === 'INBOUND').length
+          const outbound = result.data.filter((t: Transaction) => t.type === 'OUTBOUND').length
+          const pending = result.data.filter((t: Transaction) => t.status === 'PENDING').length
+          const completed = result.data.filter((t: Transaction) => t.status === 'COMPLETED').length
+
+          setStats({
+            todayInbound: inbound,
+            todayOutbound: outbound,
+            pending,
+            completed,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching transactions:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTransactions()
+    
+    // 1분마다 자동 새로고침
+    const interval = setInterval(fetchTransactions, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [selectedType])
+
+  const statsDisplay = [
+    { label: t('inboundOutbound.todayInbound'), value: stats.todayInbound.toString(), subtitle: t('inboundOutbound.transactions') },
+    { label: t('inboundOutbound.todayOutbound'), value: stats.todayOutbound.toString(), subtitle: t('inboundOutbound.transactions') },
+    { label: t('common.pending'), value: stats.pending.toString(), subtitle: t('common.items') },
+    { label: t('common.completed'), value: stats.completed.toString(), subtitle: t('common.today') },
   ]
 
-  const transactionData = [
-    {
-      id: 'TXN-2025-001',
-      type: t('inboundOutbound.inbound'),
-      typeIcon: '📥',
-      product: 'Wireless Mouse',
-      quantity: 100,
-      time: '09:30 AM',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-    },
-    {
-      id: 'TXN-2025-002',
-      type: t('inboundOutbound.outbound'),
-      typeIcon: '📤',
-      product: 'Office Chair',
-      quantity: 15,
-      time: '10:15 AM',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-    },
-    {
-      id: 'TXN-2025-003',
-      type: t('inboundOutbound.inbound'),
-      typeIcon: '📥',
-      product: 'USB-C Cable',
-      quantity: 250,
-      time: '11:00 AM',
-      status: t('common.pending'),
-      statusType: 'default' as const,
-    },
-    {
-      id: 'TXN-2025-004',
-      type: t('inboundOutbound.outbound'),
-      typeIcon: '📤',
-      product: 'Cotton T-Shirt',
-      quantity: 50,
-      time: '11:45 AM',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-    },
-  ]
+  const transactionData = transactions.map((txn) => ({
+    id: txn.id,
+    type: txn.type === 'INBOUND' ? t('inboundOutbound.inbound') : t('inboundOutbound.outbound'),
+    typeIcon: txn.type === 'INBOUND' ? '📥' : '📤',
+    product: txn.productName,
+    quantity: txn.quantity,
+    time: new Date(txn.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+    status: txn.status === 'COMPLETED' ? t('common.completed') : 
+            txn.status === 'IN_PROGRESS' ? t('common.inProgress') : 
+            t('common.pending'),
+    statusType: txn.status === 'COMPLETED' ? 'success' as const :
+                txn.status === 'IN_PROGRESS' ? 'warning' as const :
+                'default' as const,
+  }))
 
   const columns: TableColumn[] = [
     { key: 'id', label: t('inboundOutbound.transactionId'), align: 'left' },
@@ -95,7 +126,7 @@ export default function InboundOutboundPage() {
     <PageWrapper>
       <Section title={t('inboundOutbound.overview')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
+          {statsDisplay.map((stat, index) => (
             <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </Grid>
@@ -110,7 +141,11 @@ export default function InboundOutboundPage() {
             onChange={(e) => setSelectedType(e.target.value)}
           />
         </div>
-        <Table columns={columns} data={transactionData} />
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+        ) : (
+          <Table columns={columns} data={transactionData} />
+        )}
       </Section>
     </PageWrapper>
   )
