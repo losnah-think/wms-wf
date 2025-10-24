@@ -28,10 +28,17 @@ export function getItemTranslationKey(labelKey: string): string {
 }
 
 // ============================================================================
-// Menu Structure (8 Sections, 21 Items)
+// Menu Structure (9 Sections, 23 Items)
 // ============================================================================
 
 export const menuSections: MenuSection[] = [
+  {
+    titleKey: 'inbound',
+    items: [
+      { labelKey: 'inboundRequest', href: '/inbound/request' },
+      { labelKey: 'inboundSchedule', href: '/inbound/schedule' },
+    ],
+  },
   {
     titleKey: 'dashboard',
     items: [

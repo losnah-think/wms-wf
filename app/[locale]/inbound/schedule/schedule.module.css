@@ -1,0 +1,10 @@
+.filterActions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: flex-end;
+}
+
+.filterActions > div {
+  width: 200px;
+}

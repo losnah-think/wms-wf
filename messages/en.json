@@ -1,6 +1,7 @@
 {
   "nav": {
     "section": {
+      "inbound": "Inbound",
       "dashboard": "Dashboard",
       "inventory": "Inventory",
       "operations": "Operations",
@@ -10,6 +11,8 @@
       "system": "System"
     },
     "item": {
+      "inboundRequest": "Inbound Request",
+      "inboundSchedule": "Inbound Schedule",
       "dashboard": "Dashboard",
       "products": "Products",
       "warehouse": "Warehouse",
@@ -31,7 +34,7 @@
       "analysis": "Analysis Report",
       "operationRules": "System Rules"
     },
-    "inventory": "Inventory",
+    "inbound": "Inbound",
     "dashboard": "Dashboard",
     "products": "Products",
     "warehouse": "Warehouse",

@@ -1,6 +1,7 @@
 {
   "nav": {
     "section": {
+      "inbound": "Nhập",
       "dashboard": "Bảng điều khiển",
       "inventory": "Hàng tồn kho",
       "operations": "Hoạt động",
@@ -10,6 +11,8 @@
       "system": "Hệ thống"
     },
     "item": {
+      "inboundRequest": "Yêu cầu Nhập",
+      "inboundSchedule": "Lịch trình Nhập",
       "dashboard": "Bảng điều khiển",
       "products": "Quản lý Sản phẩm",
       "warehouse": "Kho",
@@ -31,7 +34,7 @@
       "analysis": "Báo cáo Phân tích",
       "operationRules": "Quy tắc Hoạt động"
     },
-    "inventory": "Hàng tồn kho",
+    "inbound": "Nhập",
     "dashboard": "Bảng điều khiển",
     "products": "Quản lý Sản phẩm",
     "warehouse": "Kho",
