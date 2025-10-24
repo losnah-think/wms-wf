@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Badge } from '@/components/UI'
@@ -10,10 +10,13 @@ import styles from './approval.module.css'
 
 interface InboundRequest {
   id: string
+  approvalNumber: string
+  requestNumber: string
   clientName: string
   item: string
   quantity: number
   requestDate: string
+  expectedDate: string
   status: 'requested' | 'pending' | 'approved' | 'allocated' | 'completed'
   approver?: string
   remark?: string
@@ -26,69 +29,64 @@ interface InboundRequest {
   allocatedZone?: string
   allocatedBin?: string
   allocationTime?: string
+  supplierCode?: string
+  items?: any[]
 }
-
-const mockData: InboundRequest[] = [
-  {
-    id: 'INB-2024-001',
-    clientName: '코플 유통',
-    item: 'Laptop Dell XPS 13',
-    quantity: 50,
-    requestDate: '2024-10-24',
-    status: 'pending',
-    remark: '긴급 입고',
-    requesterName: '김철수',
-    requesterContact: '010-1234-5678',
-    requesterCompany: '코플 유통',
-    inspectionStatus: 'passed',
-    inspectionDate: '2024-10-24',
-    inspectionRemarks: '검수 완료',
-  },
-  {
-    id: 'INB-2024-002',
-    clientName: 'SK에너지',
-    item: 'Mobile Phone Samsung',
-    quantity: 100,
-    requestDate: '2024-10-23',
-    status: 'approved',
-    allocatedZone: 'A-1',
-    allocatedBin: 'A-1-C-05',
-    allocationTime: '2024-10-24 10:30',
-    approver: '이순신',
-    remark: '정상 처리',
-    requesterName: '박영희',
-    requesterContact: '010-9876-5432',
-    requesterCompany: 'SK에너지',
-    inspectionStatus: 'passed',
-    inspectionDate: '2024-10-23',
-  },
-  {
-    id: 'INB-2024-003',
-    clientName: 'LG화학',
-    item: 'Tablet Apple iPad',
-    quantity: 30,
-    requestDate: '2024-10-22',
-    status: 'allocated',
-    allocatedZone: 'B-2',
-    allocatedBin: 'B-2-A-12',
-    allocationTime: '2024-10-23 14:15',
-    approver: '이순신',
-    remark: '자동 할당됨',
-    requesterName: '최민준',
-    requesterContact: '010-5555-6666',
-    requesterCompany: 'LG화학',
-    inspectionStatus: 'passed',
-    inspectionDate: '2024-10-22',
-  },
-]
 
 export default function InboundApprovalPage() {
   const t = useTranslations()
   const tApproval = useTranslations('inboundApproval')
-  const [data, setData] = useState<InboundRequest[]>(mockData)
+  const [data, setData] = useState<InboundRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<InboundRequest | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [statusFilter, setStatusFilter] = useState('all')
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '20',
+          ...(statusFilter !== 'all' && { status: statusFilter }),
+        })
+
+        const response = await fetch(`/api/inbound/approval?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          const formattedData = result.data.map((item: any) => ({
+            id: item.id,
+            approvalNumber: item.approvalNumber,
+            requestNumber: item.requestNumber,
+            clientName: item.supplierName,
+            supplierCode: item.supplierCode,
+            item: item.items?.[0]?.productName || '-',
+            quantity: item.totalQuantity,
+            requestDate: new Date(item.requestDate).toLocaleDateString('ko-KR'),
+            expectedDate: new Date(item.expectedDate).toLocaleDateString('ko-KR'),
+            status: item.status,
+            approver: item.approverName,
+            allocatedZone: item.allocatedZone,
+            allocatedBin: item.allocatedLocation,
+            items: item.items,
+          }))
+          setData(formattedData)
+          setTotal(result.pagination.total)
+        }
+      } catch (error) {
+        console.error('Error fetching approval data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [page, statusFilter])
 
   const getStatusBadgeType = (status: string): 'warning' | 'success' | 'default' | 'danger' => {
     switch (status) {
@@ -212,7 +210,8 @@ export default function InboundApprovalPage() {
   ]
 
   const columns: any[] = [
-    { key: 'id', label: tApproval('requestId'), align: 'left' as const },
+    { key: 'approvalNumber', label: tApproval('approvalNumber'), align: 'left' as const },
+    { key: 'requestNumber', label: tApproval('requestId'), align: 'left' as const },
     { key: 'clientName', label: tApproval('clientName'), align: 'left' as const },
     { key: 'item', label: tApproval('item'), align: 'left' as const },
     {
@@ -222,6 +221,7 @@ export default function InboundApprovalPage() {
       render: (value: number) => value.toLocaleString(),
     },
     { key: 'requestDate', label: tApproval('requestDate'), align: 'center' as const },
+    { key: 'expectedDate', label: tApproval('expectedDate'), align: 'center' as const },
     {
       key: 'status',
       label: t('common.status'),
@@ -237,7 +237,7 @@ export default function InboundApprovalPage() {
       key: 'actions',
       label: t('common.actions'),
       align: 'center' as const,
-      render: (_, row: any) => (
+      render: (_: any, row: any) => (
         <Button 
           size="sm" 
           variant="secondary"
@@ -256,13 +256,51 @@ export default function InboundApprovalPage() {
       </Section>
 
       <Section title={tApproval('requestList')}>
-        <div className={styles.tableContainer}>
-          <Table 
-            columns={columns} 
-            data={data}
-            onRowClick={(row) => handleRowClick(row)}
-          />
+        <div className={styles.filterContainer}>
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="all">{t('common.all')}</option>
+            <option value="pending">{tApproval('approvalPendingStatus')}</option>
+            <option value="approved">{tApproval('approvedStatus')}</option>
+            <option value="rejected">{t('common.rejected')}</option>
+          </select>
+          <div className={styles.stats}>
+            {t('common.total')}: {total.toLocaleString()}
+          </div>
         </div>
+        <div className={styles.tableContainer}>
+          {isLoading ? (
+            <div className={styles.loading}>{t('common.loading')}</div>
+          ) : (
+            <Table 
+              columns={columns} 
+              data={data}
+              onRowClick={(row) => handleRowClick(row)}
+            />
+          )}
+        </div>
+        {!isLoading && total > 20 && (
+          <div className={styles.pagination}>
+            <Button 
+              variant="secondary" 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+            >
+              {t('common.previous')}
+            </Button>
+            <span>{page} / {Math.ceil(total / 20)}</span>
+            <Button 
+              variant="secondary"
+              disabled={page >= Math.ceil(total / 20)}
+              onClick={() => setPage(p => p + 1)}
+            >
+              {t('common.next')}
+            </Button>
+          </div>
+        )}
       </Section>
 
       <ApprovalDrawer

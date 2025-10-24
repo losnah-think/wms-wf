@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Badge, Grid, StatCard, Select } from '@/components/UI'
@@ -8,8 +8,10 @@ import styles from './schedule.module.css'
 
 interface InboundSchedule {
   id: string
-  requestId: string
+  scheduleNumber: string
+  requestNumber: string
   supplier: string
+  supplierCode: string
   expectedDate: string
   itemCount: number
   quantity: number
@@ -17,88 +19,64 @@ interface InboundSchedule {
   status: 'pending' | 'on-schedule' | 'delayed' | 'arrived'
   carrier: string
   trackingNumber?: string
+  items?: any[]
 }
-
-const mockSchedules: InboundSchedule[] = [
-  {
-    id: 'SCH-2024-001',
-    requestId: 'REQ-2024-001',
-    supplier: 'ABC Supply Co.',
-    expectedDate: '2024-10-28',
-    itemCount: 8,
-    quantity: 250,
-    estimatedArrival: '2024-10-28 14:00',
-    status: 'on-schedule',
-    carrier: 'FastShip Express',
-    trackingNumber: 'FS-2024-001234',
-  },
-  {
-    id: 'SCH-2024-002',
-    requestId: 'REQ-2024-002',
-    supplier: 'XYZ Corporation',
-    expectedDate: '2024-10-27',
-    itemCount: 12,
-    quantity: 500,
-    estimatedArrival: '2024-10-27 10:30',
-    status: 'on-schedule',
-    carrier: 'Premium Logistics',
-    trackingNumber: 'PM-2024-005678',
-  },
-  {
-    id: 'SCH-2024-003',
-    requestId: 'REQ-2024-003',
-    supplier: 'Global Logistics',
-    expectedDate: '2024-10-26',
-    itemCount: 5,
-    quantity: 100,
-    estimatedArrival: '2024-10-26 09:00',
-    status: 'delayed',
-    carrier: 'International Freight',
-    trackingNumber: 'IF-2024-009999',
-  },
-  {
-    id: 'SCH-2024-004',
-    requestId: 'REQ-2024-004',
-    supplier: 'Premier Distributors',
-    expectedDate: '2024-10-24',
-    itemCount: 15,
-    quantity: 800,
-    estimatedArrival: '2024-10-24 16:45',
-    status: 'arrived',
-    carrier: 'Direct Delivery',
-    trackingNumber: 'DD-2024-003333',
-  },
-  {
-    id: 'SCH-2024-005',
-    requestId: 'REQ-2024-005',
-    supplier: 'Tech Distributors',
-    expectedDate: '2024-10-25',
-    itemCount: 6,
-    quantity: 300,
-    estimatedArrival: '2024-10-25 11:00',
-    status: 'on-schedule',
-    carrier: 'FastShip Express',
-    trackingNumber: 'FS-2024-001111',
-  },
-  {
-    id: 'SCH-2024-006',
-    requestId: 'REQ-2024-006',
-    supplier: 'Major Suppliers Inc',
-    expectedDate: '2024-10-31',
-    itemCount: 20,
-    quantity: 1200,
-    estimatedArrival: '2024-10-31 09:30',
-    status: 'pending',
-    carrier: 'Premium Logistics',
-    trackingNumber: 'PM-2024-007777',
-  },
-]
 
 export default function InboundSchedulePage() {
   const t = useTranslations()
-  const [schedules] = useState<InboundSchedule[]>(mockSchedules)
+  const [schedules, setSchedules] = useState<InboundSchedule[]>([])
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar')
   const [listFilter, setListFilter] = useState('all')
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams({
+          view: viewMode,
+          ...(viewMode === 'list' && { page: page.toString(), limit: '20' }),
+          ...(listFilter !== 'all' && { status: listFilter }),
+        })
+
+        const response = await fetch(`/api/inbound/schedule?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          const formattedData = result.data.map((item: any) => ({
+            id: item.id,
+            scheduleNumber: item.scheduleNumber,
+            requestNumber: item.requestNumber,
+            supplier: item.supplierName,
+            supplierCode: item.supplierCode,
+            expectedDate: new Date(item.expectedDate).toLocaleDateString('ko-KR'),
+            itemCount: item.items?.length || 0,
+            quantity: item.totalQuantity,
+            estimatedArrival: item.estimatedArrival 
+              ? new Date(item.estimatedArrival).toLocaleString('ko-KR') 
+              : '-',
+            status: item.status,
+            carrier: item.carrier || '-',
+            trackingNumber: item.trackingNumber,
+            items: item.items,
+          }))
+          setSchedules(formattedData)
+          if (result.pagination) {
+            setTotal(result.pagination.total)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching schedule data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSchedules()
+  }, [viewMode, listFilter, page])
   const [selectedDate, setSelectedDate] = useState(new Date())
 
   // 날짜 유틸리티 함수들
@@ -223,8 +201,8 @@ export default function InboundSchedulePage() {
   }
 
   const columns: any[] = [
-    { key: 'id', label: '일정ID', align: 'left' as const },
-    { key: 'requestId', label: '요청ID', align: 'left' as const },
+    { key: 'scheduleNumber', label: '일정ID', align: 'left' as const },
+    { key: 'requestNumber', label: '요청ID', align: 'left' as const },
     { key: 'supplier', label: '공급사', align: 'left' as const },
     { key: 'expectedDate', label: '예정일', align: 'center' as const },
     {

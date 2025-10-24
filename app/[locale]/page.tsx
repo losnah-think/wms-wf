@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { StatCard, Grid, Section, Table, Button, Badge, Card } from '@/components/UI'
@@ -8,6 +9,40 @@ import Link from 'next/link'
 
 export default function DashboardPage() {
   const t = useTranslations()
+  const [inboundStats, setInboundStats] = useState({
+    scheduled: 0,
+    pendingApproval: 0,
+    inProgress: 0,
+    todayInbound: 0,
+  })
+  const [outboundStats, setOutboundStats] = useState({
+    awaitingPicking: 0,
+    pickingInProgress: 0,
+    awaitingPacking: 0,
+    todayShipment: 0,
+  })
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch dashboard stats from API
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/dashboard/stats')
+        const result = await response.json()
+
+        if (result.success) {
+          setInboundStats(result.data.inbound)
+          setOutboundStats(result.data.outbound)
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
   
   const todayStats = [
     { label: t('dashboard.stats.totalOrders'), value: '287', subtitle: t('common.today') },
@@ -16,18 +51,18 @@ export default function DashboardPage() {
     { label: t('nav.returns'), value: '12', subtitle: t('dashboard.stats.pending') },
   ]
 
-  const inboundStats = [
-    { label: '입고 예정', value: '24', subtitle: '건' },
-    { label: '승인 대기', value: '8', subtitle: '건' },
-    { label: '입고 진행중', value: '5', subtitle: '건' },
-    { label: '오늘 입고', value: '3', subtitle: '건' },
+  const inboundStatsData = [
+    { label: '입고 예정', value: isLoading ? '-' : inboundStats.scheduled.toString(), subtitle: '건' },
+    { label: '승인 대기', value: isLoading ? '-' : inboundStats.pendingApproval.toString(), subtitle: '건' },
+    { label: '입고 진행중', value: isLoading ? '-' : inboundStats.inProgress.toString(), subtitle: '건' },
+    { label: '오늘 입고', value: isLoading ? '-' : inboundStats.todayInbound.toString(), subtitle: '건' },
   ]
 
-  const outboundStats = [
-    { label: '피킹 대기', value: '42', subtitle: '건' },
-    { label: '피킹 진행중', value: '18', subtitle: '건' },
-    { label: '패킹 대기', value: '25', subtitle: '건' },
-    { label: '오늘 출고', value: '12', subtitle: '건' },
+  const outboundStatsData = [
+    { label: '피킹 대기', value: isLoading ? '-' : outboundStats.awaitingPicking.toString(), subtitle: '건' },
+    { label: '피킹 진행중', value: isLoading ? '-' : outboundStats.pickingInProgress.toString(), subtitle: '건' },
+    { label: '패킹 대기', value: isLoading ? '-' : outboundStats.awaitingPacking.toString(), subtitle: '건' },
+    { label: '오늘 출고', value: isLoading ? '-' : outboundStats.todayShipment.toString(), subtitle: '건' },
   ]
 
   const quickStats = [
@@ -96,10 +131,10 @@ export default function DashboardPage() {
         <Grid columns={4} gap="md">{todayStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
       </Section>
       <Section title="📦 입고 현황">
-        <Grid columns={4} gap="md">{inboundStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
+        <Grid columns={4} gap="md">{inboundStatsData.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
       </Section>
       <Section title="📤 출고 현황">
-        <Grid columns={4} gap="md">{outboundStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
+        <Grid columns={4} gap="md">{outboundStatsData.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
       </Section>
       <Section title={t('dashboard.systemHealth')}>
         <Grid columns={4} gap="md">{quickStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
