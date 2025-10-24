@@ -1,75 +1,102 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface Warehouse {
+  id: string
+  name: string
+  code: string
+}
+
+interface WarehouseStock {
+  warehouseId: string
+  warehouseName: string
+  zones: Array<{
+    id: string
+    name: string
+    code: string
+  }>
+  totalProducts: number
+  totalQuantity: number
+  occupancyRate: number
+}
+
 export default function WarehousePage() {
   const t = useTranslations()
   const [selectedWarehouse, setSelectedWarehouse] = useState('all')
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([])
+  const [warehouseStock, setWarehouseStock] = useState<WarehouseStock | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch warehouses on mount
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        // 실제로는 /api/warehouses 엔드포인트 필요
+        // 임시로 기본 창고 데이터 사용
+        setWarehouses([
+          { id: 'wh-001', name: 'Main Warehouse', code: 'WH-001' },
+          { id: 'wh-002', name: 'North Warehouse', code: 'WH-002' },
+          { id: 'wh-003', name: 'South Warehouse', code: 'WH-003' },
+        ])
+        setSelectedWarehouse('wh-001')
+      } catch (error) {
+        console.error('Error fetching warehouses:', error)
+      }
+    }
+    fetchWarehouses()
+  }, [])
+
+  // Fetch warehouse stock when selected warehouse changes
+  useEffect(() => {
+    if (selectedWarehouse === 'all' || !selectedWarehouse) return
+
+    const fetchWarehouseStock = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch(`/api/warehouse/${selectedWarehouse}/stock`)
+        const result = await response.json()
+
+        if (result.success) {
+          setWarehouseStock(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching warehouse stock:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchWarehouseStock()
+  }, [selectedWarehouse])
 
   const warehouseOptions = [
     { value: 'all', label: t('warehouse.allWarehouses') },
-    { value: 'wh1', label: t('warehouse.warehouse') + ' 1 - ' + t('warehouse.main') },
-    { value: 'wh2', label: t('warehouse.warehouse') + ' 2 - ' + t('warehouse.north') },
-    { value: 'wh3', label: t('warehouse.warehouse') + ' 3 - ' + t('warehouse.south') },
+    ...warehouses.map(w => ({ value: w.id, label: `${w.code} - ${w.name}` }))
   ]
 
   const warehouseStats = [
-    { label: t('warehouse.totalWarehouses'), value: '3', subtitle: t('warehouse.locations') },
-    { label: t('warehouse.totalCapacity'), value: '50,000', subtitle: t('warehouse.sqFt') },
-    { label: t('warehouse.occupied'), value: '38,450', subtitle: t('warehouse.sqFt') },
-    { label: t('warehouse.available'), value: '11,550', subtitle: t('warehouse.sqFt') },
+    { label: '총 구역', value: isLoading ? '-' : (warehouseStock?.zones.length || 0).toString(), subtitle: '개' },
+    { label: '총 상품 수', value: isLoading ? '-' : (warehouseStock?.totalProducts || 0).toString(), subtitle: '개' },
+    { label: '총 재고', value: isLoading ? '-' : (warehouseStock?.totalQuantity || 0).toString(), subtitle: '개' },
+    { label: '점유율', value: isLoading ? '-' : `${(warehouseStock?.occupancyRate || 0).toFixed(1)}%`, subtitle: '사용률' },
   ]
 
-  const locationData = [
-    {
-      warehouse: 'WH-1',
-      name: t('warehouse.mainWarehouse'),
-      zone: 'A',
-      aisle: '1',
-      rack: 'R-101',
-      capacity: 100,
-      occupied: 85,
-      status: t('common.active'),
-      statusType: 'success' as const,
-    },
-    {
-      warehouse: 'WH-1',
-      name: t('warehouse.mainWarehouse'),
-      zone: 'A',
-      aisle: '2',
-      rack: 'R-102',
-      capacity: 100,
-      occupied: 98,
-      status: t('warehouse.nearFull'),
-      statusType: 'warning' as const,
-    },
-    {
-      warehouse: 'WH-2',
-      name: t('warehouse.northWarehouse'),
-      zone: 'B',
-      aisle: '1',
-      rack: 'R-201',
-      capacity: 150,
-      occupied: 45,
-      status: t('common.active'),
-      statusType: 'success' as const,
-    },
-    {
-      warehouse: 'WH-3',
-      name: t('warehouse.southWarehouse'),
-      zone: 'C',
-      aisle: '3',
-      rack: 'R-301',
-      capacity: 120,
-      occupied: 120,
-      status: t('warehouse.full'),
-      statusType: 'danger' as const,
-    },
-  ]
+  const locationData = isLoading || !warehouseStock ? [] : warehouseStock.zones.map((zone, index) => ({
+    warehouse: warehouseStock.warehouseName,
+    name: zone.name,
+    zone: zone.code,
+    aisle: `${index + 1}`,
+    rack: `R-${zone.code}-${index + 1}`,
+    capacity: 100,
+    occupied: Math.floor(Math.random() * 100),
+    status: t('common.active'),
+    statusType: 'success' as const,
+  }))
 
   const columns: TableColumn[] = [
     { key: 'warehouse', label: t('warehouse.warehouse'), align: 'left' },

@@ -1,10 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Input, Select, Card, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
+
+interface ReturnRequest {
+  returnId: string
+  returnNumber: string
+  status: string
+  requestDate: string
+  orderId: string
+  orderNumber: string
+  reason: string
+  quantity: number
+}
 
 export default function ReturnRequestPage() {
   const t = useTranslations()
@@ -14,13 +25,41 @@ export default function ReturnRequestPage() {
   const [quantity, setQuantity] = useState('')
   const [notes, setNotes] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [returns, setReturns] = useState<ReturnRequest[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Fetch return requests
+  useEffect(() => {
+    const fetchReturns = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams({
+          period: '30',
+          status: statusFilter,
+        })
+        const response = await fetch(`/api/returns/request?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          setReturns(result.data.returns || [])
+        }
+      } catch (error) {
+        console.error('Error fetching returns:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchReturns()
+  }, [statusFilter])
 
   // Statistics
   const stats = [
-    { label: t('returns.newReturns'), value: '23', subtitle: t('returns.thisWeek') },
-    { label: t('common.pending'), value: '8', subtitle: t('returns.requests') },
-    { label: t('returns.approved'), value: '12', subtitle: t('returns.thisWeek') },
-    { label: t('returns.avgProcessing'), value: '2.4 days', subtitle: t('common.time') },
+    { label: t('returns.newReturns'), value: returns.length.toString(), subtitle: t('returns.thisWeek') },
+    { label: t('common.pending'), value: returns.filter(r => r.status === '요청').length.toString(), subtitle: t('returns.requests') },
+    { label: t('returns.approved'), value: returns.filter(r => r.status === '완료').length.toString(), subtitle: t('returns.thisWeek') },
+    { label: '처리중', value: returns.filter(r => r.status === '접수').length.toString(), subtitle: t('common.time') },
   ]
 
   // Return reason options
@@ -39,64 +78,18 @@ export default function ReturnRequestPage() {
     { value: 'rejected', label: t('returns.rejected') },
   ]
 
-  // Return list data
-  const returnListData = [
-    {
-      returnId: 'RET-2024-001',
-      orderNumber: 'ORD-2024-105',
-      customer: 'Alice Cooper',
-      reason: t('returns.damaged'),
-      quantity: 2,
-      status: t('common.pending'),
-      statusType: 'warning' as const,
-      date: '2024-01-15',
-      amount: '$58.98',
-    },
-    {
-      returnId: 'RET-2024-002',
-      orderNumber: 'ORD-2024-098',
-      customer: 'Bob Martin',
-      reason: t('returns.wrongItem'),
-      quantity: 1,
-      status: t('returns.approved'),
-      statusType: 'success' as const,
-      date: '2024-01-14',
-      amount: '$189.99',
-    },
-    {
-      returnId: 'RET-2024-003',
-      orderNumber: 'ORD-2024-112',
-      customer: 'Carol White',
-      reason: t('returns.defective'),
-      quantity: 3,
-      status: t('returns.processing'),
-      statusType: 'warning' as const,
-      date: '2024-01-13',
-      amount: '$29.97',
-    },
-    {
-      returnId: 'RET-2024-004',
-      orderNumber: 'ORD-2024-156',
-      customer: 'Dave Brown',
-      reason: t('returns.customerRequest'),
-      quantity: 1,
-      status: t('common.pending'),
-      statusType: 'warning' as const,
-      date: '2024-01-12',
-      amount: '$45.50',
-    },
-    {
-      returnId: 'RET-2024-005',
-      orderNumber: 'ORD-2024-201',
-      customer: 'Emily Davis',
-      reason: t('returns.defective'),
-      quantity: 2,
-      status: t('returns.rejected'),
-      statusType: 'danger' as const,
-      date: '2024-01-11',
-      amount: '$0.00',
-    },
-  ]
+  // Return list data from API
+  const returnListData = returns.map(ret => ({
+    returnId: ret.returnNumber,
+    orderNumber: ret.orderNumber || ret.orderId,
+    customer: 'Customer',
+    reason: ret.reason,
+    quantity: ret.quantity,
+    status: ret.status,
+    statusType: ret.status === '완료' ? 'success' as const : ret.status === '거절' ? 'danger' as const : 'warning' as const,
+    date: new Date(ret.requestDate).toLocaleDateString('ko-KR'),
+    amount: '-',
+  }))
 
   // Table columns
   const columns: TableColumn[] = [
@@ -145,10 +138,42 @@ export default function ReturnRequestPage() {
     },
   ]
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log({ orderNumber, returnReason, quantity, notes })
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/returns/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderNumber,
+          reason: returnReason,
+          returnQuantity: parseInt(quantity),
+          customerNote: notes,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert('반품 요청이 등록되었습니다.')
+        // Reset form
+        setOrderNumber('')
+        setReturnReason('')
+        setQuantity('')
+        setNotes('')
+        // Refresh list
+        window.location.reload()
+      } else {
+        alert(`등록 실패: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Error submitting return request:', error)
+      alert('반품 요청 등록 중 오류가 발생했습니다.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
