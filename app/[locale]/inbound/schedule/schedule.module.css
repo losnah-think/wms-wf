@@ -8,3 +8,163 @@
 .filterActions > div {
   width: 200px;
 }
+
+.viewToggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.viewToggle button {
+  min-width: 100px;
+}
+
+/* Calendar Styles */
+.calendarContainer {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.calendarTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e5e7eb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dayHeader {
+  background: #f3f4f6;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.emptyDay {
+  background: #f9fafb;
+  min-height: 100px;
+}
+
+.calendarDay {
+  background: #fff;
+  min-height: 100px;
+  padding: 8px;
+  position: relative;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendarDay:nth-child(7n) {
+  border-right: none;
+}
+
+.calendarDay.today {
+  background: #f0f9ff;
+  border: 2px solid #0ea5e9;
+}
+
+.calendarDay.today .dayNumber {
+  color: #0ea5e9;
+  font-weight: 700;
+}
+
+.dayNumber {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.daySchedules {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.scheduleItem {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scheduleItem:hover {
+  background: #c7d2fe;
+  transform: scale(1.05);
+}
+
+.scheduleItem.status-pending {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.scheduleItem.status-on-schedule {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.scheduleItem.status-delayed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.scheduleItem.status-arrived {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendarGrid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .calendarDay {
+    min-height: 80px;
+    padding: 4px;
+  }
+
+  .dayNumber {
+    font-size: 12px;
+  }
+
+  .scheduleItem {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
