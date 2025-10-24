@@ -51,8 +51,14 @@ function getRandomElement<T>(arr: T[]): T {
 }
 
 function getRandomDate(daysAgo: number = 90): Date {
-  const date = new Date()
+  const date = new Date('2025-10-24') // 현재 날짜: 2025년 10월 24일
   date.setDate(date.getDate() - Math.floor(Math.random() * daysAgo))
+  return date
+}
+
+function getFutureDate(daysAhead: number = 30): Date {
+  const date = new Date('2025-10-24') // 현재 날짜: 2025년 10월 24일
+  date.setDate(date.getDate() + Math.floor(Math.random() * daysAhead))
   return date
 }
 
@@ -161,9 +167,12 @@ async function main() {
 
       const requestsData = []
       for (let i = startIdx; i < endIdx; i++) {
-        const requestDate = getRandomDate(90)
-        const expectedDate = new Date(requestDate)
-        expectedDate.setDate(expectedDate.getDate() + Math.floor(Math.random() * 14) + 3)
+        // 요청일: 과거 30일 이내
+        const requestDate = getRandomDate(30)
+        
+        // 예정일: 요청일로부터 3~30일 후 (미래 날짜)
+        const expectedDate = new Date('2025-10-24')
+        expectedDate.setDate(expectedDate.getDate() + Math.floor(Math.random() * 30) + 1)
 
         requestsData.push({
           requestNumber: generateRequestNumber(),
@@ -193,7 +202,7 @@ async function main() {
         supplierId: req.supplierId,
         status: getRandomElement(statuses),
         expectedDate: req.expectedDate,
-        estimatedArrival: new Date(req.expectedDate.getTime() + Math.random() * 86400000),
+        estimatedArrival: new Date(req.expectedDate.getTime() + Math.random() * 86400000 * 2), // 예정일 기준 0~2일 차이
         carrier: getRandomElement(carriers),
         trackingNumber: `TRK${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
         totalQuantity: req.totalQuantity,
@@ -210,7 +219,7 @@ async function main() {
         requestId: req.id,
         status: Math.random() > 0.2 ? 'approved' : 'pending',
         approverName: `Approver ${Math.floor(Math.random() * 10) + 1}`,
-        approvalDate: new Date(),
+        approvalDate: Math.random() > 0.3 ? new Date('2025-10-24') : null,
         allocatedZone: `Zone ${String.fromCharCode(65 + Math.floor(Math.random() * 4))}`,
       }))
 

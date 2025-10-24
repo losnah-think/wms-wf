@@ -341,9 +341,10 @@ export default function InboundSchedulePage() {
                 label="필터"
                 options={[
                   { value: 'all', label: '전체' },
-                  { value: 'today', label: '오늘' },
-                  { value: 'week', label: '이번 주' },
-                  { value: 'month', label: '이번 달' },
+                  { value: 'pending', label: '대기중' },
+                  { value: 'on-schedule', label: '정상' },
+                  { value: 'delayed', label: '지연' },
+                  { value: 'arrived', label: '도착' },
                 ]}
                 value={listFilter}
                 onChange={(e) => setListFilter(e.target.value)}
@@ -352,15 +353,37 @@ export default function InboundSchedulePage() {
           </Section>
 
           <Section>
-            <Grid columns={4} gap="md">
-              {stats.map((stat, index) => (
-                <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
-              ))}
-            </Grid>
-          </Section>
-
-          <Section title="예정 목록">
-            <Table columns={columns} data={filteredSchedules} />
+            {isLoading ? (
+              <div style={{ padding: '40px', textAlign: 'center' }}>로딩 중...</div>
+            ) : (
+              <>
+                <div style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
+                  총 {schedules.length.toLocaleString()}건
+                </div>
+                <Table columns={columns} data={schedules} />
+                {viewMode === 'list' && total > 20 && (
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '24px', padding: '16px' }}>
+                    <Button 
+                      variant="secondary" 
+                      disabled={page === 1}
+                      onClick={() => setPage(p => p - 1)}
+                    >
+                      이전
+                    </Button>
+                    <span style={{ fontSize: '14px', color: '#666', lineHeight: '32px' }}>
+                      {page} / {Math.ceil(total / 20)}
+                    </span>
+                    <Button 
+                      variant="secondary"
+                      disabled={page >= Math.ceil(total / 20)}
+                      onClick={() => setPage(p => p + 1)}
+                    >
+                      다음
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </Section>
         </>
       )}
