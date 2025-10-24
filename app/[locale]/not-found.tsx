@@ -29,9 +29,11 @@ export default function NotFound() {
         </div>
 
         <div className={styles.errorSupport}>
-          <p>
+          <p className={styles.errorSupportText}>
             {t('error.needHelp')}
-            <a href="mailto:support@example.com">{t('error.contactSupport')}</a>
+            <a href="mailto:support@example.com" className={styles.errorSupportLink}>
+              {t('error.contactSupport')}
+            </a>
           </p>
         </div>
       </div>

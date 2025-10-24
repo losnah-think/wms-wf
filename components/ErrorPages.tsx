@@ -117,7 +117,7 @@ export const ErrorPage = ({
         {errorId && (
           <div className={styles.errorId}>
             <small>
-              {t('error.errorId')}: <code>{errorId}</code>
+              {t('error.errorId')}: <code className={styles.errorIdCode}>{errorId}</code>
             </small>
           </div>
         )}
@@ -139,9 +139,11 @@ export const ErrorPage = ({
         </div>
 
         <div className={styles.errorSupport}>
-          <p>
+          <p className={styles.errorSupportText}>
             {t('error.needHelp')}
-            <a href="mailto:support@example.com">{t('error.contactSupport')}</a>
+            <a href="mailto:support@example.com" className={styles.errorSupportLink}>
+              {t('error.contactSupport')}
+            </a>
           </p>
         </div>
       </div>

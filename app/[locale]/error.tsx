@@ -28,7 +28,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         {error.digest && (
           <div className={styles.errorId}>
             <small>
-              {t('error.errorId')}: <code>{error.digest}</code>
+              {t('error.errorId')}: <code className={styles.errorIdCode}>{error.digest}</code>
             </small>
           </div>
         )}
@@ -48,9 +48,11 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         </div>
 
         <div className={styles.errorSupport}>
-          <p>
+          <p className={styles.errorSupportText}>
             {t('error.needHelp')}
-            <a href="mailto:support@example.com">{t('error.contactSupport')}</a>
+            <a href="mailto:support@example.com" className={styles.errorSupportLink}>
+              {t('error.contactSupport')}
+            </a>
           </p>
         </div>
       </div>

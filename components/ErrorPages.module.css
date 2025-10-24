@@ -64,13 +64,13 @@
   background: #ecf0f1;
   border-radius: 4px;
   font-family: 'Courier New', monospace;
+}
 
-  code {
-    display: block;
-    color: #2c3e50;
-    word-break: break-all;
-    margin-top: 4px;
-  }
+.errorIdCode {
+  display: block;
+  color: #2c3e50;
+  word-break: break-all;
+  margin-top: 4px;
 }
 
 .errorActions {
@@ -79,15 +79,6 @@
   margin: 32px 0;
   flex-wrap: wrap;
   justify-content: center;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-
-    button,
-    a {
-      width: 100%;
-    }
-  }
 }
 
 .btnRetry,
@@ -109,32 +100,32 @@
 .btnRetry {
   background: #667eea;
   color: white;
+}
 
-  &:hover {
-    background: #5568d3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  }
+.btnRetry:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
 
-  &:active {
-    transform: translateY(0);
-  }
+.btnRetry:active {
+  transform: translateY(0);
 }
 
 .btnLink {
   background: #ecf0f1;
   color: #2c3e50;
   border: 2px solid #bdc3c7;
+}
 
-  &:hover {
-    background: #bdc3c7;
-    color: white;
-    transform: translateY(-2px);
-  }
+.btnLink:hover {
+  background: #bdc3c7;
+  color: white;
+  transform: translateY(-2px);
+}
 
-  &:active {
-    transform: translateY(0);
-  }
+.btnLink:active {
+  transform: translateY(0);
 }
 
 .errorSupport {
@@ -143,20 +134,31 @@
   border-top: 1px solid #ecf0f1;
   font-size: 14px;
   color: #7f8c8d;
+}
 
-  p {
-    margin: 0;
+.errorSupportText {
+  margin: 0;
+}
 
-    a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-      margin-left: 4px;
+.errorSupportLink {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 4px;
+}
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
+.errorSupportLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .errorActions {
+    flex-direction: column;
+  }
+
+  .btnRetry,
+  .btnLink {
+    width: 100%;
   }
 }
 
