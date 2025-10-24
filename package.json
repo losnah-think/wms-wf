@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "node prisma-generate.js && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:seed": "ts-node prisma/seed.ts",
