@@ -1,15 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard, Input } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface InventoryMovement {
+  id: string
+  type: string
+  productName: string
+  from: string
+  to: string
+  quantity: number
+  reason: string
+  status: string
+  createdAt: string
+}
+
 export default function AdvancedInventoryPage() {
   const t = useTranslations()
   const [selectedMovement, setSelectedMovement] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [movementData, setMovementData] = useState<InventoryMovement[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    transfers: 0,
+    adjustments: 0,
+    cycleCounts: 0,
+    discrepancies: 0,
+  })
 
   const movementOptions = [
     { value: 'all', label: t('advancedInventory.allMovements') },
@@ -18,68 +38,71 @@ export default function AdvancedInventoryPage() {
     { value: 'cycle-count', label: t('advancedInventory.cycleCounts') },
   ]
 
-  const stats = [
-    { label: t('advancedInventory.transfersToday'), value: '23', subtitle: t('advancedInventory.movements') },
-    { label: t('advancedInventory.adjustments'), value: '8', subtitle: t('advancedInventory.corrections') },
-    { label: t('advancedInventory.cycleCounts'), value: '5', subtitle: t('common.completed') },
-    { label: t('advancedInventory.discrepancies'), value: '2', subtitle: t('common.items') },
+  // Fetch inventory movement data from API
+  useEffect(() => {
+    const fetchMovements = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (selectedMovement !== 'all') params.append('type', selectedMovement)
+        if (searchQuery) params.append('search', searchQuery)
+
+        const response = await fetch(`/api/stock/movement?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          const items = result.data || []
+          setMovementData(items)
+
+          // Calculate stats from API data
+          const transferCount = items.filter((item: InventoryMovement) => item.type === 'transfer').length
+          const adjustmentCount = items.filter((item: InventoryMovement) => item.type === 'adjustment').length
+          const cycleCountCount = items.filter((item: InventoryMovement) => item.type === 'cycle-count').length
+          const discrepancyCount = items.filter((item: InventoryMovement) => Math.abs(item.quantity) > 100).length
+
+          setStats({
+            transfers: transferCount,
+            adjustments: adjustmentCount,
+            cycleCounts: cycleCountCount,
+            discrepancies: discrepancyCount,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching movements:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchMovements()
+    const interval = setInterval(fetchMovements, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [selectedMovement, searchQuery])
+
+  const getStatusType = (status: string) => {
+    if (status === 'completed') return 'success'
+    if (status === 'in-progress' || status === 'active') return 'warning'
+    if (status === 'pending') return 'default'
+    return 'danger'
+  }
+
+  const statsDisplay = [
+    { label: t('advancedInventory.transfersToday'), value: String(stats.transfers), subtitle: t('advancedInventory.movements') },
+    { label: t('advancedInventory.adjustments'), value: String(stats.adjustments), subtitle: t('advancedInventory.corrections') },
+    { label: t('advancedInventory.cycleCounts'), value: String(stats.cycleCounts), subtitle: t('common.completed') },
+    { label: t('advancedInventory.discrepancies'), value: String(stats.discrepancies), subtitle: t('common.items') },
   ]
 
-  const movementData = [
-    {
-      id: 'MOV-2025-001',
-      type: t('advancedInventory.transfer'),
-      product: 'Wireless Mouse',
-      from: 'WH-1, Zone A',
-      to: 'WH-2, Zone B',
-      quantity: 50,
-      reason: 'Rebalancing',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-      date: '2025-01-15',
-    },
-    {
-      id: 'MOV-2025-002',
-      type: t('advancedInventory.adjustment'),
-      product: 'Office Chair',
-      from: 'WH-1, Zone A',
-      to: '-',
-      quantity: -3,
-      reason: 'Damaged Items',
-      status: t('common.active'),
-      statusType: 'warning' as const,
-      date: '2025-01-15',
-    },
-    {
-      id: 'MOV-2025-003',
-      type: t('advancedInventory.cycleCountType'),
-      product: 'USB-C Cable',
-      from: 'WH-3, Zone C',
-      to: '-',
-      quantity: 0,
-      reason: 'Regular Audit',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-      date: '2025-01-15',
-    },
-    {
-      id: 'MOV-2025-004',
-      type: t('advancedInventory.transfer'),
-      product: 'Cotton T-Shirt',
-      from: 'WH-2, Zone B',
-      to: 'WH-1, Zone A',
-      quantity: 100,
-      reason: 'Restocking',
-      status: t('common.pending'),
-      statusType: 'default' as const,
-      date: '2025-01-14',
-    },
-  ]
+  const filteredData = movementData.filter((item) =>
+    !searchQuery ||
+    item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.id.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const columns: TableColumn[] = [
     { key: 'id', label: t('advancedInventory.movementId'), align: 'left' },
     { key: 'type', label: t('inboundOutbound.type'), align: 'left' },
-    { key: 'product', label: t('products.product'), align: 'left' },
+    { key: 'productName', label: t('products.product'), align: 'left' },
     { key: 'from', label: t('advancedInventory.from'), align: 'left' },
     { key: 'to', label: t('advancedInventory.to'), align: 'left' },
     {
@@ -93,7 +116,7 @@ export default function AdvancedInventoryPage() {
       key: 'status',
       label: t('common.status'),
       align: 'center',
-      render: (value, row) => <Badge type={row.statusType}>{value}</Badge>,
+      render: (value) => <Badge type={getStatusType(value)}>{value}</Badge>,
     },
   ]
 
@@ -101,7 +124,7 @@ export default function AdvancedInventoryPage() {
     <PageWrapper>
       <Section title={t('advancedInventory.overview')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
+          {statsDisplay.map((stat, index) => (
             <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </Grid>
@@ -126,7 +149,7 @@ export default function AdvancedInventoryPage() {
             />
           </div>
         </div>
-        <Table columns={columns} data={movementData} />
+        <Table columns={columns} data={filteredData} />
       </Section>
     </PageWrapper>
   )

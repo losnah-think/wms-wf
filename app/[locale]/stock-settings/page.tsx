@@ -1,9 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Input, Select, Button, Card, Grid } from '@/components/UI'
+
+interface StockSettings {
+  id: string
+  minStockLevel: number
+  maxStockLevel: number
+  reorderPoint: number
+  reorderQuantity: number
+  leadTime: number
+  stockMethod: string
+  lowStockAlerts: boolean
+  overstockAlerts: boolean
+  expiryAlerts: boolean
+  updatedAt: string
+}
 
 export default function StockSettingsPage() {
   const t = useTranslations()
@@ -13,12 +27,73 @@ export default function StockSettingsPage() {
   const [reorderQuantity, setReorderQuantity] = useState('200')
   const [leadTime, setLeadTime] = useState('7')
   const [stockMethod, setStockMethod] = useState('fifo')
+  const [isLoading, setIsLoading] = useState(true)
+  const [lowStockAlerts, setLowStockAlerts] = useState(true)
+  const [overstockAlerts, setOverstockAlerts] = useState(true)
+  const [expiryAlerts, setExpiryAlerts] = useState(true)
 
   const methodOptions = [
     { value: 'fifo', label: 'FIFO' },
     { value: 'lifo', label: 'LIFO' },
     { value: 'fefo', label: 'FEFO' },
   ]
+
+  // Fetch stock settings from API
+  useEffect(() => {
+    const fetchSettings = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/config/warehouse')
+        const result = await response.json()
+
+        if (result.success && result.data) {
+          const settings = result.data[0] || {}
+          setMinStockLevel(String(settings.minStockLevel || 10))
+          setMaxStockLevel(String(settings.maxStockLevel || 1000))
+          setReorderPoint(String(settings.reorderPoint || 50))
+          setReorderQuantity(String(settings.reorderQuantity || 200))
+          setLeadTime(String(settings.leadTime || 7))
+          setStockMethod(settings.stockMethod || 'fifo')
+          setLowStockAlerts(settings.lowStockAlerts !== false)
+          setOverstockAlerts(settings.overstockAlerts !== false)
+          setExpiryAlerts(settings.expiryAlerts !== false)
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSettings()
+  }, [])
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/config/warehouse', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          minStockLevel: parseInt(minStockLevel),
+          maxStockLevel: parseInt(maxStockLevel),
+          reorderPoint: parseInt(reorderPoint),
+          reorderQuantity: parseInt(reorderQuantity),
+          leadTime: parseInt(leadTime),
+          stockMethod,
+          lowStockAlerts,
+          overstockAlerts,
+          expiryAlerts,
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        console.log('Settings saved successfully')
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error)
+    }
+  }
 
   return (
     <PageWrapper>
@@ -86,7 +161,12 @@ export default function StockSettingsPage() {
                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('stockSettings.lowStockAlerts')}</div>
                 <div style={{ fontSize: '14px', color: '#666' }}>{t('stockSettings.lowStockDesc')}</div>
               </div>
-              <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
+              <input
+                type="checkbox"
+                checked={lowStockAlerts}
+                onChange={(e) => setLowStockAlerts(e.target.checked)}
+                style={{ width: '20px', height: '20px' }}
+              />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -94,7 +174,12 @@ export default function StockSettingsPage() {
                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('stockSettings.overstockAlerts')}</div>
                 <div style={{ fontSize: '14px', color: '#666' }}>{t('stockSettings.overstockDesc')}</div>
               </div>
-              <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
+              <input
+                type="checkbox"
+                checked={overstockAlerts}
+                onChange={(e) => setOverstockAlerts(e.target.checked)}
+                style={{ width: '20px', height: '20px' }}
+              />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -102,8 +187,16 @@ export default function StockSettingsPage() {
                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('stockSettings.expiryAlerts')}</div>
                 <div style={{ fontSize: '14px', color: '#666' }}>{t('stockSettings.expiryDesc')}</div>
               </div>
-              <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
+              <input
+                type="checkbox"
+                checked={expiryAlerts}
+                onChange={(e) => setExpiryAlerts(e.target.checked)}
+                style={{ width: '20px', height: '20px' }}
+              />
             </div>
+            <Button variant="primary" size="md" onClick={handleSave}>
+              {t('common.save')}
+            </Button>
           </div>
         </Card>
       </Section>

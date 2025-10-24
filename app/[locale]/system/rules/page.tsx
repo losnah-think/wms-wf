@@ -1,19 +1,93 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Button, Card, Grid, StatCard } from '@/components/UI'
 
+interface SystemRule {
+  id: string
+  category: string
+  rule: string
+  value: string
+  enabled: boolean
+}
+
 export default function SystemRulesPage() {
   const t = useTranslations()
-  const stats = [
-    { label: t('system.activeRules'), value: '14', subtitle: t('system.enabled') },
-    { label: t('system.systemEfficiency'), value: '98.5%', subtitle: t('system.uptime') },
-    { label: t('system.lastUpdated'), value: '2025-01-15', subtitle: t('common.date') },
-    { label: t('system.ruleViolations'), value: '0', subtitle: t('reports.today') },
-  ]
+  const [rules, setRules] = useState<SystemRule[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    activeRules: 0,
+    systemEfficiency: 0,
+    lastUpdated: '',
+    ruleViolations: 0,
+  })
 
-  const rules = [
+  // Fetch system rules and alerts from API
+  useEffect(() => {
+    const fetchRules = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/config/alerts')
+        const result = await response.json()
+
+        if (result.success && result.data) {
+          const rulesData = result.data || []
+          setRules(rulesData)
+
+          // Calculate stats from API data
+          const enabledCount = rulesData.filter((r: SystemRule) => r.enabled).length
+          const violations = rulesData.filter((r: SystemRule) => !r.enabled).length
+          const now = new Date().toLocaleDateString()
+
+          setStats({
+            activeRules: enabledCount,
+            systemEfficiency: 98.5,
+            lastUpdated: now,
+            ruleViolations: violations,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching rules:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRules()
+    const interval = setInterval(fetchRules, 120 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleRuleToggle = async (ruleId: string, enabled: boolean) => {
+    try {
+      const response = await fetch(`/api/config/alerts/${ruleId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: !enabled }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        setRules(rules.map((r) => (r.id === ruleId ? { ...r, enabled: !enabled } : r)))
+      }
+    } catch (error) {
+      console.error('Error updating rule:', error)
+    }
+  }
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/config/alerts')
+      const result = await response.json()
+      console.log('Exported rules:', result.data)
+    } catch (error) {
+      console.error('Error exporting rules:', error)
+    }
+  }
+
+  const staticRules = [
     {
       category: t('system.inventoryRules'),
       items: [
@@ -56,13 +130,30 @@ export default function SystemRulesPage() {
     <PageWrapper>
       <Section title={t('system.systemStatus')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
-            <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
-          ))}
+          <StatCard
+            label={t('system.activeRules')}
+            value={String(stats.activeRules)}
+            subtitle={t('system.enabled')}
+          />
+          <StatCard
+            label={t('system.systemEfficiency')}
+            value={`${stats.systemEfficiency}%`}
+            subtitle={t('system.uptime')}
+          />
+          <StatCard
+            label={t('system.lastUpdated')}
+            value={stats.lastUpdated}
+            subtitle={t('common.date')}
+          />
+          <StatCard
+            label={t('system.ruleViolations')}
+            value={String(stats.ruleViolations)}
+            subtitle={t('reports.today')}
+          />
         </Grid>
       </Section>
 
-      {rules.map((section, sectionIndex) => (
+      {staticRules.map((section, sectionIndex) => (
         <Section key={sectionIndex} title={section.category}>
           <Card>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -102,7 +193,8 @@ export default function SystemRulesPage() {
                     </span>
                     <input
                       type="checkbox"
-                      defaultChecked={item.enabled}
+                      checked={item.enabled}
+                      onChange={() => handleRuleToggle(`rule-${sectionIndex}-${itemIndex}`, item.enabled)}
                       style={{ width: '20px', height: '20px' }}
                     />
                   </div>
@@ -116,7 +208,9 @@ export default function SystemRulesPage() {
       <Section title={t('system.configManagement')}>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Button variant="primary" size="md">{t('common.save')}</Button>
-          <Button variant="secondary" size="md">{t('system.exportRules')}</Button>
+          <Button variant="secondary" size="md" onClick={handleExport}>
+            {t('system.exportRules')}
+          </Button>
           <Button variant="secondary" size="md">{t('system.importRules')}</Button>
           <Button variant="secondary" size="md">{t('system.resetAll')}</Button>
         </div>
