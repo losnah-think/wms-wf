@@ -196,6 +196,24 @@ The application includes 8 main sections with 21 total pages:
 
 See `lib/navigation.ts` for the complete navigation structure.
 
+## Documentation
+
+### Wireframes
+
+- **[Inbound Management Wireframe](./WIREFRAME_INBOUND_MANAGEMENT.md)** - Low-fidelity ASCII wireframe showing:
+  - Approval List tab (inbound request management)
+  - Zone Move tab (warehouse zone allocation)
+  - Invoice History tab (invoice generation and OMS sync)
+  - 5-step status timeline workflow
+  - Complete API endpoint documentation
+  - End-to-end user interaction scenarios
+  - Error handling cases
+
+### Design Documentation
+
+- **[Error Handling Guide](./ERROR_HANDLING_GUIDE.md)** - Comprehensive error management strategy
+- **[Error Pages Documentation](./ERROR_HANDLING.md)** - Error page components and WMS error codes
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
