@@ -16,6 +16,13 @@ export default function DashboardPage() {
     { label: t('nav.returns'), value: '12', subtitle: t('dashboard.stats.pending') },
   ]
 
+  const inboundStats = [
+    { label: '입고 예정', value: '24', subtitle: '건' },
+    { label: '승인 대기', value: '8', subtitle: '건' },
+    { label: '입고 진행중', value: '5', subtitle: '건' },
+    { label: '오늘 입고', value: '3', subtitle: '건' },
+  ]
+
   const quickStats = [
     { label: t('dashboard.stats.warehouseUtilization'), value: '78%', subtitle: t('dashboard.stats.occupied') },
     { label: t('dashboard.stats.onTimeDelivery'), value: '97.8%', subtitle: t('dashboard.stats.rate') },
@@ -31,6 +38,10 @@ export default function DashboardPage() {
   ]
 
   const modules = [
+    { title: t('nav.inbound'), items: [
+      { name: t('nav.inboundSchedule'), link: '/inbound/schedule' },
+      { name: t('nav.inboundApproval'), link: '/inbound/approval' },
+    ]},
     { title: t('nav.inventory'), items: [
       { name: t('nav.products'), link: '/products' },
       { name: t('nav.warehouse'), link: '/warehouse' },
@@ -74,6 +85,9 @@ export default function DashboardPage() {
       </div>
       <Section title={t('dashboard.todayPerformance')}>
         <Grid columns={4} gap="md">{todayStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
+      </Section>
+      <Section title="📦 입고 현황">
+        <Grid columns={4} gap="md">{inboundStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
       </Section>
       <Section title={t('dashboard.systemHealth')}>
         <Grid columns={4} gap="md">{quickStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>

@@ -28,21 +28,21 @@ export function getItemTranslationKey(labelKey: string): string {
 }
 
 // ============================================================================
-// Menu Structure (9 Sections, 23 Items)
+// Menu Structure (8 Sections, 21 Items)
 // ============================================================================
 
 export const menuSections: MenuSection[] = [
   {
-    titleKey: 'inbound',
-    items: [
-      { labelKey: 'inboundRequest', href: '/inbound/request' },
-      { labelKey: 'inboundSchedule', href: '/inbound/schedule' },
-    ],
-  },
-  {
     titleKey: 'dashboard',
     items: [
       { labelKey: 'dashboard', href: '/' },
+    ],
+  },
+  {
+    titleKey: 'inbound',
+    items: [
+      { labelKey: 'inboundSchedule', href: '/inbound/schedule' },
+      { labelKey: 'inboundApproval', href: '/inbound/approval' },
     ],
   },
   {
@@ -53,9 +53,7 @@ export const menuSections: MenuSection[] = [
       { labelKey: 'stockStatus', href: '/stock-status' },
       { labelKey: 'stockSettings', href: '/stock-settings' },
       { labelKey: 'inboundOutbound', href: '/inbound-outbound' },
-      { labelKey: 'inboundApproval', href: '/inbound/approval' },
       { labelKey: 'advanced', href: '/advanced-inventory' },
-      { labelKey: 'returnPicking', href: '/return-picking' },
     ],
   },
   {
@@ -64,6 +62,7 @@ export const menuSections: MenuSection[] = [
       { labelKey: 'pickingMgmt', href: '/picking' },
       { labelKey: 'packingMgmt', href: '/packing' },
       { labelKey: 'workers', href: '/workers' },
+      { labelKey: 'returnPicking', href: '/return-picking' },
     ],
   },
   {
