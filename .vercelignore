@@ -1,0 +1,4 @@
+# Vercel build에서 제외할 파일들
+.git
+.gitignore
+README.md
