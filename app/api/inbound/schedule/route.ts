@@ -90,10 +90,16 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching inbound schedules:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      type: error instanceof Error ? error.constructor.name : typeof error,
+    })
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch inbound schedules',
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     )
