@@ -30,6 +30,7 @@ export default function InboundSchedulePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
+  const [selectedDate, setSelectedDate] = useState(new Date('2025-10-24'))
 
   // Fetch data from API
   useEffect(() => {
@@ -41,6 +42,14 @@ export default function InboundSchedulePage() {
           ...(viewMode === 'list' && { page: page.toString(), limit: '20' }),
           ...(listFilter !== 'all' && { status: listFilter }),
         })
+
+        // 캘린더 뷰일 때 현재 월의 데이터만 가져오기
+        if (viewMode === 'calendar') {
+          const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+          const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0)
+          params.set('startDate', startOfMonth.toISOString().split('T')[0])
+          params.set('endDate', endOfMonth.toISOString().split('T')[0])
+        }
 
         const response = await fetch(`/api/inbound/schedule?${params}`)
         const result = await response.json()
@@ -66,6 +75,8 @@ export default function InboundSchedulePage() {
           setSchedules(formattedData)
           if (result.pagination) {
             setTotal(result.pagination.total)
+          } else {
+            setTotal(formattedData.length)
           }
         }
       } catch (error) {
@@ -76,11 +87,10 @@ export default function InboundSchedulePage() {
     }
 
     fetchSchedules()
-  }, [viewMode, listFilter, page])
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  }, [viewMode, listFilter, page, selectedDate])
 
   // 날짜 유틸리티 함수들
-  const today = new Date('2024-10-24')
+  const today = new Date('2025-10-24')
   const getStartOfWeek = (date: Date) => {
     const d = new Date(date)
     const day = d.getDay()
@@ -139,10 +149,9 @@ export default function InboundSchedulePage() {
   }
 
   const getSchedulesForDate = (day: number) => {
-    const dateStr = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day)
-      .toISOString()
-      .split('T')[0]
-    return schedules.filter(s => s.expectedDate === dateStr)
+    const targetDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day)
+    const targetDateStr = targetDate.toLocaleDateString('ko-KR')
+    return schedules.filter(s => s.expectedDate === targetDateStr)
   }
 
   // 통계 계산
