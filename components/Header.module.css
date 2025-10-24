@@ -1,0 +1,268 @@
+/* ============================================================================
+   Header Component Styles
+   ============================================================================ */
+
+.header {
+  height: 60px;
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #999999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* ============================================================================
+   Header Left Section
+   ============================================================================ */
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: -0.5px;
+}
+
+/* ============================================================================
+   Team Selector
+   ============================================================================ */
+
+.teamSelector {
+  position: relative;
+}
+
+.teamSelect {
+  font-family: 'Comfortaa', cursive;
+  padding: 8px 32px 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.teamSelect:hover {
+  border-color: #999999;
+  background-color: #fafafa;
+}
+
+.teamSelect:focus {
+  border-color: #666666;
+  box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.1);
+}
+
+/* ============================================================================
+   Header Info
+   ============================================================================ */
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 20px;
+  border-left: 1px solid #cccccc;
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  font-size: 12px;
+  color: #666666;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ============================================================================
+   Header Right Section
+   ============================================================================ */
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================================
+   Profile Section
+   ============================================================================ */
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  border: 2px solid #cccccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.profileButton:hover {
+  background-color: #dddddd;
+  border-color: #999999;
+}
+
+.profileButton:active {
+  transform: scale(0.95);
+}
+
+.profileIcon {
+  color: #666666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================================
+   Profile Dropdown
+   ============================================================================ */
+
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.profileDropdownItem {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profileDropdownItem strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.profileEmail {
+  font-size: 12px;
+  color: #999999;
+}
+
+.profileDropdownDivider {
+  height: 1px;
+  background-color: #e8e8e8;
+  margin: 4px 0;
+}
+
+.profileDropdownButton {
+  width: 100%;
+  padding: 10px 16px;
+  font-family: 'Comfortaa', cursive;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666666;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileDropdownButton:hover {
+  background-color: #f5f5f5;
+  color: #333333;
+}
+
+/* ============================================================================
+   Mobile Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .headerLeft {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .teamSelect {
+    font-size: 12px;
+    padding: 6px 28px 6px 10px;
+  }
+
+  .headerInfo {
+    padding-left: 0;
+    border-left: none;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .headerTitle {
+    font-size: 14px;
+  }
+
+  .headerSubtitle {
+    font-size: 11px;
+  }
+
+  .headerActions {
+    gap: 6px;
+  }
+
+  .profileButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profileDropdown {
+    right: 0;
+    min-width: 180px;
+  }
+}
