@@ -3,7 +3,71 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// STK-011: 재고 상태 변경
+// STK-012: 가용 재고 조회 (GET)
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const warehouse = searchParams.get('warehouse');
+    const search = searchParams.get('search');
+
+    const whereClause: any = {};
+    if (warehouse && warehouse !== 'all') {
+      whereClause.warehouseId = warehouse;
+    }
+
+    let stocks = await prisma.warehouseProduct.findMany({
+      where: whereClause,
+      include: {
+        product: true,
+        warehouse: true,
+      },
+      take: 100,
+    });
+
+    // 검색 필터링
+    if (search) {
+      stocks = stocks.filter(
+        (item) =>
+          item.product.name.toLowerCase().includes(search.toLowerCase()) ||
+          item.product.code.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // 데이터 포맷팅
+    const data = stocks.map((stock) => ({
+      id: stock.id,
+      productName: stock.product.name,
+      barcode: stock.product.code,
+      quantity: stock.quantity,
+      available: stock.quantity,
+      warehouse: stock.warehouse?.name || 'Unknown',
+      status: stock.quantity === 0 ? '품절' : stock.quantity <= 100 ? '저수량' : '정상',
+      createdAt: stock.createdAt,
+    }));
+
+    console.log(`[API] GET /api/stock/status - 조회됨: ${data.length}건`);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination: {
+        total: data.length,
+      },
+    });
+  } catch (error) {
+    console.error('Stock status GET error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: '재고 현황 조회 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// STK-011: 재고 상태 변경 (PATCH)
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
