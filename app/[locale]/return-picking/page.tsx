@@ -27,7 +27,7 @@ export default function ReturnPickingPage() {
   const returnPickingData = [
     {
       returnId: 'RET-PICK-001',
-      orderId: 'ORD-2024-105',
+      orderId: 'ORD-2025-105',
       product: 'Wireless Mouse',
       location: 'WH-1, A-12',
       quantity: 2,
@@ -40,7 +40,7 @@ export default function ReturnPickingPage() {
     },
     {
       returnId: 'RET-PICK-002',
-      orderId: 'ORD-2024-098',
+      orderId: 'ORD-2025-098',
       product: 'Office Chair',
       location: 'WH-1, B-05',
       quantity: 1,
@@ -53,7 +53,7 @@ export default function ReturnPickingPage() {
     },
     {
       returnId: 'RET-PICK-003',
-      orderId: 'ORD-2024-112',
+      orderId: 'ORD-2025-112',
       product: 'USB-C Cable',
       location: 'WH-2, C-08',
       quantity: 3,
@@ -66,7 +66,7 @@ export default function ReturnPickingPage() {
     },
     {
       returnId: 'RET-PICK-004',
-      orderId: 'ORD-2024-089',
+      orderId: 'ORD-2025-089',
       product: 'Cotton T-Shirt',
       location: 'WH-1, A-15',
       quantity: 5,
@@ -79,7 +79,7 @@ export default function ReturnPickingPage() {
     },
     {
       returnId: 'RET-PICK-005',
-      orderId: 'ORD-2024-156',
+      orderId: 'ORD-2025-156',
       product: 'Keyboard',
       location: 'WH-2, B-18',
       quantity: 1,

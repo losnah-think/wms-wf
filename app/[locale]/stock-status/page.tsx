@@ -23,7 +23,7 @@ export default function StockStatusPage() {
   const stockData = [
     {
       productName: 'Widget A',
-      barcode: 'WGT-001-2024',
+      barcode: 'WGT-001-2025',
       quantity: 1250,
       available: 1180,
       status: t('stockStatus.inStock'),
@@ -31,7 +31,7 @@ export default function StockStatusPage() {
     },
     {
       productName: 'Component B',
-      barcode: 'CMP-002-2024',
+      barcode: 'CMP-002-2025',
       quantity: 450,
       available: 380,
       status: t('stockStatus.lowStock'),
@@ -39,7 +39,7 @@ export default function StockStatusPage() {
     },
     {
       productName: 'Part C',
-      barcode: 'PRT-003-2024',
+      barcode: 'PRT-003-2025',
       quantity: 0,
       available: 0,
       status: t('stockStatus.outOfStock'),
@@ -47,7 +47,7 @@ export default function StockStatusPage() {
     },
     {
       productName: 'Assembly D',
-      barcode: 'ASM-004-2024',
+      barcode: 'ASM-004-2025',
       quantity: 850,
       available: 850,
       status: t('stockStatus.inStock'),

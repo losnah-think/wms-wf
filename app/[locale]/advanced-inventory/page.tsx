@@ -27,7 +27,7 @@ export default function AdvancedInventoryPage() {
 
   const movementData = [
     {
-      id: 'MOV-2024-001',
+      id: 'MOV-2025-001',
       type: t('advancedInventory.transfer'),
       product: 'Wireless Mouse',
       from: 'WH-1, Zone A',
@@ -36,10 +36,10 @@ export default function AdvancedInventoryPage() {
       reason: 'Rebalancing',
       status: t('common.completed'),
       statusType: 'success' as const,
-      date: '2024-01-15',
+      date: '2025-01-15',
     },
     {
-      id: 'MOV-2024-002',
+      id: 'MOV-2025-002',
       type: t('advancedInventory.adjustment'),
       product: 'Office Chair',
       from: 'WH-1, Zone A',
@@ -48,10 +48,10 @@ export default function AdvancedInventoryPage() {
       reason: 'Damaged Items',
       status: t('common.active'),
       statusType: 'warning' as const,
-      date: '2024-01-15',
+      date: '2025-01-15',
     },
     {
-      id: 'MOV-2024-003',
+      id: 'MOV-2025-003',
       type: t('advancedInventory.cycleCountType'),
       product: 'USB-C Cable',
       from: 'WH-3, Zone C',
@@ -60,10 +60,10 @@ export default function AdvancedInventoryPage() {
       reason: 'Regular Audit',
       status: t('common.inProgress'),
       statusType: 'warning' as const,
-      date: '2024-01-15',
+      date: '2025-01-15',
     },
     {
-      id: 'MOV-2024-004',
+      id: 'MOV-2025-004',
       type: t('advancedInventory.transfer'),
       product: 'Cotton T-Shirt',
       from: 'WH-2, Zone B',
@@ -72,7 +72,7 @@ export default function AdvancedInventoryPage() {
       reason: 'Restocking',
       status: t('common.pending'),
       statusType: 'default' as const,
-      date: '2024-01-14',
+      date: '2025-01-14',
     },
   ]
 

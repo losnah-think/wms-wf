@@ -9,7 +9,7 @@ export default function SystemRulesPage() {
   const stats = [
     { label: t('system.activeRules'), value: '14', subtitle: t('system.enabled') },
     { label: t('system.systemEfficiency'), value: '98.5%', subtitle: t('system.uptime') },
-    { label: t('system.lastUpdated'), value: '2024-01-15', subtitle: t('common.date') },
+    { label: t('system.lastUpdated'), value: '2025-01-15', subtitle: t('common.date') },
     { label: t('system.ruleViolations'), value: '0', subtitle: t('reports.today') },
   ]
 

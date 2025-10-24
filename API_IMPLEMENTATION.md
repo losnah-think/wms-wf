@@ -51,8 +51,8 @@ curl http://localhost:3001/api/inbound-requests
   "success": true,
   "data": [
     {
-      "id": "INB-REQ-20241024-001",
-      "poNumber": "INB-REQ-20241024-001",
+      "id": "INB-REQ-20251024-001",
+      "poNumber": "INB-REQ-20251024-001",
       "supplierName": "ABC Supply Co.",
       "items": [
         {
@@ -63,8 +63,8 @@ curl http://localhost:3001/api/inbound-requests
           "unit": "EA"
         }
       ],
-      "requestDate": "2024-10-24",
-      "expectedDate": "2024-10-30",
+      "requestDate": "2025-10-24",
+      "expectedDate": "2025-10-30",
       "approvalStatus": "승인대기",
       "memo": ""
     }
@@ -89,8 +89,8 @@ curl -X POST http://localhost:3001/api/inbound-requests \
         "unit": "EA"
       }
     ],
-    "requestDate": "2024-10-24",
-    "expectedDate": "2024-10-30",
+    "requestDate": "2025-10-24",
+    "expectedDate": "2025-10-30",
     "memo": "테스트 요청"
   }'
 ```
@@ -105,8 +105,8 @@ curl -X POST http://localhost:3001/api/inbound-requests \
     "poNumber": "TEST-PO-001",
     "supplierName": "Test Supplier",
     "items": [...],
-    "requestDate": "2024-10-24",
-    "expectedDate": "2024-10-30",
+    "requestDate": "2025-10-24",
+    "expectedDate": "2025-10-30",
     "approvalStatus": "승인대기",
     "memo": "테스트 요청"
   }
@@ -156,7 +156,7 @@ if (success && data) {
 
 // 2. 새 요청 생성
 const newRequest = await createInboundRequest({
-  poNumber: 'PO-2024-100',
+  poNumber: 'PO-2025-100',
   supplierName: 'My Supplier',
   items: [
     {
@@ -167,20 +167,20 @@ const newRequest = await createInboundRequest({
       unit: 'EA',
     },
   ],
-  requestDate: '2024-10-24',
-  expectedDate: '2024-10-30',
+  requestDate: '2025-10-24',
+  expectedDate: '2025-10-30',
   memo: 'Urgent',
 })
 
 // 3. 상태 조회
-const status = await getInboundStatus('PO-2024-100')
+const status = await getInboundStatus('PO-2025-100')
 console.log('현재 상태:', status.data?.status)
 
 // 4. 상태 업데이트
-const updated = await updateInboundStatus('PO-2024-100', '승인완료', '승인됨')
+const updated = await updateInboundStatus('PO-2025-100', '승인완료', '승인됨')
 
 // 5. 삭제
-const deleted = await deleteInboundRequest('PO-2024-100')
+const deleted = await deleteInboundRequest('PO-2025-100')
 ```
 
 ---
@@ -191,7 +191,7 @@ const deleted = await deleteInboundRequest('PO-2024-100')
 ```typescript
 {
   id: string              // UUID
-  requestNumber: string   // "INB-REQ-20241024-001"
+  requestNumber: string   // "INB-REQ-20251024-001"
   supplierId: string      // Supplier FK
   status: string          // draft, submitted, approved, rejected
   totalQuantity: number

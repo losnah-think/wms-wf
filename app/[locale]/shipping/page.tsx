@@ -1,22 +1,81 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface Shipment {
+  id: string
+  orderId: string
+  trackingNumber: string
+  carrier: string
+  status: string
+  shippedAt?: string
+  deliveredAt?: string
+  estimatedDelivery?: string
+}
+
 export default function ShippingPage() {
   const t = useTranslations()
   const [selectedStatus, setSelectedStatus] = useState('all')
   const [selectedCarrier, setSelectedCarrier] = useState('all')
+  const [shipments, setShipments] = useState<Shipment[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    pending: 0,
+    inTransit: 0,
+    delivered: 0,
+    avgDeliveryTime: '2.3',
+  })
 
-  // Statistics
-  const stats = [
-    { label: t('shipping.pendingShipments'), value: '12', subtitle: t('shipping.awaitingPickup') },
-    { label: t('shipping.inTransit'), value: '34', subtitle: t('common.active') },
-    { label: t('shipping.deliveredToday'), value: '89', subtitle: t('dashboard.stats.totalOrders') },
-    { label: t('shipping.avgDeliveryTime'), value: '2.3 days', subtitle: t('shipping.duration') },
+  // API에서 배송 데이터 가져오기
+  useEffect(() => {
+    const fetchShippingData = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (selectedStatus !== 'all') params.append('status', selectedStatus)
+        if (selectedCarrier !== 'all') params.append('carrier', selectedCarrier)
+
+        const response = await fetch(`/api/shipping/track?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          setShipments(result.data || [])
+          
+          // 통계 계산
+          const pending = result.data.filter((s: Shipment) => s.status === 'PENDING').length
+          const inTransit = result.data.filter((s: Shipment) => s.status === 'IN_TRANSIT').length
+          const delivered = result.data.filter((s: Shipment) => s.status === 'DELIVERED').length
+          
+          setStats({
+            pending,
+            inTransit,
+            delivered,
+            avgDeliveryTime: '2.3',
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching shipping data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchShippingData()
+    
+    // 1분마다 자동 새로고침
+    const interval = setInterval(fetchShippingData, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [selectedStatus, selectedCarrier])
+
+  const statsDisplay = [
+    { label: t('shipping.pendingShipments'), value: stats.pending.toString(), subtitle: t('shipping.awaitingPickup') },
+    { label: t('shipping.inTransit'), value: stats.inTransit.toString(), subtitle: t('common.active') },
+    { label: t('shipping.deliveredToday'), value: stats.delivered.toString(), subtitle: t('dashboard.stats.totalOrders') },
+    { label: t('shipping.avgDeliveryTime'), value: stats.avgDeliveryTime + ' days', subtitle: t('shipping.duration') },
   ]
 
   // Status options
@@ -36,64 +95,22 @@ export default function ShippingPage() {
     { value: 'usps', label: 'USPS' },
   ]
 
-  // Shipping data
-  const shippingData = [
-    {
-      shipNumber: 'SHP-2024-001',
-      trackingNumber: '1Z999AA10123456784',
-      carrier: 'UPS',
-      destination: 'New York, NY',
-      weight: '2.5 kg',
-      status: t('shipping.inTransit'),
-      statusType: 'warning' as const,
-      eta: '2024-01-18',
-      cost: '$15.99',
-    },
-    {
-      shipNumber: 'SHP-2024-002',
-      trackingNumber: '9400111899223344556677',
-      carrier: 'USPS',
-      destination: 'Los Angeles, CA',
-      weight: '1.2 kg',
-      status: t('shipping.delivered'),
-      statusType: 'success' as const,
-      eta: '2024-01-15',
-      cost: '$8.50',
-    },
-    {
-      shipNumber: 'SHP-2024-003',
-      trackingNumber: '794612345671',
-      carrier: 'FedEx',
-      destination: 'Chicago, IL',
-      weight: '3.8 kg',
-      status: t('common.pending'),
-      statusType: 'default' as const,
-      eta: '2024-01-20',
-      cost: '$22.50',
-    },
-    {
-      shipNumber: 'SHP-2024-004',
-      trackingNumber: '1Z888AA20456789012',
-      carrier: 'UPS',
-      destination: 'Miami, FL',
-      weight: '1.5 kg',
-      status: t('shipping.delivered'),
-      statusType: 'success' as const,
-      eta: '2024-01-16',
-      cost: '$12.99',
-    },
-    {
-      shipNumber: 'SHP-2024-005',
-      trackingNumber: '940011234567890123',
-      carrier: 'USPS',
-      destination: 'Seattle, WA',
-      weight: '0.8 kg',
-      status: t('shipping.inTransit'),
-      statusType: 'warning' as const,
-      eta: '2024-01-19',
-      cost: '$6.50',
-    },
-  ]
+  // 배송 데이터 변환
+  const shippingData = shipments.map((shipment, index) => ({
+    shipNumber: `SHP-${shipment.id}`,
+    trackingNumber: shipment.trackingNumber || 'N/A',
+    carrier: shipment.carrier || 'CJ',
+    destination: 'Seoul, KR',
+    weight: '2.5 kg',
+    status: shipment.status === 'DELIVERED' ? t('shipping.delivered') :
+            shipment.status === 'IN_TRANSIT' ? t('shipping.inTransit') :
+            t('common.pending'),
+    statusType: shipment.status === 'DELIVERED' ? 'success' as const :
+                shipment.status === 'IN_TRANSIT' ? 'warning' as const :
+                'default' as const,
+    eta: shipment.estimatedDelivery ? new Date(shipment.estimatedDelivery).toLocaleDateString('ko-KR') : '-',
+    cost: '$15.99',
+  }))
 
   // Table columns
   const columns: TableColumn[] = [
@@ -146,7 +163,7 @@ export default function ShippingPage() {
     <PageWrapper>
       <Section title={t('shipping.shippingOverview')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
+          {statsDisplay.map((stat, index) => (
             <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </Grid>
@@ -182,7 +199,11 @@ export default function ShippingPage() {
         </div>
 
         {/* Shipping Table */}
-        <Table columns={columns} data={shippingData} />
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+        ) : (
+          <Table columns={columns} data={shippingData} />
+        )}
       </Section>
     </PageWrapper>
   )

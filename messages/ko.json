@@ -33,7 +33,8 @@
       "settings": "배송 설정",
       "currentReport": "현황 리포트",
       "analysis": "분석 리포트",
-      "operationRules": "운영 규칙"
+      "operationRules": "운영 규칙",
+      "systemSettings": "시스템 설정"
     },
     "inbound": "입고",
     "dashboard": "대시보드",

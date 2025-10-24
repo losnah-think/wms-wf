@@ -25,7 +25,7 @@ export default function InboundOutboundPage() {
 
   const transactionData = [
     {
-      id: 'TXN-2024-001',
+      id: 'TXN-2025-001',
       type: t('inboundOutbound.inbound'),
       typeIcon: '📥',
       product: 'Wireless Mouse',
@@ -35,7 +35,7 @@ export default function InboundOutboundPage() {
       statusType: 'success' as const,
     },
     {
-      id: 'TXN-2024-002',
+      id: 'TXN-2025-002',
       type: t('inboundOutbound.outbound'),
       typeIcon: '📤',
       product: 'Office Chair',
@@ -45,7 +45,7 @@ export default function InboundOutboundPage() {
       statusType: 'warning' as const,
     },
     {
-      id: 'TXN-2024-003',
+      id: 'TXN-2025-003',
       type: t('inboundOutbound.inbound'),
       typeIcon: '📥',
       product: 'USB-C Cable',
@@ -55,7 +55,7 @@ export default function InboundOutboundPage() {
       statusType: 'default' as const,
     },
     {
-      id: 'TXN-2024-004',
+      id: 'TXN-2025-004',
       type: t('inboundOutbound.outbound'),
       typeIcon: '📤',
       product: 'Cotton T-Shirt',

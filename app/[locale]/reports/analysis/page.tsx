@@ -1,13 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Select, Button, Grid, StatCard, Card } from '@/components/UI'
 
+interface WeeklyReport {
+  totalRevenue: number
+  ordersProcessed: number
+  avgOrderValue: number
+  growthRate: number
+}
+
 export default function AnalysisReportPage() {
   const t = useTranslations()
   const [timePeriod, setTimePeriod] = useState('month')
+  const [reportData, setReportData] = useState<WeeklyReport | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchWeeklyReport = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/reports/weekly')
+        const result = await response.json()
+
+        if (result.success) {
+          setReportData(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching weekly report:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchWeeklyReport()
+  }, [timePeriod])
 
   const periodOptions = [
     { value: 'week', label: t('reports.last7Days') },
@@ -17,10 +46,10 @@ export default function AnalysisReportPage() {
   ]
 
   const stats = [
-    { label: t('reports.totalRevenue'), value: '$1.2M', subtitle: t('reports.last30Days') },
-    { label: t('reports.ordersProcessed'), value: '8,543', subtitle: t('reports.last30Days') },
-    { label: t('reports.avgOrderValue'), value: '$142', subtitle: t('reports.last30Days') },
-    { label: t('reports.growthRate'), value: '+12.5%', subtitle: t('reports.vsLastPeriod') },
+    { label: t('reports.totalRevenue'), value: `$${(reportData?.totalRevenue || 0).toLocaleString()}`, subtitle: t('reports.last30Days') },
+    { label: t('reports.ordersProcessed'), value: (reportData?.ordersProcessed || 0).toLocaleString(), subtitle: t('reports.last30Days') },
+    { label: t('reports.avgOrderValue'), value: `$${reportData?.avgOrderValue || 0}`, subtitle: t('reports.last30Days') },
+    { label: t('reports.growthRate'), value: `+${reportData?.growthRate || 0}%`, subtitle: t('reports.vsLastPeriod') },
   ]
 
   const trends = [
@@ -32,22 +61,25 @@ export default function AnalysisReportPage() {
 
   return (
     <PageWrapper>
-      
-      <Section title={t('reports.performanceAnalysis')}>
-        <div style={{ marginBottom: '24px' }}>
-          <Select
-            label={t('reports.timePeriod')}
-            options={periodOptions}
-            value={timePeriod}
-            onChange={(e) => setTimePeriod(e.target.value)}
-          />
-        </div>
-        <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
-            <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
-          ))}
-        </Grid>
-      </Section>
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+      ) : (
+        <>
+          <Section title={t('reports.performanceAnalysis')}>
+            <div style={{ marginBottom: '24px' }}>
+              <Select
+                label={t('reports.timePeriod')}
+                options={periodOptions}
+                value={timePeriod}
+                onChange={(e) => setTimePeriod(e.target.value)}
+              />
+            </div>
+            <Grid columns={4} gap="md">
+              {stats.map((stat, index) => (
+                <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
+              ))}
+            </Grid>
+          </Section>
 
       <Section title={t('reports.keyTrends')}>
         <Card>
@@ -107,6 +139,8 @@ export default function AnalysisReportPage() {
           <Button variant="secondary" size="md">{t('reports.exportData')}</Button>
         </div>
       </Section>
+        </>
+      )}
     </PageWrapper>
   )
 }

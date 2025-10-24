@@ -96,6 +96,7 @@ export const menuSections: MenuSection[] = [
     titleKey: 'system',
     items: [
       { labelKey: 'operationRules', href: '/system/rules' },
+      { labelKey: 'systemSettings', href: '/system/settings' },
     ],
   },
 ]

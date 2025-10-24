@@ -1,14 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, Badge, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface PackingTask {
+  id: string
+  orderId: string
+  productId: string
+  productCode: string
+  productName: string
+  quantity: number
+  workerId: string
+  status: string
+  priority: string
+  createdAt: string
+  assignedAt?: string
+  packedAt?: string
+}
+
 export default function PackingPage() {
   const t = useTranslations()
   const [selectedStation, setSelectedStation] = useState('all')
+  const [packingTasks, setPackingTasks] = useState<PackingTask[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    activeStations: 0,
+    packedToday: 0,
+    inProgress: 0,
+    avgPackTime: 0,
+  })
 
   const stationOptions = [
     { value: 'all', label: t('packing.allStations') },
@@ -17,80 +40,68 @@ export default function PackingPage() {
     { value: 'station-3', label: t('packing.station') + ' 3' },
   ]
 
-  const stats = [
-    { label: t('packing.activeStations'), value: '3', subtitle: t('packing.stations') },
-    { label: t('packing.packedToday'), value: '156', subtitle: t('dashboard.stats.totalOrders') },
-    { label: t('common.inProgress'), value: '12', subtitle: t('dashboard.stats.totalOrders') },
-    { label: t('packing.avgPackTime'), value: '4.2', subtitle: t('packing.minPerOrder') },
+  // API에서 패킹 태스크 데이터 가져오기
+  useEffect(() => {
+    const fetchPackingData = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/picking/queue')
+        const result = await response.json()
+
+        if (result.success) {
+          setPackingTasks(result.data.orders || [])
+          
+          // 통계 계산
+          const packed = result.data.orders.filter((t: PackingTask) => t.status === 'COMPLETED').length
+          const inProgress = result.data.orders.filter((t: PackingTask) => t.status === 'IN_PROGRESS').length
+          
+          setStats({
+            activeStations: 3,
+            packedToday: packed,
+            inProgress: inProgress,
+            avgPackTime: 4.2,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching packing data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchPackingData()
+    
+    // 30초마다 자동 새로고침
+    const interval = setInterval(fetchPackingData, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const statsDisplay = [
+    { label: t('packing.activeStations'), value: stats.activeStations.toString(), subtitle: t('packing.stations') },
+    { label: t('packing.packedToday'), value: stats.packedToday.toString(), subtitle: t('dashboard.stats.totalOrders') },
+    { label: t('common.inProgress'), value: stats.inProgress.toString(), subtitle: t('dashboard.stats.totalOrders') },
+    { label: t('packing.avgPackTime'), value: stats.avgPackTime.toFixed(1), subtitle: t('packing.minPerOrder') },
   ]
 
-  const packingData = [
-    {
-      packId: 'PACK-2024-001',
-      orderId: 'ORD-2024-145',
-      items: 5,
-      station: t('packing.station') + ' 1',
-      packer: 'John Smith',
-      boxSize: t('packing.medium'),
-      weight: '2.5 kg',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-      time: '3.2 min',
-      quality: '✓',
-    },
-    {
-      packId: 'PACK-2024-002',
-      orderId: 'ORD-2024-146',
-      items: 3,
-      station: t('packing.station') + ' 2',
-      packer: 'Sarah Johnson',
-      boxSize: t('packing.small'),
-      weight: '1.2 kg',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-      time: '2.1 min',
-      quality: '-',
-    },
-    {
-      packId: 'PACK-2024-003',
-      orderId: 'ORD-2024-147',
-      items: 8,
-      station: t('packing.station') + ' 3',
-      packer: 'Mike Davis',
-      boxSize: t('packing.large'),
-      weight: '5.8 kg',
-      status: t('common.inProgress'),
-      statusType: 'warning' as const,
-      time: '5.5 min',
-      quality: '-',
-    },
-    {
-      packId: 'PACK-2024-004',
-      orderId: 'ORD-2024-148',
-      items: 2,
-      station: t('packing.station') + ' 1',
-      packer: 'Emily Brown',
-      boxSize: t('packing.small'),
-      weight: '0.8 kg',
-      status: t('common.completed'),
-      statusType: 'success' as const,
-      time: '2.8 min',
-      quality: '✓',
-    },
-    {
-      packId: 'PACK-2024-005',
-      orderId: 'ORD-2024-149',
-      items: 6,
-      station: t('packing.station') + ' 2',
-      packer: 'David Wilson',
-      boxSize: t('packing.medium'),
-      weight: '3.5 kg',
-      status: t('common.pending'),
-      statusType: 'default' as const,
-      time: '-',
-      quality: '-',
-    },
-  ]
+  const packingData = packingTasks.map((task, index) => ({
+    packId: `PACK-${task.id}`,
+    orderId: task.orderId,
+    items: task.quantity,
+    station: t('packing.station') + ' ' + ((index % 3) + 1),
+    packer: task.workerId || 'Unassigned',
+    boxSize: task.quantity <= 3 ? t('packing.small') : task.quantity <= 6 ? t('packing.medium') : t('packing.large'),
+    weight: (task.quantity * 0.5).toFixed(1) + ' kg',
+    status: task.status === 'COMPLETED' ? t('common.completed') : 
+            task.status === 'IN_PROGRESS' ? t('common.inProgress') : 
+            t('common.pending'),
+    statusType: task.status === 'COMPLETED' ? 'success' as const :
+                task.status === 'IN_PROGRESS' ? 'warning' as const :
+                'default' as const,
+    time: task.packedAt ? 
+          `${Math.floor((new Date().getTime() - new Date(task.packedAt).getTime()) / 60000)} min` : 
+          '-',
+    quality: task.status === 'COMPLETED' ? '✓' : '-',
+  }))
 
   const columns: TableColumn[] = [
     { key: 'packId', label: t('packing.packId'), align: 'left' },
@@ -112,10 +123,9 @@ export default function PackingPage() {
 
   return (
     <PageWrapper>
-      
       <Section title={t('packing.overview')}>
         <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
+          {statsDisplay.map((stat, index) => (
             <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </Grid>

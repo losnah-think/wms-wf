@@ -1,17 +1,52 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Grid, StatCard } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface DailyReport {
+  totalOrders: number
+  totalRevenue: number
+  itemsShipped: number
+  returns: number
+}
+
 export default function CurrentReportPage() {
   const t = useTranslations()
+  const [reportData, setReportData] = useState<DailyReport | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchDailyReport = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/reports/daily')
+        const result = await response.json()
+
+        if (result.success) {
+          setReportData(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching daily report:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDailyReport()
+    
+    // 5분마다 자동 새로고침
+    const interval = setInterval(fetchDailyReport, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   const stats = [
-    { label: t('dashboard.stats.totalOrders'), value: '342', subtitle: t('reports.today') },
-    { label: t('dashboard.stats.revenue'), value: '$45,678', subtitle: t('reports.today') },
-    { label: t('reports.itemsShipped'), value: '1,234', subtitle: t('reports.today') },
-    { label: t('returns.returns'), value: '23', subtitle: t('reports.today') },
+    { label: t('dashboard.stats.totalOrders'), value: reportData?.totalOrders?.toString() || '0', subtitle: t('reports.today') },
+    { label: t('dashboard.stats.revenue'), value: `$${reportData?.totalRevenue?.toLocaleString() || '0'}`, subtitle: t('reports.today') },
+    { label: t('reports.itemsShipped'), value: reportData?.itemsShipped?.toString() || '0', subtitle: t('reports.today') },
+    { label: t('returns.returns'), value: reportData?.returns?.toString() || '0', subtitle: t('reports.today') },
   ]
 
   const warehouseActivity = [
@@ -67,26 +102,32 @@ export default function CurrentReportPage() {
 
   return (
     <PageWrapper>
-      <Section title={t('reports.todayPerformance')}>
-        <Grid columns={4} gap="md">
-          {stats.map((stat, index) => (
-            <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
-          ))}
-        </Grid>
-      </Section>
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+      ) : (
+        <>
+          <Section title={t('reports.todayPerformance')}>
+            <Grid columns={4} gap="md">
+              {stats.map((stat, index) => (
+                <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />
+              ))}
+            </Grid>
+          </Section>
 
-      <Section title={t('reports.warehouseActivity')}>
-        <Table columns={warehouseColumns} data={warehouseActivity} />
-      </Section>
+          <Section title={t('reports.warehouseActivity')}>
+            <Table columns={warehouseColumns} data={warehouseActivity} />
+          </Section>
 
-      <Section title={t('reports.topProductsToday')}>
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-          <Button variant="primary" size="md">{t('reports.downloadReport')}</Button>
-          <Button variant="secondary" size="md">{t('reports.exportExcel')}</Button>
-          <Button variant="secondary" size="md">{t('common.refresh')}</Button>
-        </div>
-        <Table columns={productColumns} data={topProducts} />
-      </Section>
+          <Section title={t('reports.topProductsToday')}>
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+              <Button variant="primary" size="md">{t('reports.downloadReport')}</Button>
+              <Button variant="secondary" size="md">{t('reports.exportExcel')}</Button>
+              <Button variant="secondary" size="md">{t('common.refresh')}</Button>
+            </div>
+            <Table columns={productColumns} data={topProducts} />
+          </Section>
+        </>
+      )}
     </PageWrapper>
   )
 }

@@ -66,7 +66,7 @@ export default async function LocaleLayout({
             fontSize: '12px'
           }}>
             <div className="container">
-              &copy; 2024 WMS. All rights reserved.
+              &copy; 2025 WMS. All rights reserved.
             </div>
           </footer>
         </NextIntlClientProvider>

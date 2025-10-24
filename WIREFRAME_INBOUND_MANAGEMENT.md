@@ -49,7 +49,7 @@
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ Inbound ID │ Shipper Name │ Product Count │ Req Date    │   │
 │  │─────────────────────────────────────────────────────────│   │
-│  │ INB-001    │ ABC Company  │ 5 items      │ 2024-10-24  │   │
+│  │ INB-001    │ ABC Company  │ 5 items      │ 2025-10-24  │   │
 │  │ Status: Pending                                         │   │
 │  │ Approver: -                                             │   │
 │  │ ┌─────────────────────────────────────────────┐         │   │
@@ -58,7 +58,7 @@
 │  │ └─────────────────────────────────────────────┘         │   │
 │  │                                                         │   │
 │  ├─────────────────────────────────────────────────────────┤   │
-│  │ INB-002    │ XYZ Corp    │ 12 items     │ 2024-10-23  │   │
+│  │ INB-002    │ XYZ Corp    │ 12 items     │ 2025-10-23  │   │
 │  │ Status: Approved                                        │   │
 │  │ Approver: 이순신                                        │   │
 │  │ ┌─────────────────────────────────────────────┐         │   │
@@ -67,12 +67,12 @@
 │  │ └─────────────────────────────────────────────┘         │   │
 │  │                                                         │   │
 │  ├─────────────────────────────────────────────────────────┤   │
-│  │ INB-003    │ LG Chem     │ 8 items      │ 2024-10-22  │   │
+│  │ INB-003    │ LG Chem     │ 8 items      │ 2025-10-22  │   │
 │  │ Status: Zone Allocated                                  │   │
 │  │ Approver: 김철수                                        │   │
 │  │ ┌─────────────────────────────────────────────┐         │   │
 │  │ │ [View Details]  [Zone: A-1]  [Bin: A-1-C]  │         │   │
-│  │ │ Allocated at: 2024-10-23 14:30              │         │   │
+│  │ │ Allocated at: 2025-10-23 14:30              │         │   │
 │  │ └─────────────────────────────────────────────┘         │   │
 │  │                                                         │   │
 │  └─────────────────────────────────────────────────────────┘   │
@@ -133,15 +133,15 @@
 │  │                                                         │   │
 │  │  ℹ️  Status: Zone moved successfully.                 │   │
 │  │      INB-002 moved from A-1-C-05 → B-2-A-12          │   │
-│  │      Timestamp: 2024-10-24 10:30 AM                  │   │
+│  │      Timestamp: 2025-10-24 10:30 AM                  │   │
 │  │                                                         │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ Move History for Selected Inbound                       │   │
 │  │                                                         │   │
-│  │ A-1-C-05 → B-2-A-12 (2024-10-24 10:30) [User: Admin] │   │
-│  │ A-1-B-15 → A-1-C-05 (2024-10-23 14:15) [User: Staff] │   │
+│  │ A-1-C-05 → B-2-A-12 (2025-10-24 10:30) [User: Admin] │   │
+│  │ A-1-B-15 → A-1-C-05 (2025-10-23 14:15) [User: Staff] │   │
 │  │                                                         │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
@@ -176,7 +176,7 @@
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ Invoice No │ Inbound ID │ Issued Date │ Issued By    │   │
 │  │─────────────────────────────────────────────────────────│   │
-│  │ INV-2024-001 │ INB-001    │ 2024-10-24 │ 이순신       │   │
+│  │ INV-2025-001 │ INB-001    │ 2025-10-24 │ 이순신       │   │
 │  │ Status: ✓ Generated                                     │   │
 │  │ API: PATCH /api/inbound-status (Invoice Issued)       │   │
 │  │ OMS Callback: ✓ Sent                                   │   │
@@ -185,17 +185,17 @@
 │  │ └──────────────────────────────────┘                   │   │
 │  │                                                         │   │
 │  ├─────────────────────────────────────────────────────────┤   │
-│  │ INV-2024-002 │ INB-002    │ 2024-10-23 │ 김철수       │   │
+│  │ INV-2025-002 │ INB-002    │ 2025-10-23 │ 김철수       │   │
 │  │ Status: ✓ Generated & Sent to OMS                      │   │
-│  │ OMS Response: ✓ Acknowledged (2024-10-23 15:45)       │   │
+│  │ OMS Response: ✓ Acknowledged (2025-10-23 15:45)       │   │
 │  │ ┌──────────────────────────────────┐                   │   │
 │  │ │ [View]  [Download PDF]  [Resend] │                   │   │
 │  │ └──────────────────────────────────┘                   │   │
 │  │                                                         │   │
 │  ├─────────────────────────────────────────────────────────┤   │
-│  │ INV-2024-003 │ INB-003    │ 2024-10-22 │ 박영희       │   │
+│  │ INV-2025-003 │ INB-003    │ 2025-10-22 │ 박영희       │   │
 │  │ Status: ⚠️ Pending OMS Acknowledgement                  │   │
-│  │ OMS Response: Waiting (Last sent: 2024-10-22 16:20)   │   │
+│  │ OMS Response: Waiting (Last sent: 2025-10-22 16:20)   │   │
 │  │ ┌──────────────────────────────────┐                   │   │
 │  │ │ [View]  [Download PDF]  [Resend] │                   │   │
 │  │ └──────────────────────────────────┘                   │   │
@@ -388,7 +388,7 @@ Step 3: AUTO-INVOICE & OMS SYNC PHASE
 ├─ System calls: PATCH /api/inbound-status (status: "invoice_issued")
 ├─ System calls: PATCH /api/omsCallback (sends invoice to OMS)
 ├─ Staff opens "Invoice History" tab
-├─ Sees INV-2024-001 with status: "Generated & Sent to OMS"
+├─ Sees INV-2025-001 with status: "Generated & Sent to OMS"
 ├─ Waits for OMS acknowledgement ✓
 └─ Status changes: Zone Moved → Invoice Issued → Complete ✓
 
@@ -426,7 +426,7 @@ Invoice generated but OMS doesn't acknowledge within 5 minutes
 ├─ [Resend] button appears
 ├─ Staff can manually click [Resend] to retry
 ├─ System retries up to 3 times, then escalates to admin
-└─ Alert: "⚠️ OMS acknowledgement pending for INV-2024-003"
+└─ Alert: "⚠️ OMS acknowledgement pending for INV-2025-003"
 ```
 
 ---
@@ -469,5 +469,5 @@ Invoice generated but OMS doesn't acknowledge within 5 minutes
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2024-10-24  
+**Last Updated**: 2025-10-24  
 **Created for**: WMS Wireframe Design Phase
