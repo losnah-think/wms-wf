@@ -1,15 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { PageWrapper } from '@/components/PageWrapper'
 import { Section, Table, Button, Select, SearchBar, Badge } from '@/components/UI'
 import { TableColumn } from '@/components/UI'
 
+interface StockItem {
+  id: string
+  productName: string
+  barcode: string
+  quantity: number
+  available: number
+  warehouse: string
+  status: string
+  createdAt: string
+}
+
 export default function StockStatusPage() {
   const t = useTranslations()
   const [selectedWarehouse, setSelectedWarehouse] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [stockData, setStockData] = useState<StockItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState({
+    inStock: 0,
+    lowStock: 0,
+    outOfStock: 0,
+  })
 
   // Warehouse options
   const warehouseOptions = [
@@ -19,41 +37,58 @@ export default function StockStatusPage() {
     { value: 'wh-3', label: t('warehouse.warehouse') + ' 3' },
   ]
 
-  // Stock data
-  const stockData = [
-    {
-      productName: 'Widget A',
-      barcode: 'WGT-001-2025',
-      quantity: 1250,
-      available: 1180,
-      status: t('stockStatus.inStock'),
-      statusType: 'success' as const,
-    },
-    {
-      productName: 'Component B',
-      barcode: 'CMP-002-2025',
-      quantity: 450,
-      available: 380,
-      status: t('stockStatus.lowStock'),
-      statusType: 'warning' as const,
-    },
-    {
-      productName: 'Part C',
-      barcode: 'PRT-003-2025',
-      quantity: 0,
-      available: 0,
-      status: t('stockStatus.outOfStock'),
-      statusType: 'danger' as const,
-    },
-    {
-      productName: 'Assembly D',
-      barcode: 'ASM-004-2025',
-      quantity: 850,
-      available: 850,
-      status: t('stockStatus.inStock'),
-      statusType: 'success' as const,
-    },
-  ]
+  // Fetch stock data from API
+  useEffect(() => {
+    const fetchStockData = async () => {
+      setIsLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (selectedWarehouse !== 'all') params.append('warehouse', selectedWarehouse)
+        if (searchQuery) params.append('search', searchQuery)
+
+        const response = await fetch(`/api/stock/status?${params}`)
+        const result = await response.json()
+
+        if (result.success) {
+          const items = result.data || []
+          setStockData(items)
+
+          // Calculate stats from API data
+          const inStockCount = items.filter((item: StockItem) => item.quantity > 0 && item.available > 0).length
+          const lowStockCount = items.filter((item: StockItem) => item.quantity > 0 && item.quantity <= 100).length
+          const outOfStockCount = items.filter((item: StockItem) => item.quantity === 0).length
+
+          setStats({
+            inStock: inStockCount,
+            lowStock: lowStockCount,
+            outOfStock: outOfStockCount,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching stock data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchStockData()
+    const interval = setInterval(fetchStockData, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [selectedWarehouse, searchQuery])
+
+  // Get status type for badge
+  const getStatusType = (item: StockItem) => {
+    if (item.quantity === 0) return 'danger'
+    if (item.quantity <= 100) return 'warning'
+    return 'success'
+  }
+
+  // Get status label
+  const getStatusLabel = (item: StockItem) => {
+    if (item.quantity === 0) return t('stockStatus.outOfStock')
+    if (item.quantity <= 100) return t('stockStatus.lowStock')
+    return t('stockStatus.inStock')
+  }
 
   // Table columns
   const columns: TableColumn[] = [
@@ -82,10 +117,17 @@ export default function StockStatusPage() {
       label: t('common.status'),
       align: 'center',
       render: (value, row) => (
-        <Badge type={row.statusType}>{value}</Badge>
+        <Badge type={getStatusType(row)}>{getStatusLabel(row)}</Badge>
       ),
     },
   ]
+
+  // Filter data based on search
+  const filteredData = stockData.filter((item) =>
+    !searchQuery ||
+    item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.barcode.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
     <PageWrapper>
@@ -109,7 +151,7 @@ export default function StockStatusPage() {
         </div>
 
         {/* Stock Table */}
-        <Table columns={columns} data={stockData} />
+        <Table columns={columns} data={filteredData} />
       </Section>
     </PageWrapper>
   )
