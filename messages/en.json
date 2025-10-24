@@ -593,60 +593,60 @@
     "errorId": "Error ID",
     "details": "Details",
     "400": {
-      "title": "Bad Request",
-      "description": "The request format is invalid. Please check your input."
+      "title": "Oops, something's wrong",
+      "description": "Could you double-check the information you entered? The format might be incorrect or some required fields might be missing."
     },
     "401": {
-      "title": "Authentication Required",
-      "description": "You need to log in to continue."
+      "title": "You need to log in",
+      "description": "You need to be logged in to access this page. Would you like to go to the login page?"
     },
     "403": {
-      "title": "Access Denied",
-      "description": "You don't have permission to access this resource."
+      "title": "You don't have access here",
+      "description": "Sorry, you don't have permission to access this page. Please contact your administrator."
     },
     "404": {
-      "title": "Page Not Found",
-      "description": "The page you're looking for doesn't exist. Please navigate to another page."
+      "title": "Hmm, we can't find this page",
+      "description": "The page you're looking for doesn't exist. Please check the address or navigate from the menu again."
     },
     "408": {
-      "title": "Request Timeout",
-      "description": "The request took too long to process. Please try again."
+      "title": "That took too long to respond",
+      "description": "Your request timed out. Please check your internet connection and try again."
     },
     "409": {
-      "title": "Conflict",
-      "description": "A conflict occurred while processing your request. Please try again later."
+      "title": "There's a conflict",
+      "description": "It looks like someone is editing the same data at the same time. Try refreshing the page and then try again."
     },
     "410": {
-      "title": "Resource Gone",
-      "description": "The resource you're looking for has been deleted."
+      "title": "This item has been deleted",
+      "description": "The item you're looking for no longer exists. Please select a different item from the list."
     },
     "422": {
-      "title": "Validation Error",
-      "description": "The data you entered is invalid. Please check all fields."
+      "title": "Please check your entries",
+      "description": "There are issues with some fields. Please review all items and enter them in the correct format."
     },
     "429": {
-      "title": "Too Many Requests",
-      "description": "Too many requests were made. Please wait a moment and try again."
+      "title": "Too many requests",
+      "description": "You've sent too many requests in a short period. Please wait a moment and try again."
     },
     "500": {
-      "title": "Server Error",
-      "description": "A server error occurred. We're working to fix it."
+      "title": "Something's wrong with the server",
+      "description": "An unexpected error occurred. Our team is working on it, so please wait a moment."
     },
     "502": {
-      "title": "Gateway Error",
-      "description": "A gateway error occurred. Please try again later."
+      "title": "Server connection lost",
+      "description": "There's a connection issue between servers. Please try again in a moment."
     },
     "503": {
-      "title": "Service Unavailable",
-      "description": "The service is temporarily unavailable for maintenance. Please try again later."
+      "title": "We're doing maintenance right now",
+      "description": "We're working on improving the service. You'll be able to use it again once maintenance is complete."
     },
     "504": {
-      "title": "Gateway Timeout",
-      "description": "The server took too long to respond. Please try again."
+      "title": "No response from the server",
+      "description": "The server didn't respond within the expected time. Please check your internet connection and try again."
     },
     "unknown": {
-      "title": "Unknown Error",
-      "description": "An unknown error occurred. Please try again later."
+      "title": "Something's not right",
+      "description": "An unexpected issue occurred. Please contact our support team or try again later."
     }
   }
 }

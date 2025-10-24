@@ -593,60 +593,60 @@
     "errorId": "ID Lỗi",
     "details": "Chi tiết",
     "400": {
-      "title": "Yêu cầu không hợp lệ",
-      "description": "Định dạng yêu cầu không hợp lệ. Vui lòng kiểm tra đầu vào của bạn."
+      "title": "Ôi, có gì đó không đúng",
+      "description": "Bạn có thể kiểm tra lại thông tin bạn nhập không? Định dạng có thể không chính xác hoặc có những trường bắt buộc bị thiếu."
     },
     "401": {
-      "title": "Xác thực bắt buộc",
-      "description": "Bạn cần đăng nhập để tiếp tục."
+      "title": "Bạn cần đăng nhập",
+      "description": "Bạn cần đăng nhập để truy cập trang này. Bạn có muốn đi đến trang đăng nhập không?"
     },
     "403": {
-      "title": "Truy cập bị từ chối",
-      "description": "Bạn không có quyền truy cập tài nguyên này."
+      "title": "Bạn không có quyền truy cập ở đây",
+      "description": "Xin lỗi, bạn không có quyền truy cập trang này. Vui lòng liên hệ với quản trị viên của bạn."
     },
     "404": {
-      "title": "Không tìm thấy trang",
-      "description": "Trang bạn đang tìm kiếm không tồn tại. Vui lòng điều hướng đến trang khác."
+      "title": "Hmm, chúng tôi không thể tìm thấy trang này",
+      "description": "Trang bạn đang tìm kiếm không tồn tại. Vui lòng kiểm tra địa chỉ hoặc điều hướng lại từ menu."
     },
     "408": {
-      "title": "Hết thời gian yêu cầu",
-      "description": "Xử lý yêu cầu mất quá lâu. Vui lòng thử lại."
+      "title": "Mất quá lâu để phản hồi",
+      "description": "Yêu cầu của bạn đã hết thời gian chờ. Vui lòng kiểm tra kết nối Internet của bạn và thử lại."
     },
     "409": {
-      "title": "Xung đột",
-      "description": "Xảy ra xung đột khi xử lý yêu cầu của bạn. Vui lòng thử lại sau."
+      "title": "Có xung đột",
+      "description": "Có vẻ như ai đó đang chỉnh sửa cùng một dữ liệu cùng lúc. Hãy thử làm mới trang và sau đó thử lại."
     },
     "410": {
-      "title": "Tài nguyên đã xóa",
-      "description": "Tài nguyên bạn đang tìm kiếm đã bị xóa."
+      "title": "Mục này đã bị xóa",
+      "description": "Mục bạn đang tìm kiếm không còn tồn tại. Vui lòng chọn một mục khác từ danh sách."
     },
     "422": {
-      "title": "Lỗi xác thực",
-      "description": "Dữ liệu bạn nhập không hợp lệ. Vui lòng kiểm tra tất cả các trường."
+      "title": "Vui lòng kiểm tra mục nhập của bạn",
+      "description": "Có vấn đề với một số trường. Vui lòng xem xét lại tất cả các mục và nhập chúng ở định dạng chính xác."
     },
     "429": {
       "title": "Quá nhiều yêu cầu",
-      "description": "Quá nhiều yêu cầu được gửi. Vui lòng đợi một lát rồi thử lại."
+      "description": "Bạn đã gửi quá nhiều yêu cầu trong một khoảng thời gian ngắn. Vui lòng chờ một lúc rồi thử lại."
     },
     "500": {
-      "title": "Lỗi máy chủ",
-      "description": "Xảy ra lỗi máy chủ. Chúng tôi đang làm việc để khắc phục nó."
+      "title": "Máy chủ có vấn đề",
+      "description": "Đã xảy ra lỗi không mong muốn. Đội ngũ của chúng tôi đang xử lý nó, vui lòng chờ một lúc."
     },
     "502": {
-      "title": "Lỗi Cổng kết nối",
-      "description": "Xảy ra lỗi cổng kết nối. Vui lòng thử lại sau."
+      "title": "Kết nối máy chủ bị mất",
+      "description": "Có vấn đề kết nối giữa các máy chủ. Vui lòng thử lại sau một lúc."
     },
     "503": {
-      "title": "Dịch vụ không khả dụng",
-      "description": "Dịch vụ tạm thời không có sẵn để bảo trì. Vui lòng thử lại sau."
+      "title": "Chúng tôi đang bảo trì ngay bây giờ",
+      "description": "Chúng tôi đang cải thiện dịch vụ. Bạn sẽ có thể sử dụng nó trở lại khi bảo trì hoàn tất."
     },
     "504": {
-      "title": "Hết thời gian Cổng kết nối",
-      "description": "Máy chủ mất quá lâu để phản hồi. Vui lòng thử lại."
+      "title": "Không có phản hồi từ máy chủ",
+      "description": "Máy chủ không phản hồi trong thời gian dự kiến. Vui lòng kiểm tra kết nối Internet của bạn và thử lại."
     },
     "unknown": {
-      "title": "Lỗi không xác định",
-      "description": "Xảy ra lỗi không xác định. Vui lòng thử lại sau."
+      "title": "Có gì đó không ổn",
+      "description": "Đã xảy ra một vấn đề không mong muốn. Vui lòng liên hệ với nhóm hỗ trợ của chúng tôi hoặc thử lại sau."
     }
   }
 }
