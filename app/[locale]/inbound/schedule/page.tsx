@@ -51,8 +51,14 @@ export default function InboundSchedulePage() {
           params.set('endDate', endOfMonth.toISOString().split('T')[0])
         }
 
-        const response = await fetch(`/api/inbound/schedule?${params}`)
+        const url = `/api/inbound/schedule?${params}`
+        console.log('[InboundSchedule] 페치 시작:', url)
+        
+        const response = await fetch(url)
+        console.log('[InboundSchedule] 응답 상태:', response.status)
+        
         const result = await response.json()
+        console.log('[InboundSchedule] API 응답:', result)
 
         if (result.success) {
           const formattedData = result.data.map((item: any) => ({
@@ -72,15 +78,18 @@ export default function InboundSchedulePage() {
             trackingNumber: item.trackingNumber,
             items: item.items,
           }))
+          console.log('[InboundSchedule] 포맷팅된 데이터 개수:', formattedData.length)
           setSchedules(formattedData)
           if (result.pagination) {
             setTotal(result.pagination.total)
           } else {
             setTotal(formattedData.length)
           }
+        } else {
+          console.error('[InboundSchedule] API 실패:', result)
         }
       } catch (error) {
-        console.error('Error fetching schedule data:', error)
+        console.error('[InboundSchedule] 에러 발생:', error)
       } finally {
         setIsLoading(false)
       }
