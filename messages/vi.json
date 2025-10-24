@@ -2,6 +2,7 @@
   "nav": {
     "section": {
       "inbound": "Nhập",
+      "outbound": "Xuất",
       "dashboard": "Bảng điều khiển",
       "inventory": "Hàng tồn kho",
       "operations": "Hoạt động",

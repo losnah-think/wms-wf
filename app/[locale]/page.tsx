@@ -23,6 +23,13 @@ export default function DashboardPage() {
     { label: '오늘 입고', value: '3', subtitle: '건' },
   ]
 
+  const outboundStats = [
+    { label: '피킹 대기', value: '42', subtitle: '건' },
+    { label: '피킹 진행중', value: '18', subtitle: '건' },
+    { label: '패킹 대기', value: '25', subtitle: '건' },
+    { label: '오늘 출고', value: '12', subtitle: '건' },
+  ]
+
   const quickStats = [
     { label: t('dashboard.stats.warehouseUtilization'), value: '78%', subtitle: t('dashboard.stats.occupied') },
     { label: t('dashboard.stats.onTimeDelivery'), value: '97.8%', subtitle: t('dashboard.stats.rate') },
@@ -42,6 +49,10 @@ export default function DashboardPage() {
       { name: t('nav.inboundSchedule'), link: '/inbound/schedule' },
       { name: t('nav.inboundApproval'), link: '/inbound/approval' },
     ]},
+    { title: t('nav.outbound'), items: [
+      { name: t('nav.pickingMgmt'), link: '/picking' },
+      { name: t('nav.packingMgmt'), link: '/packing' },
+    ]},
     { title: t('nav.inventory'), items: [
       { name: t('nav.products'), link: '/products' },
       { name: t('nav.warehouse'), link: '/warehouse' },
@@ -49,21 +60,19 @@ export default function DashboardPage() {
       { name: t('nav.stockSettings'), link: '/stock-settings' },
     ]},
     { title: t('dashboard.operations'), items: [
-      { name: t('nav.picking'), link: '/picking' },
-      { name: t('nav.packing'), link: '/packing' },
       { name: t('nav.inboundOutbound'), link: '/inbound-outbound' },
       { name: t('nav.advancedInventory'), link: '/advanced-inventory' },
+      { name: t('nav.workers'), link: '/workers' },
+      { name: t('nav.returnPicking'), link: '/return-picking' },
     ]},
     { title: t('dashboard.returnsShipping'), items: [
       { name: t('nav.returnRequest'), link: '/returns/request' },
       { name: t('nav.returnProcess'), link: '/returns/process' },
       { name: t('nav.returnStatus'), link: '/returns/status' },
-      { name: t('nav.returnPicking'), link: '/return-picking' },
       { name: t('nav.shipments'), link: '/shipping' },
       { name: t('nav.shippingSettings'), link: '/shipping/settings' },
     ]},
     { title: t('dashboard.managementReports'), items: [
-      { name: t('nav.workers'), link: '/workers' },
       { name: t('nav.currentReport'), link: '/reports/current' },
       { name: t('nav.analysisReport'), link: '/reports/analysis' },
       { name: t('nav.systemRules'), link: '/system/rules' },
@@ -88,6 +97,9 @@ export default function DashboardPage() {
       </Section>
       <Section title="📦 입고 현황">
         <Grid columns={4} gap="md">{inboundStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
+      </Section>
+      <Section title="📤 출고 현황">
+        <Grid columns={4} gap="md">{outboundStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>
       </Section>
       <Section title={t('dashboard.systemHealth')}>
         <Grid columns={4} gap="md">{quickStats.map((stat, index) => <StatCard key={index} label={stat.label} value={stat.value} subtitle={stat.subtitle} />)}</Grid>

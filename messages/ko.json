@@ -2,6 +2,7 @@
   "nav": {
     "section": {
       "inbound": "입고",
+      "outbound": "출고",
       "dashboard": "대시보드",
       "inventory": "재고",
       "operations": "운영",

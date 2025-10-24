@@ -28,7 +28,7 @@ export function getItemTranslationKey(labelKey: string): string {
 }
 
 // ============================================================================
-// Menu Structure (8 Sections, 21 Items)
+// Menu Structure (9 Sections, 23 Items)
 // ============================================================================
 
 export const menuSections: MenuSection[] = [
@@ -46,6 +46,13 @@ export const menuSections: MenuSection[] = [
     ],
   },
   {
+    titleKey: 'outbound',
+    items: [
+      { labelKey: 'pickingMgmt', href: '/picking' },
+      { labelKey: 'packingMgmt', href: '/packing' },
+    ],
+  },
+  {
     titleKey: 'inventory',
     items: [
       { labelKey: 'products', href: '/products' },
@@ -59,8 +66,6 @@ export const menuSections: MenuSection[] = [
   {
     titleKey: 'operations',
     items: [
-      { labelKey: 'pickingMgmt', href: '/picking' },
-      { labelKey: 'packingMgmt', href: '/packing' },
       { labelKey: 'workers', href: '/workers' },
       { labelKey: 'returnPicking', href: '/return-picking' },
     ],

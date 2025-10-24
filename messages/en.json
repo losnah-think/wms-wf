@@ -2,6 +2,7 @@
   "nav": {
     "section": {
       "inbound": "Inbound",
+      "outbound": "Outbound",
       "dashboard": "Dashboard",
       "inventory": "Inventory",
       "operations": "Operations",
