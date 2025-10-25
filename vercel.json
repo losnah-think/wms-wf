@@ -4,13 +4,5 @@
   "framework": "nextjs",
   "git": {
     "silent": false
-  },
-  "env": {
-    "DATABASE_URL": "postgresql://user:password@localhost/db"
-  },
-  "build": {
-    "env": {
-      "DATABASE_URL": "postgresql://user:password@localhost/db"
-    }
   }
 }
