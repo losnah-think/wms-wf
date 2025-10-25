@@ -1,8 +1,3 @@
-// Load .env files early in the build process
-if (!process.env.DATABASE_URL) {
-  require('dotenv').config({ path: './prisma/.env' })
-}
-
 const withNextIntl = require('next-intl/plugin')('./i18n/request.ts')
 
 /** @type {import('next').NextConfig} */
