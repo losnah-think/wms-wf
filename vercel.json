@@ -4,5 +4,13 @@
   "framework": "nextjs",
   "git": {
     "silent": false
+  },
+  "env": {
+    "DATABASE_URL": "@database_url"
+  },
+  "build": {
+    "env": {
+      "DATABASE_URL": "@database_url"
+    }
   }
 }
