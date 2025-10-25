@@ -6,11 +6,11 @@
     "silent": false
   },
   "env": {
-    "DATABASE_URL": "@database_url"
+    "DATABASE_URL": "postgresql://user:password@localhost/db"
   },
   "build": {
     "env": {
-      "DATABASE_URL": "@database_url"
+      "DATABASE_URL": "postgresql://user:password@localhost/db"
     }
   }
 }
