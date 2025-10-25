@@ -1,21 +1,31 @@
 import { PrismaClient } from '@prisma/client'
 
-// Ensure DATABASE_URL is available
-if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL is not set. Available env vars:', 
-    Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('PRISMA') || k.includes('DB')))
-  throw new Error('DATABASE_URL environment variable is required')
+// Global Prisma instance - created lazily on first use
+declare global {
+  var prismaGlobal: PrismaClient | undefined
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+function getPrismaClient(): PrismaClient {
+  if (!process.env.DATABASE_URL) {
+    const dbVar = Object.keys(process.env).find(k => k.toLowerCase().includes('database'))
+    console.error('❌ DATABASE_URL not found. Available:', dbVar || 'NONE')
+    throw new Error('DATABASE_URL environment variable is required for database connection')
+  }
+
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
 }
 
 export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
+  global.prismaGlobal ??
+  (() => {
+    const client = getPrismaClient()
+    if (process.env.NODE_ENV !== 'production') {
+      global.prismaGlobal = client
+    }
+    return client
+  })()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
 
