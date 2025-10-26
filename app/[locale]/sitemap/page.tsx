@@ -17,158 +17,56 @@ interface ApiEndpoint {
   status: 'working' | 'testing' | 'pending'
 }
 
+const StatusBadge = ({ status }: { status: string }) => {
+  const colors = {
+    completed: 'bg-green-100 text-green-800',
+    'in-progress': 'bg-yellow-100 text-yellow-800',
+    pending: 'bg-red-100 text-red-800',
+    working: 'bg-green-100 text-green-800',
+    testing: 'bg-yellow-100 text-yellow-800',
+  }
+  
+  const labels = {
+    completed: '완료',
+    'in-progress': '진행중',
+    pending: '미처리',
+    working: '작동중',
+    testing: '테스트',
+  }
+
+  return (
+    <span className={`px-2 py-1 rounded text-xs font-semibold ${colors[status as keyof typeof colors] || 'bg-gray-100'}`}>
+      {labels[status as keyof typeof labels] || status}
+    </span>
+  )
+}
+
 export default function Sitemap() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const [expandedApiGroup, setExpandedApiGroup] = useState<string | null>(null)
 
   const pages: PageSection[] = [
-    {
-      title: '📊 대시보드',
-      path: '/dashboard',
-      status: 'in-progress',
-      apis: ['GET /api/dashboard/stats'],
-    },
-    {
-      title: '📥 입고 관리',
-      path: '/inbound',
-      status: 'completed',
-      apis: [
-        'GET /api/inbound/schedule',
-        'GET /api/inbound-requests',
-        'GET /api/inbound/approval',
-        'POST /api/inbound/manual',
-      ],
-    },
-    {
-      title: '📦 입고 예정표',
-      path: '/inbound/schedule',
-      status: 'completed',
-      apis: ['GET /api/inbound/schedule'],
-    },
-    {
-      title: '📋 입고 요청',
-      path: '/inbound/requests',
-      status: 'in-progress',
-      apis: ['GET /api/inbound-requests'],
-    },
-    {
-      title: '✅ 입고 승인',
-      path: '/inbound/approval',
-      status: 'in-progress',
-      apis: ['GET /api/inbound/approval', 'POST /api/inbound/approval'],
-    },
-    {
-      title: '📤 출고 관리',
-      path: '/outbound',
-      status: 'pending',
-      apis: ['POST /api/outbound/manual'],
-    },
-    {
-      title: '🎯 피킹',
-      path: '/picking',
-      status: 'in-progress',
-      apis: [
-        'GET /api/picking/queue',
-        'POST /api/picking/assign',
-        'POST /api/picking/pick',
-        'GET /api/picking/efficiency',
-      ],
-    },
-    {
-      title: '📪 반품',
-      path: '/returns',
-      status: 'in-progress',
-      apis: [
-        'GET /api/returns/request',
-        'POST /api/returns/process',
-        'GET /api/returns/status',
-      ],
-    },
-    {
-      title: '🚚 배송',
-      path: '/shipping',
-      status: 'in-progress',
-      apis: [
-        'POST /api/shipping/process',
-        'GET /api/shipping/track',
-        'GET /api/shipping/carrier',
-      ],
-    },
-    {
-      title: '📊 재고 상태',
-      path: '/stock-status',
-      status: 'completed',
-      apis: ['GET /api/stock/status'],
-    },
-    {
-      title: '⚙️ 재고 설정',
-      path: '/stock-settings',
-      status: 'in-progress',
-      apis: ['GET /api/stock/location', 'POST /api/stock/import'],
-    },
-    {
-      title: '🔍 고급 재고',
-      path: '/advanced-inventory',
-      status: 'in-progress',
-      apis: [
-        'GET /api/stock/movement',
-        'GET /api/stock/trends',
-        'GET /api/stock/audit',
-      ],
-    },
-    {
-      title: '📈 보고서',
-      path: '/reports',
-      status: 'in-progress',
-      apis: [
-        'GET /api/reports/daily',
-        'GET /api/reports/weekly',
-        'GET /api/reports/inventory/monthly',
-        'GET /api/reports/sales',
-      ],
-    },
-    {
-      title: '👥 작업자 관리',
-      path: '/workers',
-      status: 'in-progress',
-      apis: ['GET /api/users', 'GET /api/users/activity'],
-    },
-    {
-      title: '🏢 창고 관리',
-      path: '/warehouse',
-      status: 'in-progress',
-      apis: ['GET /api/warehouse/[id]/stock', 'GET /api/config/warehouse'],
-    },
-    {
-      title: '📦 상품 관리',
-      path: '/products',
-      status: 'in-progress',
-      apis: ['GET /api/products'],
-    },
-    {
-      title: '⚙️ 시스템 규칙',
-      path: '/system/rules',
-      status: 'pending',
-      apis: ['GET /api/config/system', 'GET /api/config/alerts'],
-    },
-    {
-      title: '🔄 입출 관리',
-      path: '/inbound-outbound',
-      status: 'in-progress',
-      apis: [
-        'GET /api/inbound/schedule',
-        'POST /api/outbound/manual',
-      ],
-    },
-    {
-      title: '📦 포장',
-      path: '/packing',
-      status: 'in-progress',
-      apis: [
-        'GET /api/picking/packing-list',
-        'POST /api/picking/shipping-tag',
-      ],
-    },
+    { title: '대시보드', path: '/dashboard', status: 'in-progress', apis: ['GET /api/dashboard/stats'] },
+    { title: '입고 예정표', path: '/inbound/schedule', status: 'completed', apis: ['GET /api/inbound/schedule'] },
+    { title: '입고 승인', path: '/inbound/approval', status: 'in-progress', apis: ['GET /api/inbound/approval'] },
+    { title: '재고 현황', path: '/stock-status', status: 'completed', apis: ['GET /api/stock/status'] },
+    { title: '재고 설정', path: '/stock-settings', status: 'in-progress', apis: ['GET /api/config/warehouse'] },
+    { title: '재고 이동', path: '/advanced-inventory', status: 'in-progress', apis: ['GET /api/stock/movement'] },
+    { title: '피킹', path: '/picking', status: 'in-progress', apis: ['GET /api/picking/pick'] },
+    { title: '포장', path: '/packing', status: 'in-progress', apis: ['GET /api/picking/packing-list'] },
+    { title: '입출고', path: '/inbound-outbound', status: 'in-progress', apis: ['GET /api/inbound/schedule'] },
+    { title: '반품요청', path: '/returns/request', status: 'in-progress', apis: ['GET /api/returns/request'] },
+    { title: '반품처리', path: '/returns/process', status: 'in-progress', apis: ['GET /api/returns/process'] },
+    { title: '반품현황', path: '/returns/status', status: 'in-progress', apis: ['GET /api/returns/status'] },
+    { title: '반품피킹', path: '/return-picking', status: 'in-progress', apis: ['GET /api/picking/queue'] },
+    { title: '배송관리', path: '/shipping', status: 'in-progress', apis: ['GET /api/shipping/process'] },
+    { title: '배송설정', path: '/shipping/settings', status: 'in-progress', apis: ['GET /api/config/warehouse'] },
+    { title: '보고서', path: '/reports/current', status: 'in-progress', apis: ['GET /api/reports/daily'] },
+    { title: '분석', path: '/reports/analysis', status: 'in-progress', apis: ['GET /api/reports/inventory/monthly'] },
+    { title: '시스템규칙', path: '/system/rules', status: 'pending', apis: ['GET /api/config/system'] },
+    { title: '작업자관리', path: '/workers', status: 'in-progress', apis: ['GET /api/users'] },
+    { title: '창고관리', path: '/warehouse', status: 'in-progress', apis: ['GET /api/config/warehouse'] },
+    { title: '상품관리', path: '/products', status: 'in-progress', apis: ['GET /api/products'] },
   ]
 
   const allApis: ApiEndpoint[] = [
@@ -275,213 +173,134 @@ export default function Sitemap() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1>📍 WMS 사이트맵</h1>
-        <p className="text-gray-600 mb-8">전체 페이지 및 API 엔드포인트 현황</p>
+        <h1>WMS 사이트맵</h1>
+        <p style={{ color: '#666', marginBottom: '24px' }}>전체 페이지 및 API 엔드포인트 현황</p>
 
         {/* Statistics */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-            <div className="text-2xl font-bold text-blue-600">{pages.length}</div>
-            <div className="text-sm text-gray-600">총 페이지</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+          <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#e3f2fd', borderLeft: '4px solid #2196f3' }}>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1976d2' }}>{pages.length}</div>
+            <div style={{ fontSize: '14px', color: '#666' }}>총 페이지</div>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
-            <div className="text-2xl font-bold text-green-600">
+          <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50' }}>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#388e3c' }}>
               {pages.filter(p => p.status === 'completed').length}
             </div>
-            <div className="text-sm text-gray-600">완료</div>
+            <div style={{ fontSize: '14px', color: '#666' }}>완료</div>
           </div>
-          <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
-            <div className="text-2xl font-bold text-yellow-600">
+          <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800' }}>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57c00' }}>
               {pages.filter(p => p.status === 'in-progress').length}
             </div>
-            <div className="text-sm text-gray-600">진행 중</div>
+            <div style={{ fontSize: '14px', color: '#666' }}>진행 중</div>
           </div>
-          <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
-            <div className="text-2xl font-bold text-red-600">
+          <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#ffebee', borderLeft: '4px solid #f44336' }}>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#d32f2f' }}>
               {pages.filter(p => p.status === 'pending').length}
             </div>
-            <div className="text-sm text-gray-600">미처리</div>
+            <div style={{ fontSize: '14px', color: '#666' }}>미처리</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Pages Section */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold mb-4">📄 페이지 목록</h2>
-            <div className="space-y-2">
-              {pages.map((page) => (
-                <div key={page.path} className="border rounded-lg overflow-hidden">
-                  <button
-                    onClick={() =>
-                      setExpandedSection(
-                        expandedSection === page.path ? null : page.path
-                      )
-                    }
-                    className="w-full p-4 bg-gray-50 hover:bg-gray-100 flex items-center justify-between transition"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span>{page.title}</span>
-                      <span className="text-xs text-gray-500">{page.path}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${
-                          statusColors[page.status]
-                        }`}
-                      >
-                        {page.status === 'completed'
-                          ? '완료'
-                          : page.status === 'in-progress'
-                          ? '진행 중'
-                          : '미처리'}
-                      </span>
-                      <span className="text-gray-400">
-                        {expandedSection === page.path ? '▼' : '▶'}
-                      </span>
-                    </div>
-                  </button>
-
-                  {expandedSection === page.path && (
-                    <div className="border-t p-4 bg-white">
-                      <div className="text-sm font-semibold text-gray-700 mb-2">
-                        관련 API:
-                      </div>
-                      <div className="space-y-1">
-                        {page.apis.map((api) => (
-                          <div
-                            key={api}
-                            className="text-sm text-blue-600 ml-2 flex items-center gap-2"
-                          >
-                            <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
-                              {api}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+        {/* Pages Table */}
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>페이지 목록</h2>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>#</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>페이지</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>경로</th>
+                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pages.map((page, idx) => (
+                  <tr key={page.path} style={{ borderBottom: '1px solid #eee', backgroundColor: idx % 2 === 0 ? '#fafafa' : '#fff' }}>
+                    <td style={{ padding: '12px' }}>{idx + 1}</td>
+                    <td style={{ padding: '12px', fontWeight: '500' }}>{page.title}</td>
+                    <td style={{ padding: '12px', color: '#666', fontSize: '12px', fontFamily: 'monospace' }}>{page.path}</td>
+                    <td style={{ padding: '12px', textAlign: 'center' }}>
+                      <StatusBadge status={page.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          {/* API Summary Section */}
-          <div>
-            <h2 className="text-xl font-bold mb-4">📡 API 현황</h2>
-            <div className="space-y-3">
-              <div className="bg-green-50 p-3 rounded border-l-4 border-green-500">
-                <div className="text-lg font-bold text-green-600">
-                  {allApis.filter(a => a.status === 'working').length}
-                </div>
-                <div className="text-xs text-gray-600">작동 중</div>
+        {/* API Stats */}
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>API 현황</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#388e3c' }}>
+                {allApis.filter(a => a.status === 'working').length}
               </div>
-              <div className="bg-yellow-50 p-3 rounded border-l-4 border-yellow-500">
-                <div className="text-lg font-bold text-yellow-600">
-                  {allApis.filter(a => a.status === 'testing').length}
-                </div>
-                <div className="text-xs text-gray-600">테스트 중</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>작동 중</div>
+            </div>
+            <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f57c00' }}>
+                {allApis.filter(a => a.status === 'testing').length}
               </div>
-              <div className="bg-red-50 p-3 rounded border-l-4 border-red-500">
-                <div className="text-lg font-bold text-red-600">
-                  {allApis.filter(a => a.status === 'pending').length}
-                </div>
-                <div className="text-xs text-gray-600">미구현</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>테스트 중</div>
+            </div>
+            <div style={{ padding: '16px', borderRadius: '8px', backgroundColor: '#ffebee', borderLeft: '4px solid #f44336' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#d32f2f' }}>
+                {allApis.filter(a => a.status === 'pending').length}
               </div>
-              <div className="mt-4 pt-4 border-t">
-                <div className="text-sm font-bold text-gray-700 mb-2">
-                  총 API: {allApis.length}개
-                </div>
-              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>미구현</div>
             </div>
           </div>
         </div>
 
-        {/* Detailed API List */}
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">📡 API 상세 목록</h2>
-
-          {/* Group by category */}
-          {['Inbound', 'Outbound', 'Stock', 'Picking', 'Returns', 'Shipping', 'Reports', 'Barcode', 'Users', 'Config', 'Warehouse', 'Dashboard', 'Auth'].map(
-            (category) => {
-              const categoryApis = allApis.filter((api) =>
-                api.path.includes(category.toLowerCase())
-              )
-              if (categoryApis.length === 0) return null
-
-              return (
-                <div key={category} className="mb-4">
-                  <button
-                    onClick={() =>
-                      setExpandedApiGroup(
-                        expandedApiGroup === category ? null : category
-                      )
-                    }
-                    className="w-full p-3 bg-gray-100 hover:bg-gray-200 rounded font-semibold flex items-center justify-between transition"
-                  >
-                    <span>{category}</span>
-                    <span className="text-xs bg-gray-300 px-2 py-1 rounded">
-                      {categoryApis.length}
-                    </span>
-                    <span className="text-gray-600">
-                      {expandedApiGroup === category ? '▼' : '▶'}
-                    </span>
-                  </button>
-
-                  {expandedApiGroup === category && (
-                    <div className="space-y-2 mt-2 pl-2">
-                      {categoryApis.map((api) => (
-                        <div
-                          key={api.path}
-                          className={`p-3 rounded text-sm ${
-                            apiStatusColors[api.status]
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="font-mono font-bold text-xs">
-                              {api.method}
-                            </div>
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-semibold ${
-                                apiStatusBadges[api.status]
-                              }`}
-                            >
-                              {api.status === 'working'
-                                ? '작동 중'
-                                : api.status === 'testing'
-                                ? '테스트'
-                                : '미구현'}
-                            </span>
-                          </div>
-                          <div className="font-mono text-xs text-gray-700">
-                            {api.path}
-                          </div>
-                          <div className="text-xs text-gray-600 mt-1">
-                            {api.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            }
-          )}
+        {/* API List */}
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>API 상세</h2>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>METHOD</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>경로</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>설명</th>
+                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allApis.map((api) => (
+                  <tr key={api.path} style={{ borderBottom: '1px solid #eee' }}>
+                    <td style={{ padding: '12px', fontFamily: 'monospace', fontWeight: 'bold', color: api.method === 'GET' ? '#1976d2' : '#f57c00' }}>
+                      {api.method}
+                    </td>
+                    <td style={{ padding: '12px', fontFamily: 'monospace', fontSize: '11px' }}>{api.path}</td>
+                    <td style={{ padding: '12px', color: '#666' }}>{api.description}</td>
+                    <td style={{ padding: '12px', textAlign: 'center' }}>
+                      <StatusBadge status={api.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Legend */}
-        <div className="mt-8 p-4 bg-gray-50 rounded border">
-          <h3 className="font-bold mb-2">🔤 범례</h3>
-          <div className="grid grid-cols-3 gap-4 text-sm">
+        <div style={{ padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+          <h3 style={{ fontWeight: 'bold', marginBottom: '12px' }}>범례</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', fontSize: '12px' }}>
             <div>
-              <span className="inline-block w-3 h-3 bg-green-500 rounded mr-2"></span>
+              <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#4caf50', borderRadius: '2px', marginRight: '8px' }}></span>
               완료 / 작동 중
             </div>
             <div>
-              <span className="inline-block w-3 h-3 bg-yellow-500 rounded mr-2"></span>
+              <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#ff9800', borderRadius: '2px', marginRight: '8px' }}></span>
               진행 중 / 테스트
             </div>
             <div>
-              <span className="inline-block w-3 h-3 bg-red-500 rounded mr-2"></span>
+              <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#f44336', borderRadius: '2px', marginRight: '8px' }}></span>
               미처리 / 미구현
             </div>
           </div>
