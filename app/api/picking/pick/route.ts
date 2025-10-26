@@ -1,6 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// PIC-002: 피킹 목록 조회 (GET)
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const status = searchParams.get('status');
+    const workerId = searchParams.get('workerId');
+
+    const whereClause: any = {};
+
+    if (status) {
+      whereClause.status = status;
+    }
+
+    if (workerId) {
+      whereClause.assignedWorker = workerId;
+    }
+
+    const pickings = await prisma.pickingTask.findMany({
+      where: whereClause,
+      include: {
+        order: {
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+
+    // 데이터 포맷팅
+    const data = pickings.map((picking) => {
+      const totalItems = picking.order.items.length;
+      const pickedItems = picking.order.items.filter(
+        item => item.pickedQty >= item.quantity
+      ).length;
+      const completionRate = totalItems > 0
+        ? ((pickedItems / totalItems) * 100).toFixed(1)
+        : '0.0';
+
+      return {
+        id: picking.id,
+        orderId: picking.orderId,
+        status: picking.status,
+        assignedWorker: picking.assignedWorker,
+        completionRate: `${completionRate}%`,
+        totalItems,
+        pickedItems,
+        items: picking.order.items.map((item) => ({
+          productId: item.productId,
+          productName: item.product.name,
+          orderedQty: item.quantity,
+          pickedQty: item.pickedQty || 0,
+        })),
+        startTime: picking.startTime,
+        completionTime: picking.completionTime,
+        createdAt: picking.createdAt,
+      };
+    });
+
+    console.log(`[API] GET /api/picking/pick - 조회됨: ${data.length}건`);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination: {
+        total: data.length,
+      },
+    });
+  } catch (error) {
+    console.error('Picking list GET error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: '피킹 목록 조회 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // PIC-003: 개별 상품 피킹
 export async function POST(request: NextRequest) {

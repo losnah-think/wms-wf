@@ -1,6 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// STK-009: 재고 실사 목록 조회 (GET)
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const warehouseId = searchParams.get('warehouseId');
+
+    const whereClause: any = {
+      action: 'STOCK_AUDIT',
+    };
+
+    if (warehouseId) {
+      whereClause.changes = {
+        contains: warehouseId,
+      };
+    }
+
+    const audits = await prisma.auditLog.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+
+    // 데이터 포맷팅
+    const data = audits.map((audit) => {
+      const changes = JSON.parse(audit.changes);
+      return {
+        id: audit.id,
+        productName: changes.productName,
+        warehouseName: changes.warehouseName,
+        expectedQuantity: changes.expectedQuantity,
+        auditQuantity: changes.auditQuantity,
+        difference: changes.difference,
+        differenceRate: changes.differenceRate,
+        status: changes.status,
+        reason: changes.reason,
+        auditor: audit.userId,
+        createdAt: audit.createdAt,
+      };
+    });
+
+    console.log(`[API] GET /api/stock/audit - 조회됨: ${data.length}건`);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination: {
+        total: data.length,
+      },
+    });
+  } catch (error) {
+    console.error('Stock audit GET error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: '재고 실사 조회 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // STK-010: 재고 실사
 export async function POST(request: NextRequest) {

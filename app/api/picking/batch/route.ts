@@ -1,6 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// PIC-009: 피킹 배치 목록 조회 (GET)
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const status = searchParams.get('status');
+
+    const whereClause: any = {};
+
+    if (status) {
+      whereClause.status = status;
+    }
+
+    const batches = await prisma.pickingTask.findMany({
+      where: whereClause,
+      include: {
+        order: {
+          include: {
+            items: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+
+    // 데이터 포맷팅 - 배치 단위로 그룹화
+    const groupedByWorker: { [key: string]: any } = {};
+
+    batches.forEach((batch) => {
+      const worker = batch.assignedWorker || 'UNASSIGNED';
+      if (!groupedByWorker[worker]) {
+        groupedByWorker[worker] = {
+          worker,
+          totalBatches: 0,
+          totalOrders: 0,
+          status: batch.status,
+          createdAt: batch.createdAt,
+          batches: [],
+        };
+      }
+      groupedByWorker[worker].batches.push({
+        batchId: batch.id,
+        orderId: batch.orderId,
+        itemCount: batch.order.items.length,
+        status: batch.status,
+      });
+      groupedByWorker[worker].totalBatches++;
+      groupedByWorker[worker].totalOrders++;
+    });
+
+    const data = Object.values(groupedByWorker);
+
+    console.log(`[API] GET /api/picking/batch - 조회됨: ${data.length}건 (배치)`);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination: {
+        total: data.length,
+      },
+    });
+  } catch (error) {
+    console.error('Picking batch GET error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: '피킹 배치 조회 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // PIC-010: 일괄 피킹
 export async function POST(request: NextRequest) {
