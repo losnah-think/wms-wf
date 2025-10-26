@@ -36,16 +36,22 @@ export default function WarehousePage() {
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
-        // 실제로는 /api/warehouses 엔드포인트 필요
-        // 임시로 기본 창고 데이터 사용
+        const response = await fetch('/api/warehouse')
+        const result = await response.json()
+
+        if (result.success && result.data && result.data.length > 0) {
+          setWarehouses(result.data)
+          setSelectedWarehouse(result.data[0].id)
+        }
+      } catch (error) {
+        console.error('Error fetching warehouses:', error)
+        // Fallback to default warehouses
         setWarehouses([
           { id: 'wh-001', name: 'Main Warehouse', code: 'WH-001' },
           { id: 'wh-002', name: 'North Warehouse', code: 'WH-002' },
           { id: 'wh-003', name: 'South Warehouse', code: 'WH-003' },
         ])
         setSelectedWarehouse('wh-001')
-      } catch (error) {
-        console.error('Error fetching warehouses:', error)
       }
     }
     fetchWarehouses()

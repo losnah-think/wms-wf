@@ -7,20 +7,24 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20')
     const skip = (page - 1) * limit
 
-    // 창고 데이터 조회
+    // 창고 데이터 조회 (zones와 products 포함)
     const [warehouses, total] = await Promise.all([
       prisma.warehouse.findMany({
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
         include: {
           zones: {
             include: {
               locations: true,
             },
           },
-          products: true,
+          products: {
+            include: {
+              product: true,
+            },
+          },
         },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
       }),
       prisma.warehouse.count(),
     ])
@@ -32,13 +36,36 @@ export async function GET(request: NextRequest) {
       code: warehouse.code,
       address: warehouse.address,
       isActive: warehouse.isActive,
-      zones: warehouse.zones.map(z => ({
-        id: z.id,
-        name: z.name,
-        code: z.code,
-      })),
-      totalProducts: warehouse.products.length,
       createdAt: warehouse.createdAt,
+      zones: warehouse.zones.map((zone) => ({
+        id: zone.id,
+        name: zone.name,
+        code: zone.code,
+        isActive: zone.isActive,
+        locations: zone.locations.map((location) => ({
+          id: location.id,
+          name: location.name,
+          code: location.code,
+          capacity: location.capacity,
+          isActive: location.isActive,
+        })),
+      })),
+      products: warehouse.products.map((wp) => ({
+        id: wp.id,
+        productId: wp.productId,
+        quantity: wp.quantity,
+        safeStock: wp.safeStock,
+        isActive: wp.isActive,
+        product: {
+          id: wp.product.id,
+          code: wp.product.code,
+          name: wp.product.name,
+          sku: wp.product.sku,
+          barcode: wp.product.barcode,
+          price: wp.product.price,
+          weight: wp.product.weight,
+        },
+      })),
     }))
 
     return NextResponse.json({
