@@ -9,7 +9,8 @@
       "returns": "반품",
       "shipping": "배송",
       "reports": "리포트",
-      "system": "시스템"
+      "system": "시스템",
+      "tools": "도구"
     },
     "item": {
       "inboundRequest": "입고 신청",
@@ -34,7 +35,8 @@
       "currentReport": "현황 리포트",
       "analysis": "분석 리포트",
       "operationRules": "운영 규칙",
-      "systemSettings": "시스템 설정"
+      "systemSettings": "시스템 설정",
+      "sitemap": "사이트맵"
     },
     "inbound": "입고",
     "dashboard": "대시보드",

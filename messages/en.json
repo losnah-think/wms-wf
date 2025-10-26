@@ -9,7 +9,8 @@
       "returns": "Returns",
       "shipping": "Shipping",
       "reports": "Reports",
-      "system": "System"
+      "system": "System",
+      "tools": "Tools"
     },
     "item": {
       "inboundRequest": "Inbound Request",
@@ -33,7 +34,9 @@
       "settings": "Shipping Settings",
       "currentReport": "Current Report",
       "analysis": "Analysis Report",
-      "operationRules": "System Rules"
+      "operationRules": "System Rules",
+      "systemSettings": "System Settings",
+      "sitemap": "Sitemap"
     },
     "inbound": "Inbound",
     "dashboard": "Dashboard",

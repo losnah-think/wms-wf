@@ -99,6 +99,12 @@ export const menuSections: MenuSection[] = [
       { labelKey: 'systemSettings', href: '/system/settings' },
     ],
   },
+  {
+    titleKey: 'tools',
+    items: [
+      { labelKey: 'sitemap', href: '/sitemap' },
+    ],
+  },
 ]
 
 // ============================================================================
