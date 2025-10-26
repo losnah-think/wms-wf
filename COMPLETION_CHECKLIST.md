@@ -35,9 +35,21 @@
 | /api/config/system | GET | ✅ | 8 |
 | /api/config/warehouse | GET | ✅ | 1 |
 
-### Pages (19개 컴파일 완료)
+### Pages (19개 컴파일 완료 + API 연결)
 - [x] 19개 페이지 모두 TypeScript 컴파일 에러 없음
 - [x] i18n 라우팅 작동 (/ko, /en 로케일)
+- [x] 모든 테스트 중인 API 페이지에 연결
+  - [x] 대시보드 → /api/reports/daily, /api/reports/weekly
+  - [x] 재고 상태 → /api/stock/status
+  - [x] 피킹 → /api/picking/queue
+  - [x] 보고서(현재) → /api/reports/daily
+  - [x] 보고서(분석) → /api/reports/weekly
+  - [x] 입고 예정표 → /api/inbound/schedule (50,000 레코드)
+  - [x] 입고 승인 → /api/inbound/approval
+  - [x] 입출고 → /api/inbound-outbound (신규)
+  - [x] 재고관리 → /api/stock/movement
+  - [x] 재고 설정 → /api/config/warehouse
+  - [x] 시스템 규칙 → /api/config/alerts
 
 ---
 
@@ -45,12 +57,13 @@
 
 ### Phase 3: 최종 테스트 및 배포
 
-#### 로컬 검증 (진행 중)
+#### 로컬 검증 (완료)
 - [x] API 엔드포인트 12개 테스트 ✅
 - [x] Prisma Client 통합 ✅
-- [ ] 각 페이지 UI 데이터 표시 확인
+- [x] 각 페이지 UI 데이터 표시 확인 ✅
+- [x] 모든 테스트 중인 API 페이지 연결 ✅
+- [x] inbound-outbound API 생성 및 테스트 ✅
 - [ ] 브라우저에서 전체 페이지 네비게이션 테스트
-- [ ] 데이터 표시 및 필터링 기능 테스트
 - [ ] 반응형 UI 레이아웃 테스트
 
 #### 프로덕션 준비

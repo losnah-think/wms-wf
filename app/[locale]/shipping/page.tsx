@@ -39,7 +39,7 @@ export default function ShippingPage() {
         if (selectedStatus !== 'all') params.append('status', selectedStatus)
         if (selectedCarrier !== 'all') params.append('carrier', selectedCarrier)
 
-        const response = await fetch(`/api/shipping/track?${params}`)
+        const response = await fetch(`/api/shipping/list?${params}`)
         const result = await response.json()
 
         if (result.success) {

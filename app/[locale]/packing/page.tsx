@@ -45,15 +45,15 @@ export default function PackingPage() {
     const fetchPackingData = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch('/api/picking/queue')
+        const response = await fetch('/api/picking/packing')
         const result = await response.json()
 
         if (result.success) {
-          setPackingTasks(result.data.orders || [])
+          setPackingTasks(result.data || [])
           
           // 통계 계산
-          const packed = result.data.orders.filter((t: PackingTask) => t.status === 'COMPLETED').length
-          const inProgress = result.data.orders.filter((t: PackingTask) => t.status === 'IN_PROGRESS').length
+          const packed = result.data.filter((t: PackingTask) => t.status === 'completed').length
+          const inProgress = result.data.filter((t: PackingTask) => t.status === 'packing').length
           
           setStats({
             activeStations: 3,
