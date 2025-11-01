@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
+@import 'antd/dist/reset.css';
 
 :root {
   --color-white: #ffffff;
@@ -124,4 +126,145 @@ h1, h2, h3, h4, h5, h6 {
 .nav-item:hover {
   background-color: var(--color-gray-lighter) !important;
   transform: translateX(4px);
+}
+
+/* Ant Design Customizations */
+body {
+  font-family: 'Pretendard', sans-serif !important;
+}
+
+/* Table Styles */
+.ant-table {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #FFFFFF;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #F3F4F6 !important;
+  color: #06101D !important;
+  font-family: 'Pretendard', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  border-bottom: 1px solid #E5E7EB !important;
+}
+
+.ant-table-tbody > tr {
+  transition: background-color 0.2s ease;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #F9FAFB !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #E5E7EB !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+}
+
+/* Button Styles */
+.ant-btn-primary {
+  background-color: #007BED !important;
+  border-color: #007BED !important;
+  font-weight: 600 !important;
+  font-family: 'Pretendard', sans-serif !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #0066d4 !important;
+  border-color: #0066d4 !important;
+}
+
+.ant-btn-default {
+  border-color: #E5E7EB !important;
+  color: #464C53 !important;
+  font-weight: 600 !important;
+  font-family: 'Pretendard', sans-serif !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn-default:hover {
+  color: #007BED !important;
+  border-color: #007BED !important;
+  background-color: #F9FAFB !important;
+}
+
+/* Tabs Styles */
+.ant-tabs-tab {
+  font-family: 'Pretendard', sans-serif !important;
+  font-weight: 600 !important;
+  color: #6B7178 !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-tabs-tab-active {
+  color: #007BED !important;
+  font-weight: 700 !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-remove {
+  color: #007BED !important;
+}
+
+/* Pagination Styles */
+.ant-pagination-item {
+  background-color: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+  font-family: 'Pretendard', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.ant-pagination-item-active {
+  background-color: #E0F2FE !important;
+  border-color: #007BED !important;
+  color: #007BED !important;
+}
+
+.ant-pagination-item a {
+  color: #6B7178 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #007BED !important;
+}
+
+/* Badge Styles */
+.ant-badge-count {
+  background-color: #007BED !important;
+  box-shadow: 0 2px 8px rgba(0, 123, 237, 0.2) !important;
+}
+
+/* Tag Styles */
+.ant-tag {
+  font-family: 'Pretendard', sans-serif !important;
+  border-radius: 4px !important;
+}
+
+/* Card Styles */
+.ant-card {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ant-card-head {
+  border-bottom-color: #E5E7EB !important;
+  background-color: #F8F9FA !important;
+}
+
+/* Progress Styles */
+.ant-progress-text {
+  font-family: 'Pretendard', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.ant-progress-inner {
+  border-radius: 4px !important;
+}
+
+.ant-progress-bg {
+  background-color: #007BED !important;
+  border-radius: 4px !important;
 }

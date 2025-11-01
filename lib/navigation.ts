@@ -28,81 +28,24 @@ export function getItemTranslationKey(labelKey: string): string {
 }
 
 // ============================================================================
-// Menu Structure (9 Sections, 23 Items)
+// Menu Structure (Optimized - Only Active Features)
 // ============================================================================
 
 export const menuSections: MenuSection[] = [
   {
-    titleKey: 'dashboard',
+    titleKey: 'warehouse',
     items: [
-      { labelKey: 'dashboard', href: '/' },
-    ],
-  },
-  {
-    titleKey: 'inbound',
-    items: [
-      { labelKey: 'inboundSchedule', href: '/inbound/schedule' },
-      { labelKey: 'inboundApproval', href: '/inbound/approval' },
-    ],
-  },
-  {
-    titleKey: 'outbound',
-    items: [
-      { labelKey: 'pickingMgmt', href: '/picking' },
-      { labelKey: 'packingMgmt', href: '/packing' },
+      { labelKey: 'warehouseInfo', href: '/warehouse' },
+      { labelKey: 'warehouseLayout', href: '/warehouse/layout' },
+      { labelKey: 'locationMgmt', href: '/warehouse/location' },
+      { labelKey: 'barcodeMgmt', href: '/warehouse/barcode' },
     ],
   },
   {
     titleKey: 'inventory',
     items: [
-      { labelKey: 'products', href: '/products' },
-      { labelKey: 'warehouse', href: '/warehouse' },
       { labelKey: 'stockStatus', href: '/stock-status' },
-      { labelKey: 'stockSettings', href: '/stock-settings' },
-      { labelKey: 'inboundOutbound', href: '/inbound-outbound' },
-      { labelKey: 'advanced', href: '/advanced-inventory' },
-    ],
-  },
-  {
-    titleKey: 'operations',
-    items: [
-      { labelKey: 'workers', href: '/workers' },
-      { labelKey: 'returnPicking', href: '/return-picking' },
-    ],
-  },
-  {
-    titleKey: 'returns',
-    items: [
-      { labelKey: 'returnRequest', href: '/returns/request' },
-      { labelKey: 'processing', href: '/returns/process' },
-      { labelKey: 'status', href: '/returns/status' },
-    ],
-  },
-  {
-    titleKey: 'shipping',
-    items: [
-      { labelKey: 'shipments', href: '/shipping' },
-      { labelKey: 'settings', href: '/shipping/settings' },
-    ],
-  },
-  {
-    titleKey: 'reports',
-    items: [
-      { labelKey: 'currentReport', href: '/reports/current' },
-      { labelKey: 'analysis', href: '/reports/analysis' },
-    ],
-  },
-  {
-    titleKey: 'system',
-    items: [
-      { labelKey: 'operationRules', href: '/system/rules' },
-      { labelKey: 'systemSettings', href: '/system/settings' },
-    ],
-  },
-  {
-    titleKey: 'tools',
-    items: [
-      { labelKey: 'sitemap', href: '/sitemap' },
+      { labelKey: 'stockAudit', href: '/stock-audit' },
     ],
   },
 ]
