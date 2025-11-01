@@ -490,7 +490,7 @@ export default function WarehouseInfoPage() {
           <Form.Item label="주소" name="address">
             <Input />
           </Form.Item>
-          <Form.Item label="넓이 (m²)" name="area" type="number">
+          <Form.Item label="넓이 (m²)" name="area">
             <Input type="number" />
           </Form.Item>
           <Form.Item label="담당자명" name="manager" rules={[{ required: true, message: '담당자명을 입력하세요' }]}>
@@ -516,7 +516,7 @@ export default function WarehouseInfoPage() {
         cancelText="취소"
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
-        <Form addForm={addForm} layout="vertical" style={{ marginTop: 24 }}>
+        <Form form={addForm} layout="vertical" style={{ marginTop: 24 }}>
           <Form.Item label="창고명" name="name" rules={[{ required: true, message: '창고명을 입력하세요' }]}>
             <Input placeholder="예: 서울 센터" />
           </Form.Item>
@@ -526,7 +526,7 @@ export default function WarehouseInfoPage() {
           <Form.Item label="주소" name="address">
             <Input placeholder="예: 서울시 강남구" />
           </Form.Item>
-          <Form.Item label="넓이 (m²)" name="area" type="number">
+          <Form.Item label="넓이 (m²)" name="area">
             <Input type="number" placeholder="5000" />
           </Form.Item>
           <Form.Item label="담당자명" name="manager" rules={[{ required: true, message: '담당자명을 입력하세요' }]}>
