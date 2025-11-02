@@ -249,7 +249,7 @@ export default function StockAuditPage() {
             재고 조정
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 4,5/5] 조정(수량/상태 수정) 및 실사(Inventory Audit) - 실사를 통한 재고 조정 및 불일치 관리
+            조정(수량/상태 수정) 및 실사(Inventory Audit) - 실사를 통한 재고 조정 및 불일치 관리
           </p>
         </div>
 

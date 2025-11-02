@@ -340,7 +340,7 @@ export default function WarehouseLayoutPage() {
             구역 설정 (Zone)
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 2/6] 구역(Zone) 설정 - 통로(Aisle) → 랙(Rack) → 레벨(Level)의 계층 구조로 창고 구역 관리
+            구역(Zone) 설정 - 통로(Aisle) → 랙(Rack) → 레벨(Level)의 계층 구조로 창고 구역 관리
           </p>
         </div>
 

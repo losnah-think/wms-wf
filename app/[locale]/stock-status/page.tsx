@@ -180,7 +180,7 @@ export default function StockStatusPage() {
             재고 현황
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 1/5] 재고 현황 - 전체 창고의 재고 상황을 한눈에 파악합니다
+            재고 현황 - 전체 창고의 재고 상황을 한눈에 파악합니다
           </p>
         </div>
 

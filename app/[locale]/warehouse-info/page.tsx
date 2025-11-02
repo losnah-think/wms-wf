@@ -402,7 +402,7 @@ export default function WarehouseInfoPage() {
             창고 정보 관리
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 1/6] 창고 등록 및 담당자 관리 - 전체 창고의 현황과 상세 정보를 관리합니다
+            창고 등록 및 담당자 관리 - 전체 창고의 현황과 상세 정보를 관리합니다
           </p>
         </div>
 

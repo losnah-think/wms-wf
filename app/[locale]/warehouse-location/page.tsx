@@ -327,7 +327,7 @@ export default function WarehouseLocationPage() {
             위치(로케이션) 등록
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 3/6] 위치(로케이션) 등록 - 개별 위치의 등록 및 관리
+            위치(로케이션) 등록 - 개별 위치의 등록 및 관리
           </p>
         </div>
 

@@ -274,7 +274,7 @@ export default function StockMoveManagementPage() {
             재고 이동
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            [Step 3/5] 재고 이동(창고간/위치간) - 창고 내 재고 이동 현황을 관리합니다
+            재고 이동(창고간/위치간) - 창고 내 재고 이동 현황을 관리합니다
           </p>
         </div>
 

@@ -81,14 +81,14 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
     // 창고관리 섹션
     {
       key: 'warehouse-1',
-      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>🏭 창고관리</span>,
+      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>창고관리</span>,
       type: 'group',
     },
     {
       key: '/warehouse-info',
       label: (
         <Link href={`/${locale}/warehouse-info`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>🏢 창고 정보 관리</span>
+          <span style={{ paddingLeft: 16 }}>창고 정보 관리</span>
         </Link>
       ),
     },
@@ -96,7 +96,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-layout',
       label: (
         <Link href={`/${locale}/warehouse-layout`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>🗂️ 구역 설정 (Zone)</span>
+          <span style={{ paddingLeft: 16 }}>구역 설정 (Zone)</span>
         </Link>
       ),
     },
@@ -104,7 +104,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-location',
       label: (
         <Link href={`/${locale}/warehouse-location`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>📍 위치(로케이션) 등록</span>
+          <span style={{ paddingLeft: 16 }}>위치(로케이션) 등록</span>
         </Link>
       ),
     },
@@ -112,7 +112,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-barcode',
       label: (
         <Link href={`/${locale}/warehouse-barcode`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>🔖 바코드 생성 및 관리</span>
+          <span style={{ paddingLeft: 16 }}>바코드 생성 및 관리</span>
         </Link>
       ),
     },
@@ -127,14 +127,14 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
     // 재고관리 섹션
     {
       key: 'inventory-1',
-      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>📦 재고관리</span>,
+      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>재고관리</span>,
       type: 'group',
     },
     {
       key: '/stock-status',
       label: (
         <Link href={`/${locale}/stock-status`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>📊 재고 현황</span>
+          <span style={{ paddingLeft: 16 }}>재고 현황</span>
         </Link>
       ),
     },
@@ -142,7 +142,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/stock-move',
       label: (
         <Link href={`/${locale}/stock-move`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>🔄 재고 이동</span>
+          <span style={{ paddingLeft: 16 }}>재고 이동</span>
         </Link>
       ),
     },
@@ -150,7 +150,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/stock-audit',
       label: (
         <Link href={`/${locale}/stock-audit`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ paddingLeft: 16 }}>✅ 재고 조정/실사</span>
+          <span style={{ paddingLeft: 16 }}>재고 조정/실사</span>
         </Link>
       ),
     },
@@ -167,7 +167,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/error-showcase',
       label: (
         <Link href={`/${locale}/error-showcase`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          🧪 에러 쇼케이스
+          에러 쇼케이스
         </Link>
       ),
     },
