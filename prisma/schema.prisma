@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// WMS (Warehouse Management System) Prisma Schema
+// Comprehensive database design for warehouse and inventory management
 
 generator client {
   provider      = "prisma-client-js"
@@ -15,301 +12,713 @@ datasource db {
 }
 
 // ============================================================================
-// Supplier/Customer Models
+// MASTER TABLES (기본 정보)
 // ============================================================================
 
-model Supplier {
-  id            String   @id @default(cuid())
-  name          String   @db.VarChar(255)
-  code          String   @unique @db.VarChar(50)
-  email         String?  @db.VarChar(255)
-  phone         String?  @db.VarChar(20)
-  address       String?  @db.Text
-  type          String   @default("supplier") // supplier, logistics, etc
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  inboundRequests InboundRequest[]
-  schedules       InboundSchedule[]
-
-  @@index([code])
-  @@index([type])
-}
-
-// ============================================================================
-// Warehouse Models
-// ============================================================================
-
-model Warehouse {
+/// 사용자
+model User {
   id        String   @id @default(cuid())
-  name      String   @db.VarChar(255)
-  code      String   @unique @db.VarChar(50)
-  address   String?  @db.Text
+  email     String   @unique
+  username  String   @unique
+  password  String?
+  name      String?
+  role      String   @default("user") // admin, manager, staff, viewer
+  
   isActive  Boolean  @default(true)
+  lastLogin DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  zones    Zone[]
-  products WarehouseProduct[]
+  // Relations
+  grnReceived         GRN[]                @relation("receivedBy")
+  grnApproved         GRN[]                @relation("approvedBy")
+  outboundPicked      Outbound[]           @relation("pickedBy")
+  outboundPacked      Outbound[]           @relation("packedBy")
+  outboundShipped     Outbound[]           @relation("shippedBy")
+  stockMovementInitiated StockMovement[]  @relation("initiatedBy")
+  stockMovementVerified  StockMovement[]  @relation("verifiedBy")
+  stockAuditedBy      StockAudit[]         @relation("auditedBy")
+  stockAdjustedBy     StockAudit[]         @relation("adjustedBy")
+  alertAssignedTo     Alert[]              @relation("assignedTo")
+  alertAcknowledgedBy Alert[]              @relation("acknowledgedBy")
+  alertResolvedBy     Alert[]              @relation("resolvedBy")
+  auditLogsCreated    AuditLog[]           @relation("userId")
 
+  @@index([role])
+  @@index([isActive])
+}
+
+/// 창고
+model Warehouse {
+  id              String    @id @default(cuid())
+  code            String    @unique @db.VarChar(20)
+  name            String    @db.VarChar(100)
+  description     String?   @db.Text
+  
+  // 주소 정보
+  address         String?   @db.VarChar(255)
+  city            String?   @db.VarChar(100)
+  state           String?   @db.VarChar(100)
+  zipCode         String?   @db.VarChar(20)
+  country         String?   @db.VarChar(50)
+  
+  // 물리적 정보
+  totalCapacity   Float?                 // m³ 또는 개수
+  totalArea       Float?                 // m²
+  noOfZones       Int      @default(0)
+  noOfRacks       Int      @default(0)
+  noOfLocations   Int      @default(0)
+  
+  // 담당자
+  managerId       String?
+  managerName     String?   @db.VarChar(100)
+  contactPhone    String?   @db.VarChar(20)
+  contactEmail    String?   @db.VarChar(100)
+  
+  // 운영 정보
+  status          String    @default("active") // active, inactive, maintenance
+  operationHours  String?   @db.VarChar(50)    // "09:00-18:00"
+  allowsAfterHours Boolean  @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  zones           Zone[]
+  locations       Location[]
+  stocks          Stock[]
+  grns            GRN[]
+  outbounds       Outbound[]
+  stockMovements  StockMovement[]
+  stockAudits     StockAudit[]
+  alerts          Alert[]
+
+  @@index([status])
   @@index([code])
 }
 
+/// 구역 (Zone)
 model Zone {
-  id          String   @id @default(cuid())
-  name        String   @db.VarChar(100)
-  code        String   @db.VarChar(50)
-  warehouseId String
-  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String    @id @default(cuid())
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  
+  code            String    @db.VarChar(10)
+  name            String    @db.VarChar(100)
+  description     String?   @db.Text
+  
+  // 물리적 정보
+  capacity        Float?
+  noOfRacks       Int      @default(0)
+  
+  // 특성
+  zoneType        String    @default("general") // general, cold, hazmat, high-value
+  temperature     Int?                          // 섭씨
+  humidity        Int?                          // %
+  
+  status          String    @default("active") // active, inactive, reserved
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  locations Location[]
+  // Relations
+  locations       Location[]
 
   @@unique([warehouseId, code])
   @@index([warehouseId])
+  @@index([status])
 }
 
+/// 위치 (Location)
 model Location {
-  id        String   @id @default(cuid())
-  name      String   @db.VarChar(100)
-  code      String   @db.VarChar(50)
-  zoneId    String
-  zone      Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  capacity  Int      @default(100)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String    @id @default(cuid())
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  zoneId          String
+  zone            Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  
+  code            String    @db.VarChar(50)  // A-01-1 (zone-rack-level)
+  name            String?   @db.VarChar(100)
+  
+  // 물리적 정보
+  rackNumber      String?   @db.VarChar(10)  // 01, 02
+  level           Int?
+  column          Int?
+  
+  // 용량
+  maxCapacity     Float?
+  currentUtilization Float? @default(0)
+  
+  // 타입
+  locationType    String    @default("pallet") // pallet, daebong, box, shelf, bin
+  
+  status          String    @default("empty") // empty, occupied, reserved, damaged, maintenance
+  allowsOverstock Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  @@unique([zoneId, code])
-  @@index([zoneId])
-}
+  // Relations
+  stocks          Stock[]
+  grnLineItems    GRNLineItem[]
+  outboundLineItems OutboundLineItem[]
+  stockMovements  StockMovement[]    @relation("toLocation")
+  stockMovementsFrom StockMovement[]  @relation("fromLocation")
 
-// ============================================================================
-// Product Models
-// ============================================================================
-
-model Product {
-  id          String   @id @default(cuid())
-  code        String   @unique @db.VarChar(50)
-  name        String   @db.VarChar(255)
-  description String?  @db.Text
-  barcode     String?  @unique @db.VarChar(100)
-  sku         String?  @unique @db.VarChar(100)
-  price       Decimal  @default(0) @db.Decimal(10, 2)
-  weight      Decimal? @db.Decimal(10, 2) // kg
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  warehouseProducts WarehouseProduct[]
-  inboundItems      InboundRequestItem[]
-  outboundItems     OutboundOrderItem[]
-
-  @@index([code])
-  @@index([barcode])
-}
-
-model WarehouseProduct {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  warehouseId String
-  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  quantity    Int      @default(0)
-  safeStock   Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([productId, warehouseId])
-  @@index([productId])
+  @@unique([warehouseId, code])
   @@index([warehouseId])
-}
-
-// ============================================================================
-// Inbound Models
-// ============================================================================
-
-model InboundRequest {
-  id              String   @id @default(cuid())
-  requestNumber   String   @unique @db.VarChar(50)
-  supplierId      String
-  supplier        Supplier @relation(fields: [supplierId], references: [id])
-  status          String   @default("draft") // draft, submitted, approved, rejected
-  totalQuantity   Int      @default(0)
-  totalAmount     Decimal  @default(0) @db.Decimal(12, 2)
-  requestDate     DateTime @default(now())
-  expectedDate    DateTime
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  items     InboundRequestItem[]
-  schedules InboundSchedule[]
-
-  @@index([supplierId])
+  @@index([zoneId])
   @@index([status])
-  @@index([requestDate])
+  @@index([code])
 }
 
-model InboundRequestItem {
-  id        String @id @default(cuid())
-  requestId String
-  request   InboundRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  unitPrice Decimal @db.Decimal(10, 2)
+// ============================================================================
+// PRODUCT TABLES (상품 정보)
+// ============================================================================
 
-  @@index([requestId])
-  @@index([productId])
+/// 상품 마스터
+model Product {
+  id              String    @id @default(cuid())
+  sku             String    @unique @db.VarChar(50)
+  code            String?   @db.VarChar(50)
+  name            String    @db.VarChar(255)
+  description     String?   @db.Text
+  
+  // 분류
+  category        String?   @db.VarChar(100)
+  subcategory     String?   @db.VarChar(100)
+  
+  // 물리적 정보
+  weight          Float?                      // kg
+  length          Float?                      // cm
+  width           Float?
+  height          Float?
+  volume          Float?                      // m³
+  
+  // 규격
+  unit            String?   @db.VarChar(20)   // EA, BOX, CASE
+  unitsPerPack    Int?
+  packsPerPallet  Int?
+  
+  // 가격/비용
+  costPrice       Float?
+  sellingPrice    Float?
+  
+  // 재고 관리
+  minStockLevel   Int      @default(0)
+  maxStockLevel   Int      @default(0)
+  reorderPoint    Int      @default(0)
+  leadTimeDays    Int      @default(0)
+  
+  // 특성
+  isFragile       Boolean  @default(false)
+  requiresTemperatureControl Boolean @default(false)
+  isHazmat        Boolean  @default(false)
+  isHighValue     Boolean  @default(false)
+  
+  status          String    @default("active") // active, discontinued, archived
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  skus            SKU[]
+  grnLineItems    GRNLineItem[]
+  outboundLineItems OutboundLineItem[]
+
+  @@index([sku])
+  @@index([category])
+  @@index([status])
 }
 
-model InboundSchedule {
-  id              String   @id @default(cuid())
-  scheduleNumber  String   @unique @db.VarChar(50)
-  requestId       String
-  request         InboundRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  supplierId      String
-  supplier        Supplier @relation(fields: [supplierId], references: [id])
-  status          String   @default("pending") // pending, on-schedule, delayed, arrived
-  expectedDate    DateTime
-  estimatedArrival DateTime?
-  carrier         String?  @db.VarChar(100)
-  trackingNumber  String?  @db.VarChar(100)
+/// SKU (상품 변형)
+model SKU {
+  id              String    @id @default(cuid())
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  skuCode         String    @unique @db.VarChar(50)
+  variantName     String?   @db.VarChar(255)
+  
+  // 속성
+  color           String?   @db.VarChar(50)
+  size            String?   @db.VarChar(50)
+  style           String?   @db.VarChar(50)
+  
+  // 바코드
+  barcode         String?   @db.VarChar(50)
+  
+  // 재고 캐시 (빠른 조회)
   totalQuantity   Int      @default(0)
+  availableQuantity Int    @default(0)
+  reservedQuantity Int     @default(0)
+  damagedQuantity Int      @default(0)
+  
+  status          String    @default("active") // active, inactive, discontinued
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  stocks          Stock[]
+  stockMovements  StockMovement[]
+  stockAudits     StockAudit[]
+
+  @@index([productId])
+  @@index([skuCode])
+}
+
+// ============================================================================
+// INVENTORY TABLES (재고)
+// ============================================================================
+
+/// 재고
+model Stock {
+  id              String    @id @default(cuid())
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  locationId      String?
+  location        Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  skuId           String
+  sku             SKU       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  
+  // 수량 정보
+  quantity        Int      @default(0)
+  reserved        Int      @default(0)
+  available       Int      @default(0)
+  damaged         Int      @default(0)
+  
+  // 배치 정보 (Lot/Batch tracking)
+  batchNumber     String?   @db.VarChar(50)
+  expirationDate  DateTime?
+  manufactureDate DateTime?
+  
+  // 입고 참조
+  grnId           String?
+  
+  status          String    @default("available") // available, reserved, damaged, expired, blocked
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  histories       StockHistory[]
+
+  @@unique([warehouseId, locationId, skuId, batchNumber])
+  @@index([warehouseId])
+  @@index([locationId])
+  @@index([skuId])
+  @@index([status])
+  @@index([expirationDate])
+}
+
+/// 재고 조사 (Audit)
+model StockAudit {
+  id              String    @id @default(cuid())
+  auditNumber     String    @unique @db.VarChar(50)
+  
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id])
+  zoneId          String?
+  locationId      String?
+  skuId           String
+  sku             SKU       @relation(fields: [skuId], references: [id])
+  
+  // 수량 정보
+  systemQuantity  Int
+  actualQuantity  Int
+  variance        Int?
+  
+  // 조사 정보
+  auditedById     String?
+  auditedBy       User?     @relation("auditedBy", fields: [auditedById], references: [id])
+  auditDate       DateTime  @default(now())
+  
+  // 조정 정보
+  adjustmentRequired Boolean?
+  adjustedById    String?
+  adjustedBy      User?     @relation("adjustedBy", fields: [adjustedById], references: [id])
+  adjustedAt      DateTime?
+  adjustmentReason String?  @db.Text
+  
+  status          String    @default("pending") // pending, completed, discrepancy, resolved
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([auditNumber])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([auditDate])
+}
+
+/// 재고 변경 이력
+model StockHistory {
+  id              String    @id @default(cuid())
+  stockId         String?
+  stock           Stock?    @relation(fields: [stockId], references: [id], onDelete: SetNull)
+  
+  warehouseId     String
+  skuId           String
+  sku             SKU       @relation(fields: [skuId], references: [id])
+  
+  // 수량 변경
+  previousQuantity Int?
+  newQuantity     Int?
+  quantityChange  Int?
+  
+  // 이유
+  changeType      String   // inbound, outbound, adjustment, audit, damage, expiration
+  referenceId     String?   @db.VarChar(100)
+  reason          String?   @db.Text
+  
+  changedById     String?
+  changedBy       User?     @relation("userId", fields: [changedById], references: [id])
+  
+  changedAt       DateTime  @default(now())
+
+  @@index([stockId])
+  @@index([skuId])
+  @@index([changedAt])
+}
+
+// ============================================================================
+// INBOUND TABLES (입고)
+// ============================================================================
+
+/// Goods Receipt Note (입고)
+model GRN {
+  id              String    @id @default(cuid())
+  grnNumber       String    @unique @db.VarChar(50)
+  poNumber        String?   @db.VarChar(50)
+  
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id])
+  supplierId      String?
+  supplierName    String?   @db.VarChar(255)
+  
+  // 일정
+  expectedDeliveryDate DateTime?
+  actualDeliveryDate DateTime?
+  
+  // 수량
+  totalItems      Int      @default(0)
+  totalQuantity   Int      @default(0)
+  totalWeight     Float?
+  totalVolume     Float?
+  
+  // 담당자
+  receivedById    String?
+  receivedBy      User?     @relation("receivedBy", fields: [receivedById], references: [id])
+  approvedById    String?
+  approvedBy      User?     @relation("approvedBy", fields: [approvedById], references: [id])
+  
+  status          String    @default("pending") // pending, partial, received, inspected, putaway, cancelled
+  
+  notes           String?   @db.Text
+  referenceDocuments String? @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  lineItems       GRNLineItem[]
+  stockMovements  StockMovement[]
+
+  @@index([grnNumber])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([actualDeliveryDate])
+}
+
+/// GRN Line Item
+model GRNLineItem {
+  id              String    @id @default(cuid())
+  grnId           String
+  grn             GRN       @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+  
+  orderedQuantity Int
   receivedQuantity Int     @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  inspectedQuantity Int    @default(0)
+  acceptedQuantity Int     @default(0)
+  rejectedQuantity Int     @default(0)
+  damagedQuantity  Int     @default(0)
+  
+  // 배치 정보
+  batchNumber     String?   @db.VarChar(50)
+  expirationDate  DateTime?
+  manufactureDate DateTime?
+  
+  locationId      String?
+  location        Location? @relation(fields: [locationId], references: [id])
+  
+  status          String    @default("pending") // pending, received, inspected, accepted, rejected, putaway
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  @@index([requestId])
-  @@index([supplierId])
-  @@index([status])
-  @@index([expectedDate])
-}
-
-model InboundApproval {
-  id              String   @id @default(cuid())
-  approvalNumber  String   @unique @db.VarChar(50)
-  requestId       String   @unique
-  status          String   @default("pending") // pending, approved, rejected
-  approverName    String?  @db.VarChar(100)
-  approvalDate    DateTime?
-  rejectionReason String?  @db.Text
-  allocatedZone   String?  @db.VarChar(100)
-  allocatedLocation String? @db.VarChar(100)
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([status])
-  @@index([approvalDate])
-}
-
-// ============================================================================
-// Outbound Models
-// ============================================================================
-
-model OutboundOrder {
-  id              String   @id @default(cuid())
-  orderNumber     String   @unique @db.VarChar(50)
-  orderDate       DateTime @default(now())
-  status          String   @default("pending") // pending, picking, packing, shipped, delivered
-  totalQuantity   Int      @default(0)
-  totalAmount     Decimal  @default(0) @db.Decimal(12, 2)
-  shippingDate    DateTime?
-  expectedDelivery DateTime?
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  items     OutboundOrderItem[]
-  pickings  PickingTask[]
-  packings  PackingTask[]
-
-  @@index([orderDate])
-  @@index([status])
-  @@index([expectedDelivery])
-}
-
-model OutboundOrderItem {
-  id        String @id @default(cuid())
-  orderId   String
-  order     OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  pickedQty Int     @default(0)
-  packedQty Int     @default(0)
-
-  @@index([orderId])
+  @@index([grnId])
   @@index([productId])
 }
 
 // ============================================================================
-// Picking Models
+// OUTBOUND TABLES (출고)
 // ============================================================================
 
-model PickingTask {
-  id              String   @id @default(cuid())
-  pickingNumber   String   @unique @db.VarChar(50)
-  orderId         String
-  order           OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  status          String   @default("pending") // pending, picking, completed, cancelled
-  assignedWorker  String?  @db.VarChar(100)
-  startTime       DateTime?
-  completionTime  DateTime?
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+/// 출고
+model Outbound {
+  id              String    @id @default(cuid())
+  outboundNumber  String    @unique @db.VarChar(50)
+  
+  orderId         String?   @db.VarChar(50)
+  customerId      String?   @db.VarChar(50)
+  customerName    String?   @db.VarChar(255)
+  
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id])
+  shippingAddress String?   @db.Text
+  
+  // 수량
+  totalItems      Int      @default(0)
+  totalQuantity   Int      @default(0)
+  totalWeight     Float?
+  
+  // 일정
+  expectedShippingDate DateTime?
+  actualShippingDate DateTime?
+  
+  // 배송
+  shippingCarrier String?   @db.VarChar(100)
+  trackingNumber  String?   @db.VarChar(100)
+  
+  // 담당자
+  pickedById      String?
+  pickedBy        User?     @relation("pickedBy", fields: [pickedById], references: [id])
+  packedById      String?
+  packedBy        User?     @relation("packedBy", fields: [packedById], references: [id])
+  shippedById     String?
+  shippedBy       User?     @relation("shippedBy", fields: [shippedById], references: [id])
+  
+  status          String    @default("pending") // pending, picking, picked, packing, packed, shipped, delivered, cancelled
+  
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
+  // Relations
+  lineItems       OutboundLineItem[]
+  stockMovements  StockMovement[]
+
+  @@index([outboundNumber])
   @@index([orderId])
+  @@index([warehouseId])
   @@index([status])
-  @@index([assignedWorker])
+}
+
+/// Outbound Line Item
+model OutboundLineItem {
+  id              String    @id @default(cuid())
+  outboundId      String
+  outbound        Outbound  @relation(fields: [outboundId], references: [id], onDelete: Cascade)
+  
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+  
+  orderedQuantity Int
+  pickedQuantity  Int      @default(0)
+  packedQuantity  Int      @default(0)
+  shippedQuantity Int      @default(0)
+  
+  pickedFromLocationId String?
+  pickedFromLocation Location? @relation(fields: [pickedFromLocationId], references: [id])
+  
+  status          String    @default("pending") // pending, picked, packed, shipped
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([outboundId])
+  @@index([productId])
 }
 
 // ============================================================================
-// Packing Models
+// STOCK MOVEMENT TABLES
 // ============================================================================
 
-model PackingTask {
-  id              String   @id @default(cuid())
-  packingNumber   String   @unique @db.VarChar(50)
-  orderId         String
-  order           OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  status          String   @default("pending") // pending, packing, completed
-  station         String?  @db.VarChar(50)
-  assignedWorker  String?  @db.VarChar(100)
-  boxSize         String?  @db.VarChar(20) // small, medium, large, xlarge
-  weight          Decimal? @db.Decimal(10, 2)
+/// 재고 이동
+model StockMovement {
+  id              String    @id @default(cuid())
+  movementNumber  String    @unique @db.VarChar(50)
+  
+  // 이동 유형
+  movementType    String   // internal, inbound, outbound, return, adjustment
+  
+  fromWarehouseId String?
+  fromLocationId  String?
+  fromLocation    Location? @relation("fromLocation", fields: [fromLocationId], references: [id])
+  
+  toWarehouseId   String?
+  warehouse       Warehouse? @relation(fields: [toWarehouseId], references: [id])
+  toLocationId    String?
+  toLocation      Location? @relation("toLocation", fields: [toLocationId], references: [id])
+  
+  skuId           String
+  sku             SKU       @relation(fields: [skuId], references: [id])
+  quantity        Int
+  
+  // 참조
+  grnId           String?
+  grn             GRN?      @relation(fields: [grnId], references: [id])
+  outboundId      String?
+  outbound        Outbound? @relation(fields: [outboundId], references: [id])
+  orderId         String?   @db.VarChar(50)
+  
+  // 담당자
+  initiatedById   String?
+  initiatedBy     User?     @relation("initiatedBy", fields: [initiatedById], references: [id])
+  verifiedById    String?
+  verifiedBy      User?     @relation("verifiedBy", fields: [verifiedById], references: [id])
+  
+  status          String    @default("pending") // pending, in-transit, completed, cancelled, on-hold
+  
   startTime       DateTime?
   completionTime  DateTime?
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  reason          String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  @@index([orderId])
+  @@index([movementNumber])
+  @@index([movementType])
   @@index([status])
-  @@index([station])
+  @@index([skuId])
 }
 
 // ============================================================================
-// Audit Log
+// ALERT TABLES (알림)
 // ============================================================================
 
+/// Alert
+model Alert {
+  id              String    @id @default(cuid())
+  alertCode       String    @db.VarChar(50)
+  alertType       String   // info, warning, critical, error
+  
+  warehouseId     String?
+  warehouse       Warehouse? @relation(fields: [warehouseId], references: [id])
+  skuId           String?
+  locationId      String?
+  
+  title           String    @db.VarChar(255)
+  message         String    @db.Text
+  
+  triggerValue    Float?
+  currentValue    Float?
+  threshold       Float?
+  
+  status          String    @default("active") // active, acknowledged, resolved, dismissed
+  
+  assignedToId    String?
+  assignedTo      User?     @relation("assignedTo", fields: [assignedToId], references: [id])
+  acknowledgedById String?
+  acknowledgedBy  User?     @relation("acknowledgedBy", fields: [acknowledgedById], references: [id])
+  resolvedById    String?
+  resolvedBy      User?     @relation("resolvedBy", fields: [resolvedById], references: [id])
+  
+  triggeredAt     DateTime  @default(now())
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+  
+  actionRequired  String?   @db.VarChar(255)
+  actionTaken     String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  history         AlertHistory[]
+
+  @@index([warehouseId])
+  @@index([status])
+  @@index([alertType])
+  @@index([triggeredAt])
+  @@index([assignedToId])
+}
+
+/// Alert History
+model AlertHistory {
+  id              String    @id @default(cuid())
+  alertId         String
+  alert           Alert     @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  
+  previousStatus  String?   @db.VarChar(50)
+  newStatus       String    @db.VarChar(50)
+  changedById     String?
+  changedBy       User?     @relation(fields: [changedById], references: [id])
+  
+  action          String?   @db.VarChar(255)
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+
+  @@index([alertId])
+}
+
+// ============================================================================
+// AUDIT & LOG TABLES
+// ============================================================================
+
+/// Audit Log
 model AuditLog {
-  id        String   @id @default(cuid())
-  action    String   @db.VarChar(100)
-  entity    String   @db.VarChar(100)
-  entityId  String   @db.VarChar(100)
-  userId    String?  @db.VarChar(100)
-  changes   String?  @db.Text
-  createdAt DateTime @default(now())
+  id              String    @id @default(cuid())
+  
+  userId          String?
+  user            User?     @relation("userId", fields: [userId], references: [id])
+  username        String?   @db.VarChar(100)
+  
+  action          String    @db.VarChar(100)
+  entityType      String    @db.VarChar(100)
+  entityId        String    @db.VarChar(255)
+  
+  oldValues       String?   @db.Text           // JSON
+  newValues       String?   @db.Text           // JSON
+  
+  ipAddress       String?   @db.VarChar(50)
+  userAgent       String?   @db.Text
+  sessionId       String?   @db.VarChar(255)
+  
+  status          String    @default("success") // success, failure, partial
+  errorMessage    String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
 
-  @@index([entity])
-  @@index([entityId])
+  @@index([userId])
+  @@index([entityType])
+  @@index([action])
+  @@index([createdAt])
+}
+
+/// System Log
+model SystemLog {
+  id              String    @id @default(cuid())
+  
+  level           String   // debug, info, warn, error, critical
+  category        String    @db.VarChar(100)
+  message         String    @db.Text
+  
+  stackTrace      String?   @db.Text
+  metadata        String?   @db.Text           // JSON
+  
+  createdAt       DateTime  @default(now())
+
+  @@index([level])
+  @@index([category])
   @@index([createdAt])
 }
