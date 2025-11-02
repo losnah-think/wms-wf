@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Table, Button, Tabs, Breadcrumb, Pagination, Tag, Card, Space, Badge, Modal, Form, Input, Select } from 'antd'
-import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { Table, Button, Tabs, Breadcrumb, Pagination, Tag, Card, Space, Badge, Modal, Form, Input, Select, message } from 'antd'
+import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, SearchOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons'
 import type { TableColumnsType, TabsProps } from 'antd'
 
 interface LocationData {
@@ -26,10 +26,15 @@ export default function WarehouseLocationPage() {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<LocationData | null>(null)
   const [form] = Form.useForm()
+  const [addForm] = Form.useForm()
+  const [searchText, setSearchText] = useState('')
+  const [warehouseFilter, setWarehouseFilter] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
 
-  const locationData: LocationData[] = [
+  const [locationList, setLocationList] = useState<LocationData[]>([
     {
       id: 1,
       locationCode: 'A-01-001',
@@ -78,13 +83,26 @@ export default function WarehouseLocationPage() {
       manager: '박관리',
       lastUpdated: '2025-10-31',
     },
-  ]
+  ])
 
   const statusConfig = {
     cyan: { color: '#007C86', bgColor: '#E0F7FA' },
     blue: { color: '#004B92', bgColor: '#E3F2FD' },
     red: { color: '#E02D3C', bgColor: '#FFEBEE' },
   }
+
+  // 필터링 로직
+  const filteredData = locationList.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.locationCode.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.locationName.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.zone.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesWarehouse = warehouseFilter === null || item.warehouseId === warehouseFilter
+    const matchesStatus = statusFilter === null || item.status === statusFilter
+    
+    return matchesSearch && matchesWarehouse && matchesStatus
+  })
 
   const handleEdit = (record: LocationData) => {
     setSelectedRecord(record)
@@ -96,6 +114,7 @@ export default function WarehouseLocationPage() {
       rackNumber: record.rackNumber,
       level: record.level,
       manager: record.manager,
+      status: record.status,
     })
     setIsEditModalOpen(true)
   }
@@ -105,12 +124,78 @@ export default function WarehouseLocationPage() {
     setIsDeleteModalOpen(true)
   }
 
+  const handleAdd = () => {
+    addForm.resetFields()
+    setIsAddModalOpen(true)
+  }
+
   const handleEditOk = () => {
-    setIsEditModalOpen(false)
+    form.validateFields().then((values) => {
+      if (selectedRecord) {
+        setLocationList(prev => prev.map(item =>
+          item.id === selectedRecord.id
+            ? { 
+                ...item, 
+                locationName: values.locationName,
+                warehouseId: values.warehouseId,
+                warehouseName: values.warehouseId === 'WH-001' ? '서울 센터' : values.warehouseId === 'WH-002' ? '인천 센터' : '부산 센터',
+                zone: values.zone,
+                rackNumber: values.rackNumber,
+                level: values.level,
+                manager: values.manager,
+                status: values.status,
+                statusColor: values.status === '사용 중' ? 'cyan' : values.status === '가용' ? 'blue' : 'red',
+                lastUpdated: new Date().toISOString().split('T')[0],
+              }
+            : item
+        ))
+        setIsEditModalOpen(false)
+        message.success('위치 정보가 수정되었습니다.')
+      }
+    })
   }
 
   const handleDeleteOk = () => {
-    setIsDeleteModalOpen(false)
+    if (selectedRecord) {
+      setLocationList(prev => prev.filter(item => item.id !== selectedRecord.id))
+      setIsDeleteModalOpen(false)
+      message.success('위치가 삭제되었습니다.')
+    }
+  }
+
+  const handleAddOk = () => {
+    addForm.validateFields().then((values) => {
+      const newLocation: LocationData = {
+        id: locationList.length + 1,
+        locationCode: `${values.zone}-${values.rackNumber}-${values.level}`,
+        locationName: values.locationName,
+        warehouseId: values.warehouseId,
+        warehouseName: values.warehouseId === 'WH-001' ? '서울 센터' : values.warehouseId === 'WH-002' ? '인천 센터' : '부산 센터',
+        zone: values.zone,
+        rackNumber: values.rackNumber,
+        level: values.level,
+        status: '가용',
+        statusColor: 'blue',
+        capacity: values.capacity || 100,
+        usedCapacity: 0,
+        manager: values.manager,
+        lastUpdated: new Date().toISOString().split('T')[0],
+      }
+      setLocationList(prev => [...prev, newLocation])
+      setIsAddModalOpen(false)
+      message.success('새 위치가 추가되었습니다.')
+    })
+  }
+
+  const handleRefresh = () => {
+    setSearchText('')
+    setWarehouseFilter(null)
+    setStatusFilter(null)
+    message.success('필터가 초기화되었습니다.')
+  }
+
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   const columns: TableColumnsType<LocationData> = [
@@ -363,7 +448,7 @@ export default function WarehouseLocationPage() {
                 전체 위치
               </span>
               <Badge
-                count={150}
+                count={filteredData.length}
                 style={{
                   backgroundColor: '#007BED',
                   color: '#FFFFFF',
@@ -373,26 +458,85 @@ export default function WarehouseLocationPage() {
                 }}
               />
             </div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{
-                height: '40px',
-                padding: '0 16px',
-                fontSize: 16,
-                fontFamily: 'Pretendard',
-                fontWeight: 600,
-                backgroundColor: '#007BED',
-              }}
-            >
-              위치 추가
-            </Button>
+            <Space wrap>
+              <Input.Search
+                placeholder="위치 코드, 위치명, 구역 검색..."
+                prefix={<SearchOutlined />}
+                allowClear
+                style={{ width: 280 }}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              <Select
+                placeholder="창고 필터"
+                allowClear
+                style={{ width: 150 }}
+                value={warehouseFilter}
+                options={[
+                  { value: 'WH-001', label: '서울 센터' },
+                  { value: 'WH-002', label: '인천 센터' },
+                  { value: 'WH-003', label: '부산 센터' },
+                ]}
+                onChange={setWarehouseFilter}
+              />
+              <Select
+                placeholder="상태 필터"
+                allowClear
+                style={{ width: 130 }}
+                value={statusFilter}
+                options={[
+                  { value: '사용 중', label: '사용 중' },
+                  { value: '가용', label: '가용' },
+                  { value: '오류', label: '오류' },
+                ]}
+                onChange={setStatusFilter}
+              />
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={handleRefresh}
+                style={{
+                  height: '40px',
+                  fontSize: 14,
+                  fontFamily: 'Pretendard',
+                  fontWeight: 600,
+                }}
+              >
+                초기화
+              </Button>
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={handleExport}
+                style={{
+                  height: '40px',
+                  fontSize: 14,
+                  fontFamily: 'Pretendard',
+                  fontWeight: 600,
+                }}
+              >
+                내보내기
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAdd}
+                style={{
+                  height: '40px',
+                  padding: '0 16px',
+                  fontSize: 16,
+                  fontFamily: 'Pretendard',
+                  fontWeight: 600,
+                  backgroundColor: '#007BED',
+                }}
+              >
+                위치 추가
+              </Button>
+            </Space>
           </div>
 
           {/* 데이터 테이블 */}
           <Table
             columns={columns}
-            dataSource={locationData}
+            dataSource={filteredData}
             pagination={false}
             rowKey="id"
             style={{
@@ -416,7 +560,7 @@ export default function WarehouseLocationPage() {
             <Pagination
               current={currentPage}
               onChange={setCurrentPage}
-              total={150}
+              total={filteredData.length}
               pageSize={10}
               showSizeChanger={false}
               showQuickJumper={false}
@@ -456,7 +600,7 @@ export default function WarehouseLocationPage() {
               }}
             />
           </Form.Item>
-          <Form.Item label="위치명" name="locationName">
+          <Form.Item label="위치명" name="locationName" rules={[{ required: true, message: '위치명을 입력하세요' }]}>
             <Input
               style={{
                 fontFamily: 'Pretendard',
@@ -465,7 +609,7 @@ export default function WarehouseLocationPage() {
               }}
             />
           </Form.Item>
-          <Form.Item label="창고" name="warehouseId">
+          <Form.Item label="창고" name="warehouseId" rules={[{ required: true, message: '창고를 선택하세요' }]}>
             <Select
               options={[
                 { value: 'WH-001', label: '서울 센터' },
@@ -474,7 +618,7 @@ export default function WarehouseLocationPage() {
               ]}
             />
           </Form.Item>
-          <Form.Item label="구역" name="zone">
+          <Form.Item label="구역" name="zone" rules={[{ required: true, message: '구역을 입력하세요' }]}>
             <Input
               style={{
                 fontFamily: 'Pretendard',
@@ -483,7 +627,7 @@ export default function WarehouseLocationPage() {
               }}
             />
           </Form.Item>
-          <Form.Item label="랙번호" name="rackNumber">
+          <Form.Item label="랙번호" name="rackNumber" rules={[{ required: true, message: '랙번호를 입력하세요' }]}>
             <Input
               style={{
                 fontFamily: 'Pretendard',
@@ -492,7 +636,7 @@ export default function WarehouseLocationPage() {
               }}
             />
           </Form.Item>
-          <Form.Item label="레벨" name="level">
+          <Form.Item label="레벨" name="level" rules={[{ required: true, message: '레벨을 입력하세요' }]}>
             <Input
               style={{
                 fontFamily: 'Pretendard',
@@ -501,8 +645,111 @@ export default function WarehouseLocationPage() {
               }}
             />
           </Form.Item>
-          <Form.Item label="담당자" name="manager">
+          <Form.Item label="상태" name="status" rules={[{ required: true, message: '상태를 선택하세요' }]}>
+            <Select
+              options={[
+                { value: '사용 중', label: '사용 중' },
+                { value: '가용', label: '가용' },
+                { value: '오류', label: '오류' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="담당자" name="manager" rules={[{ required: true, message: '담당자를 입력하세요' }]}>
             <Input
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 추가 모달 */}
+      <Modal
+        title={
+          <span style={{ fontFamily: 'Pretendard', fontWeight: 700, fontSize: 18 }}>
+            새 위치 추가
+          </span>
+        }
+        open={isAddModalOpen}
+        onOk={handleAddOk}
+        onCancel={() => setIsAddModalOpen(false)}
+        okText="추가"
+        cancelText="취소"
+        okButtonProps={{
+          style: {
+            backgroundColor: '#007BED',
+            borderColor: '#007BED',
+          },
+        }}
+      >
+        <Form form={addForm} layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item label="위치명" name="locationName" rules={[{ required: true, message: '위치명을 입력하세요' }]}>
+            <Input
+              placeholder="예: A Zone 1층 1번"
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="창고" name="warehouseId" rules={[{ required: true, message: '창고를 선택하세요' }]}>
+            <Select
+              placeholder="창고 선택"
+              options={[
+                { value: 'WH-001', label: '서울 센터' },
+                { value: 'WH-002', label: '인천 센터' },
+                { value: 'WH-003', label: '부산 센터' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="구역" name="zone" rules={[{ required: true, message: '구역을 입력하세요' }]}>
+            <Input
+              placeholder="예: A"
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="랙번호" name="rackNumber" rules={[{ required: true, message: '랙번호를 입력하세요' }]}>
+            <Input
+              placeholder="예: 01"
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="레벨" name="level" rules={[{ required: true, message: '레벨을 입력하세요' }]}>
+            <Input
+              placeholder="예: 1"
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="용량" name="capacity">
+            <Input
+              type="number"
+              placeholder="100"
+              style={{
+                fontFamily: 'Pretendard',
+                borderRadius: '8px',
+                height: '36px',
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="담당자" name="manager" rules={[{ required: true, message: '담당자를 입력하세요' }]}>
+            <Input
+              placeholder="담당자명"
               style={{
                 fontFamily: 'Pretendard',
                 borderRadius: '8px',
