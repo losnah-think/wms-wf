@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, Row, Col, Statistic, Button, Space, Select, Input, Modal, Form, Table, Tag, Tooltip, Breadcrumb, Progress, Tabs } from 'antd'
+import { Card, Row, Col, Statistic, Button, Space, Select, Input, Modal, Form, Table, Tag, Tooltip, Breadcrumb, Progress, Tabs, message } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, ExclamationCircleOutlined, DownloadOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 
@@ -39,9 +39,17 @@ export default function WarehouseLayoutPage() {
   const [selectedLocation, setSelectedLocation] = useState<LocationItem | null>(null)
   const [searchText, setSearchText] = useState('')
   const [selectedLocationType, setSelectedLocationType] = useState<string | null>(null)
+  const [selectedZone, setSelectedZone] = useState<string | null>(null)
   const [form] = Form.useForm()
   const [editForm] = Form.useForm()
   const [activeTab, setActiveTab] = useState('1')
+
+  const [locationList, setLocationList] = useState<LocationItem[]>([
+    { id: 'A-1-1', code: 'A1L1', name: '통로A 랙1 레벨1', zone: 'A', rack: 1, level: 1, status: 'occupied', capacity: 20, occupancy: 18, lastUpdated: '2025-11-01', manager: '김관리', sku: 'SKU-001', locationType: 'pallet' },
+    { id: 'A-1-2', code: 'A1L2', name: '통로A 랙1 레벨2', zone: 'A', rack: 1, level: 2, status: 'occupied', capacity: 20, occupancy: 19, lastUpdated: '2025-11-01', manager: '이관리', sku: 'SKU-002', locationType: 'daebong' },
+    { id: 'B-1-1', code: 'B1L1', name: '통로B 랙1 레벨1', zone: 'B', rack: 1, level: 1, status: 'empty', capacity: 20, occupancy: 5, lastUpdated: '2025-10-31', manager: '박관리', locationType: 'box' },
+    { id: 'C-2-3', code: 'C2L3', name: '통로C 랙2 레벨3', zone: 'C', rack: 2, level: 3, status: 'occupied', capacity: 20, occupancy: 20, lastUpdated: '2025-11-01', manager: '최관리', sku: 'SKU-045', locationType: 'shelf' },
+  ])
 
   // Mock 데이터
   const warehouses = [
@@ -76,18 +84,23 @@ export default function WarehouseLayoutPage() {
     ],
   }
 
-  const locationList: LocationItem[] = [
-    { id: 'A-1-1', code: 'A1L1', name: '통로A 랙1 레벨1', zone: 'A', rack: 1, level: 1, status: 'occupied', capacity: 20, occupancy: 18, lastUpdated: '2025-11-01', manager: '김관리', sku: 'SKU-001', locationType: 'pallet' },
-    { id: 'A-1-2', code: 'A1L2', name: '통로A 랙1 레벨2', zone: 'A', rack: 1, level: 2, status: 'occupied', capacity: 20, occupancy: 19, lastUpdated: '2025-11-01', manager: '이관리', sku: 'SKU-002', locationType: 'daebong' },
-    { id: 'B-1-1', code: 'B1L1', name: '통로B 랙1 레벨1', zone: 'B', rack: 1, level: 1, status: 'empty', capacity: 20, occupancy: 5, lastUpdated: '2025-10-31', manager: '박관리', locationType: 'box' },
-    { id: 'C-2-3', code: 'C2L3', name: '통로C 랙2 레벨3', zone: 'C', rack: 2, level: 3, status: 'occupied', capacity: 20, occupancy: 20, lastUpdated: '2025-11-01', manager: '최관리', sku: 'SKU-045', locationType: 'shelf' },
-  ]
+  // 필터링 로직
+  const filteredLocations = locationList.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.code.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesType = selectedLocationType === null || item.locationType === selectedLocationType
+    const matchesZone = selectedZone === null || item.zone === selectedZone
+    
+    return matchesSearch && matchesType && matchesZone
+  })
 
   const stats = {
-    totalLocations: 108,
-    occupied: 72,
-    available: 36,
-    utilizationRate: 67,
+    totalLocations: locationList.length,
+    occupied: locationList.filter(l => l.status === 'occupied').length,
+    available: locationList.filter(l => l.status === 'empty').length,
+    utilizationRate: locationList.length > 0 ? Math.round((locationList.filter(l => l.status === 'occupied').length / locationList.length) * 100) : 0,
     aisles: 3,
     racksPerAisle: 3,
     levelsPerRack: 4,
@@ -95,10 +108,10 @@ export default function WarehouseLayoutPage() {
 
   // 위치 타입별 통계
   const locationTypeStats = {
-    pallet: { label: '팔레트', count: 28, icon: '📦', color: '#1890ff' },
-    daebong: { label: '대봉', count: 32, icon: '🏗️', color: '#faad14' },
-    box: { label: '박스', count: 35, icon: '📫', color: '#52c41a' },
-    shelf: { label: '선반', count: 13, icon: '🛒', color: '#f5576c' },
+    pallet: { label: '팔레트', count: locationList.filter(l => l.locationType === 'pallet').length, icon: '📦', color: '#1890ff' },
+    daebong: { label: '대봉', count: locationList.filter(l => l.locationType === 'daebong').length, icon: '🏗️', color: '#faad14' },
+    box: { label: '박스', count: locationList.filter(l => l.locationType === 'box').length, icon: '📫', color: '#52c41a' },
+    shelf: { label: '선반', count: locationList.filter(l => l.locationType === 'shelf').length, icon: '🛒', color: '#f5576c' },
   }
 
   // 모달 함수들
@@ -113,6 +126,9 @@ export default function WarehouseLayoutPage() {
       code: location.code,
       name: location.name,
       manager: location.manager,
+      locationType: location.locationType,
+      capacity: location.capacity,
+      status: location.status,
     })
     setIsEditModalOpen(true)
   }
@@ -123,22 +139,66 @@ export default function WarehouseLayoutPage() {
   }
 
   const handleSaveAdd = () => {
-    form.validateFields().then(() => {
+    form.validateFields().then((values) => {
+      const newLocation: LocationItem = {
+        id: `${values.zone}-${values.rack}-${values.level}`,
+        code: `${values.zone}${values.rack}L${values.level}`,
+        name: values.name,
+        zone: values.zone,
+        rack: parseInt(values.rack),
+        level: parseInt(values.level),
+        status: 'empty',
+        capacity: values.capacity || 20,
+        occupancy: 0,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        manager: values.manager,
+        locationType: values.locationType,
+      }
+      setLocationList(prev => [...prev, newLocation])
       setIsModalOpen(false)
-      alert('위치가 추가되었습니다.')
+      message.success('위치가 추가되었습니다.')
     })
   }
 
   const handleSaveEdit = () => {
-    editForm.validateFields().then(() => {
-      setIsEditModalOpen(false)
-      alert('위치가 수정되었습니다.')
+    editForm.validateFields().then((values) => {
+      if (selectedLocation) {
+        setLocationList(prev => prev.map(item =>
+          item.id === selectedLocation.id
+            ? { 
+                ...item, 
+                name: values.name,
+                manager: values.manager,
+                locationType: values.locationType,
+                capacity: values.capacity,
+                status: values.status as 'empty' | 'occupied' | 'error',
+                lastUpdated: new Date().toISOString().split('T')[0],
+              }
+            : item
+        ))
+        setIsEditModalOpen(false)
+        message.success('위치가 수정되었습니다.')
+      }
     })
   }
 
   const handleConfirmDelete = () => {
-    setIsDeleteModalOpen(false)
-    alert('위치가 삭제되었습니다.')
+    if (selectedLocation) {
+      setLocationList(prev => prev.filter(item => item.id !== selectedLocation.id))
+      setIsDeleteModalOpen(false)
+      message.success('위치가 삭제되었습니다.')
+    }
+  }
+
+  const handleRefresh = () => {
+    setSearchText('')
+    setSelectedLocationType(null)
+    setSelectedZone(null)
+    message.success('필터가 초기화되었습니다.')
+  }
+
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   // 테이블 컬럼
@@ -452,9 +512,21 @@ export default function WarehouseLayoutPage() {
               onChange={setSelectedWarehouse}
             />
             <Select
-              placeholder="위치 타입 선택"
+              placeholder="통로(Zone) 필터"
               allowClear
-              style={{ width: 200 }}
+              style={{ width: 150 }}
+              value={selectedZone}
+              options={[
+                { value: 'A', label: '통로 A' },
+                { value: 'B', label: '통로 B' },
+                { value: 'C', label: '통로 C' },
+              ]}
+              onChange={setSelectedZone}
+            />
+            <Select
+              placeholder="위치 타입"
+              allowClear
+              style={{ width: 150 }}
               value={selectedLocationType}
               options={[
                 { value: 'pallet', label: '📦 팔레트' },
@@ -465,20 +537,21 @@ export default function WarehouseLayoutPage() {
               onChange={setSelectedLocationType}
             />
             <Input.Search
-              placeholder="위치 검색..."
+              placeholder="위치 코드, 위치명 검색..."
               prefix={<SearchOutlined />}
-              style={{ width: 200 }}
+              allowClear
+              style={{ width: 240 }}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAddLocation} style={{ backgroundColor: '#007BED' }}>
               새 위치 추가
             </Button>
-            <Button icon={<DownloadOutlined />}>
+            <Button icon={<DownloadOutlined />} onClick={handleExport}>
               내보내기
             </Button>
-            <Button icon={<ReloadOutlined />}>
-              새로고침
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh}>
+              초기화
             </Button>
           </Space>
         </Card>
@@ -504,8 +577,8 @@ export default function WarehouseLayoutPage() {
                 <div style={{ marginTop: '20px' }}>
                   <Table
                     columns={columns}
-                    dataSource={locationList}
-                    pagination={{ pageSize: 10, total: locationList.length }}
+                    dataSource={filteredLocations}
+                    pagination={{ pageSize: 10, total: filteredLocations.length }}
                     rowKey="id"
                     scroll={{ x: 1200 }}
                   />
@@ -560,13 +633,40 @@ export default function WarehouseLayoutPage() {
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item label="위치 코드" name="code" rules={[{ required: true, message: '위치 코드를 입력하세요' }]}>
-            <Input placeholder="예: A1L1" />
-          </Form.Item>
           <Form.Item label="위치명" name="name" rules={[{ required: true, message: '위치명을 입력하세요' }]}>
             <Input placeholder="예: 통로A 랙1 레벨1" />
           </Form.Item>
-          <Form.Item label="담당자" name="manager">
+          <Form.Item label="통로(Zone)" name="zone" rules={[{ required: true, message: '통로를 입력하세요' }]}>
+            <Select
+              placeholder="통로 선택"
+              options={[
+                { value: 'A', label: 'A' },
+                { value: 'B', label: 'B' },
+                { value: 'C', label: 'C' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="랙 번호" name="rack" rules={[{ required: true, message: '랙 번호를 입력하세요' }]}>
+            <Input type="number" placeholder="1" />
+          </Form.Item>
+          <Form.Item label="레벨" name="level" rules={[{ required: true, message: '레벨을 입력하세요' }]}>
+            <Input type="number" placeholder="1" />
+          </Form.Item>
+          <Form.Item label="위치 타입" name="locationType" rules={[{ required: true, message: '위치 타입을 선택하세요' }]}>
+            <Select
+              placeholder="위치 타입 선택"
+              options={[
+                { value: 'pallet', label: '📦 팔레트' },
+                { value: 'daebong', label: '🏗️ 대봉' },
+                { value: 'box', label: '📫 박스' },
+                { value: 'shelf', label: '🛒 선반' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="용량" name="capacity">
+            <Input type="number" placeholder="20" />
+          </Form.Item>
+          <Form.Item label="담당자" name="manager" rules={[{ required: true, message: '담당자를 입력하세요' }]}>
             <Input placeholder="담당자명" />
           </Form.Item>
         </Form>
@@ -590,10 +690,32 @@ export default function WarehouseLayoutPage() {
           <Form.Item label="위치 코드" name="code">
             <Input disabled />
           </Form.Item>
-          <Form.Item label="위치명" name="name" rules={[{ required: true }]}>
+          <Form.Item label="위치명" name="name" rules={[{ required: true, message: '위치명을 입력하세요' }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="담당자" name="manager">
+          <Form.Item label="위치 타입" name="locationType" rules={[{ required: true, message: '위치 타입을 선택하세요' }]}>
+            <Select
+              options={[
+                { value: 'pallet', label: '📦 팔레트' },
+                { value: 'daebong', label: '🏗️ 대봉' },
+                { value: 'box', label: '📫 박스' },
+                { value: 'shelf', label: '🛒 선반' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="용량" name="capacity" rules={[{ required: true, message: '용량을 입력하세요' }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item label="상태" name="status" rules={[{ required: true, message: '상태를 선택하세요' }]}>
+            <Select
+              options={[
+                { value: 'empty', label: '가용' },
+                { value: 'occupied', label: '사용중' },
+                { value: 'error', label: '오류' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="담당자" name="manager" rules={[{ required: true, message: '담당자를 입력하세요' }]}>
             <Input />
           </Form.Item>
         </Form>
