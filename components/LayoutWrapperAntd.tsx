@@ -19,7 +19,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-info',
       label: (
         <Link href={`/${locale}/warehouse-info`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          창고 정보 관리
+          🏢 창고 정보 관리
         </Link>
       ),
     },
@@ -27,7 +27,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-layout',
       label: (
         <Link href={`/${locale}/warehouse-layout`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          창고 레이아웃
+          🗂️ 구역 설정 (Zone)
         </Link>
       ),
     },
@@ -35,7 +35,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-location',
       label: (
         <Link href={`/${locale}/warehouse-location`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          위치(로케이션) 관리
+          📍 위치(로케이션) 등록
         </Link>
       ),
     },
@@ -43,7 +43,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/warehouse-barcode',
       label: (
         <Link href={`/${locale}/warehouse-barcode`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          위치 바코드 관리
+          🔖 바코드 생성 및 관리
         </Link>
       ),
     },
@@ -54,7 +54,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/stock-status',
       label: (
         <Link href={`/${locale}/stock-status`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          현황
+          📊 재고 현황
         </Link>
       ),
     },
@@ -62,7 +62,7 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/stock-move',
       label: (
         <Link href={`/${locale}/stock-move`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          이동
+          🔄 재고 이동
         </Link>
       ),
     },
@@ -70,31 +70,99 @@ export default function LayoutWrapperAntd({ children }: { children: React.ReactN
       key: '/stock-audit',
       label: (
         <Link href={`/${locale}/stock-audit`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          조정(조사)
-        </Link>
-      ),
-    },
-    {
-      key: '/stock-settings',
-      label: (
-        <Link href={`/${locale}/stock-settings`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          환경설정
+          ✅ 재고 조정/실사
         </Link>
       ),
     },
   ]
 
+  // 1Depth 메뉴 - 아코디언 없이 평면 구조
   const menuItems: MenuProps['items'] = [
+    // 창고관리 섹션
     {
-      key: 'warehouse',
-      label: '창고관리',
-      children: warehouseMenuItems,
+      key: 'warehouse-1',
+      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>🏭 창고관리</span>,
+      type: 'group',
     },
     {
-      key: 'inventory',
-      label: '재고 관리',
-      children: inventoryMenuItems,
+      key: '/warehouse-info',
+      label: (
+        <Link href={`/${locale}/warehouse-info`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>🏢 창고 정보 관리</span>
+        </Link>
+      ),
     },
+    {
+      key: '/warehouse-layout',
+      label: (
+        <Link href={`/${locale}/warehouse-layout`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>🗂️ 구역 설정 (Zone)</span>
+        </Link>
+      ),
+    },
+    {
+      key: '/warehouse-location',
+      label: (
+        <Link href={`/${locale}/warehouse-location`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>📍 위치(로케이션) 등록</span>
+        </Link>
+      ),
+    },
+    {
+      key: '/warehouse-barcode',
+      label: (
+        <Link href={`/${locale}/warehouse-barcode`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>🔖 바코드 생성 및 관리</span>
+        </Link>
+      ),
+    },
+
+    // 구분선
+    {
+      key: 'divider-1',
+      label: <div style={{ height: 1, backgroundColor: '#E5E7EB', margin: '8px 0' }} />,
+      disabled: true,
+    },
+
+    // 재고관리 섹션
+    {
+      key: 'inventory-1',
+      label: <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2B60' }}>📦 재고관리</span>,
+      type: 'group',
+    },
+    {
+      key: '/stock-status',
+      label: (
+        <Link href={`/${locale}/stock-status`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>📊 재고 현황</span>
+        </Link>
+      ),
+    },
+    {
+      key: '/stock-move',
+      label: (
+        <Link href={`/${locale}/stock-move`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>🔄 재고 이동</span>
+        </Link>
+      ),
+    },
+    {
+      key: '/stock-audit',
+      label: (
+        <Link href={`/${locale}/stock-audit`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{ paddingLeft: 16 }}>✅ 재고 조정/실사</span>
+        </Link>
+      ),
+    },
+
+    // 구분선
+    {
+      key: 'divider-2',
+      label: <div style={{ height: 1, backgroundColor: '#E5E7EB', margin: '8px 0' }} />,
+      disabled: true,
+    },
+
+    // 테스트
     {
       key: '/error-showcase',
       label: (

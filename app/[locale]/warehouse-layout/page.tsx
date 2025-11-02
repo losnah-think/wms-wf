@@ -322,7 +322,7 @@ export default function WarehouseLayoutPage() {
           <Breadcrumb
             items={[
               { title: '창고관리' },
-              { title: '창고 레이아웃' },
+              { title: '구역 설정 (Zone)' },
             ]}
             style={{ marginBottom: '16px' }}
           />
@@ -337,10 +337,10 @@ export default function WarehouseLayoutPage() {
               marginBottom: '8px',
             }}
           >
-            종단횡렬 대시보드
+            구역 설정 (Zone)
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            통로(Aisle) → 랙(Rack) → 레벨(Level)의 계층 구조로 창고 전체 현황 관리
+            [Step 2/6] 구역(Zone) 설정 - 통로(Aisle) → 랙(Rack) → 레벨(Level)의 계층 구조로 창고 구역 관리
           </p>
         </div>
 

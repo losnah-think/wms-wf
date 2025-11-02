@@ -1,0 +1,61 @@
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table {
+  cursor: pointer;
+}
+
+.tableContainer tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.tableContainer tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.stats {
+  font-size: 14px;
+  color: #666;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 16px;
+}
+
+.pagination span {
+  font-size: 14px;
+  color: #666;
+}

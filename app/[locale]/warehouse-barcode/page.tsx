@@ -269,7 +269,7 @@ export default function WarehouseBarcodeManagementPage() {
             위치 바코드 관리
           </h1>
           <p style={{ color: '#6B7178', fontSize: '14px', margin: 0 }}>
-            창고 위치별 바코드를 생성, 관리 및 인쇄합니다
+            [Step 4/6] 바코드 생성 및 부착 - 창고 위치별 바코드를 생성, 관리 및 인쇄합니다
           </p>
         </div>
 
