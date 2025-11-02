@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Table, Button, Breadcrumb, Tag, Progress, Card, Space, Badge, Modal, Form, Input, Select, Row, Col, Statistic, Tabs } from 'antd'
+import { Table, Button, Breadcrumb, Tag, Progress, Card, Space, Badge, Modal, Form, Input, Select, Row, Col, Statistic, Tabs, message } from 'antd'
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, SearchOutlined, ReloadOutlined, DownloadOutlined, CheckCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import type { TableColumnsType, TabsProps } from 'antd'
 
@@ -35,8 +35,7 @@ export default function WarehouseInfoPage() {
   const [form] = Form.useForm()
   const [addForm] = Form.useForm()
   const [activeTab, setActiveTab] = useState('1')
-
-  const warehouseData: WarehouseData[] = [
+  const [warehouseList, setWarehouseList] = useState<WarehouseData[]>([
     {
       id: 1,
       name: '서울 센터',
@@ -89,7 +88,9 @@ export default function WarehouseInfoPage() {
       address: '부산시 중구',
       area: 4500,
     },
-  ]
+  ])
+
+  const warehouseData = warehouseList
 
   const statusConfig = {
     cyan: { color: '#007C86', bgColor: '#E0F7FA', icon: <SyncOutlined /> },
@@ -129,22 +130,86 @@ export default function WarehouseInfoPage() {
   }
 
   const handleEditOk = () => {
-    form.validateFields().then(() => {
-      setIsEditModalOpen(false)
-      alert('창고 정보가 수정되었습니다.')
+    form.validateFields().then((values) => {
+      if (selectedRecord) {
+        const updatedList = warehouseList.map((item) =>
+          item.id === selectedRecord.id
+            ? {
+                ...item,
+                name: values.name,
+                manager: values.manager,
+                phone: values.phone,
+                address: values.address,
+                area: values.area,
+              }
+            : item
+        )
+        setWarehouseList(updatedList)
+        setIsEditModalOpen(false)
+        message.success('창고 정보가 수정되었습니다.')
+      }
+    }).catch(() => {
+      message.error('모든 필드를 입력해주세요.')
     })
   }
 
   const handleDeleteOk = () => {
-    setIsDeleteModalOpen(false)
-    alert('창고가 삭제되었습니다.')
+    if (selectedRecord) {
+      setWarehouseList(warehouseList.filter((item) => item.id !== selectedRecord.id))
+      setIsDeleteModalOpen(false)
+      message.success('창고가 삭제되었습니다.')
+    }
   }
 
   const handleAddOk = () => {
-    addForm.validateFields().then(() => {
+    addForm.validateFields().then((values) => {
+      const newWarehouse: WarehouseData = {
+        id: Date.now(),
+        name: values.name,
+        code: values.code,
+        status: 'syncing',
+        statusText: '연동 중',
+        statusColor: 'cyan',
+        capacity: values.capacity || 1000,
+        capacityPercent: 0,
+        totalItems: 0,
+        occupiedItems: 0,
+        manager: values.manager,
+        phone: values.phone,
+        address: values.address,
+        area: values.area,
+      }
+      setWarehouseList([...warehouseList, newWarehouse])
       setIsAddModalOpen(false)
-      alert('창고가 등록되었습니다.')
+      addForm.resetFields()
+      message.success('창고가 등록되었습니다.')
+    }).catch(() => {
+      message.error('모든 필드를 입력해주세요.')
     })
+  }
+
+  // 검색 기능
+  const filteredData = warehouseData.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.code.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.manager.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesStatus = statusFilter === null || item.status === statusFilter
+    
+    return matchesSearch && matchesStatus
+  })
+
+  // 새로고침
+  const handleRefresh = () => {
+    message.success('데이터가 새로고침되었습니다.')
+    setSearchText('')
+    setStatusFilter(null)
+  }
+
+  // 내보내기
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   const columns: TableColumnsType<WarehouseData> = [
@@ -268,8 +333,8 @@ export default function WarehouseInfoPage() {
         <div style={{ marginTop: '20px' }}>
           <Table
             columns={columns}
-            dataSource={warehouseData}
-            pagination={{ pageSize: 10, total: warehouseData.length }}
+            dataSource={filteredData}
+            pagination={{ pageSize: 10, total: filteredData.length }}
             rowKey="id"
             scroll={{ x: 1200 }}
           />
@@ -282,7 +347,7 @@ export default function WarehouseInfoPage() {
       children: (
         <div style={{ marginTop: '20px' }}>
           <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-            {warehouseData.map((warehouse) => (
+            {filteredData.map((warehouse) => (
               <Col key={warehouse.id} xs={24} sm={12} lg={8}>
                 <Card style={{ borderRadius: '10px', height: '100%' }}>
                   <div style={{ marginBottom: '12px' }}>
@@ -451,14 +516,38 @@ export default function WarehouseInfoPage() {
 
         {/* 컨트롤 */}
         <Card style={{ marginBottom: '24px', borderRadius: '10px', border: '1px solid #E5E7EB' }}>
-          <Space wrap>
-            <Badge count={warehouseData.length} style={{ backgroundColor: '#007BED' }} />
-            <span style={{ color: '#6B7178', fontSize: '14px' }}>총 {warehouseData.length}개 창고</span>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} style={{ backgroundColor: '#007BED' }}>
-              창고 등록
-            </Button>
-            <Button icon={<DownloadOutlined />}>내보내기</Button>
-            <Button icon={<ReloadOutlined />}>새로고침</Button>
+          <Space wrap style={{ width: '100%', justifyContent: 'space-between' }}>
+            <Space wrap>
+              <Badge count={filteredData.length} style={{ backgroundColor: '#007BED' }} />
+              <span style={{ color: '#6B7178', fontSize: '14px' }}>총 {filteredData.length}개 창고</span>
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} style={{ backgroundColor: '#007BED' }}>
+                창고 등록
+              </Button>
+              <Button icon={<DownloadOutlined />} onClick={handleExport}>내보내기</Button>
+              <Button icon={<ReloadOutlined />} onClick={handleRefresh}>새로고침</Button>
+            </Space>
+            <Space>
+              <Input
+                placeholder="창고명, 코드, 담당자 검색"
+                prefix={<SearchOutlined />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{ width: 200 }}
+                allowClear
+              />
+              <Select
+                placeholder="상태 필터"
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 120 }}
+                allowClear
+                options={[
+                  { label: '연동 중', value: 'syncing' },
+                  { label: '수집 중', value: 'collecting' },
+                  { label: '오류', value: 'error' },
+                ]}
+              />
+            </Space>
           </Space>
         </Card>
 

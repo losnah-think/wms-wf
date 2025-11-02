@@ -64,6 +64,57 @@ export default function WarehouseBarcodeManagementPage() {
   const [designForm] = Form.useForm()
   const [dataForm] = Form.useForm()
 
+  // 엑셀 파일 업로드 핸들러
+  const handleFileUpload = (file: any) => {
+    message.success(`${file.name} 파일이 업로드되었습니다.`)
+    // TODO: 엑셀 파싱 로직 추가
+    return false // 자동 업로드 방지
+  }
+
+  // 데이터 추가 핸들러
+  const handleAddItem = () => {
+    dataForm.validateFields().then((values) => {
+      const newItem: BarcodeItem = {
+        id: Date.now().toString(),
+        code: values.code,
+        name: values.name,
+        type: values.type,
+        quantity: values.quantity || 1,
+      }
+      setBarcodeItems([...barcodeItems, newItem])
+      dataForm.resetFields()
+      message.success('바코드 데이터가 추가되었습니다.')
+    }).catch(() => {
+      message.error('모든 필드를 입력해주세요.')
+    })
+  }
+
+  // 데이터 삭제 핸들러
+  const handleDeleteItem = (id: string) => {
+    setBarcodeItems(barcodeItems.filter((item) => item.id !== id))
+    message.success('삭제되었습니다.')
+  }
+
+  // 인쇄 핸들러
+  const handlePrint = () => {
+    if (barcodeItems.length === 0) {
+      message.warning('인쇄할 데이터가 없습니다.')
+      return
+    }
+    message.success(`${barcodeItems.length}개 항목 인쇄를 시작합니다.`)
+    // TODO: 실제 인쇄 로직 추가
+  }
+
+  // 엑셀 내보내기 핸들러
+  const handleExportExcel = () => {
+    if (barcodeItems.length === 0) {
+      message.warning('내보낼 데이터가 없습니다.')
+      return
+    }
+    message.success('엑셀 파일 다운로드를 시작합니다.')
+    // TODO: 엑셀 export 로직 추가
+  }
+
   const columns: TableColumnsType<BarcodeItem> = [
     {
       title: 'No.',
@@ -116,7 +167,7 @@ export default function WarehouseBarcodeManagementPage() {
           size="small"
           icon={<DeleteOutlined />}
           danger
-          onClick={() => setBarcodeItems(barcodeItems.filter((item) => item.id !== record.id))}
+          onClick={() => handleDeleteItem(record.id)}
         />
       ),
     },
@@ -306,26 +357,50 @@ export default function WarehouseBarcodeManagementPage() {
               </h3>
 
               <div style={{ marginBottom: '12px' }}>
-                <Button
-                  block
-                  icon={<CloudDownloadOutlined />}
-                  size="small"
-                  style={{ marginBottom: '8px' }}
+                <Upload
+                  beforeUpload={handleFileUpload}
+                  accept=".xlsx,.xls"
+                  showUploadList={false}
                 >
-                  엑셀 파일 끌어서 올리기
-                </Button>
+                  <Button
+                    block
+                    icon={<CloudDownloadOutlined />}
+                    size="small"
+                    style={{ marginBottom: '8px' }}
+                  >
+                    엑셀 파일 끌어서 올리기
+                  </Button>
+                </Upload>
               </div>
 
               <Divider style={{ margin: '12px 0' }} />
 
               <Form form={dataForm} layout="vertical" size="small">
-                <Form.Item label="바코드 번호" required style={{ marginBottom: '10px' }}>
+                <Form.Item 
+                  label="바코드 번호" 
+                  name="code"
+                  required 
+                  rules={[{ required: true, message: '바코드 번호를 입력하세요' }]}
+                  style={{ marginBottom: '10px' }}
+                >
                   <Input placeholder="예: BAR-001-WH" size="small" />
                 </Form.Item>
-                <Form.Item label="위치명" required style={{ marginBottom: '10px' }}>
+                <Form.Item 
+                  label="위치명" 
+                  name="name"
+                  required 
+                  rules={[{ required: true, message: '위치명을 입력하세요' }]}
+                  style={{ marginBottom: '10px' }}
+                >
                   <Input placeholder="예: A1층 위치 01" size="small" />
                 </Form.Item>
-                <Form.Item label="위치 유형" required style={{ marginBottom: '10px' }}>
+                <Form.Item 
+                  label="위치 유형" 
+                  name="type"
+                  required 
+                  rules={[{ required: true, message: '위치 유형을 선택하세요' }]}
+                  style={{ marginBottom: '10px' }}
+                >
                   <Select
                     placeholder="선택"
                     size="small"
@@ -337,10 +412,23 @@ export default function WarehouseBarcodeManagementPage() {
                     ]}
                   />
                 </Form.Item>
-                <Form.Item label="인쇄 수량" required style={{ marginBottom: '12px' }}>
+                <Form.Item 
+                  label="인쇄 수량" 
+                  name="quantity"
+                  required 
+                  rules={[{ required: true, message: '인쇄 수량을 입력하세요' }]}
+                  style={{ marginBottom: '12px' }}
+                >
                   <InputNumber min={1} max={100} defaultValue={1} size="small" style={{ width: '100%' }} />
                 </Form.Item>
-                <Button type="primary" block size="small" icon={<PlusOutlined />} style={{ backgroundColor: '#007BED' }}>
+                <Button 
+                  type="primary" 
+                  block 
+                  size="small" 
+                  icon={<PlusOutlined />} 
+                  style={{ backgroundColor: '#007BED' }}
+                  onClick={handleAddItem}
+                >
                   추가
                 </Button>
               </Form>
@@ -447,13 +535,13 @@ export default function WarehouseBarcodeManagementPage() {
               데이터 목록 ({barcodeItems.length}개)
             </h3>
             <Space>
-              <Button icon={<UploadOutlined />} size="small">
+              <Button icon={<UploadOutlined />} size="small" onClick={handleExportExcel}>
                 엑셀 내보내기
               </Button>
               <Button
                 type="primary"
                 icon={<PrinterOutlined />}
-                onClick={() => message.success('인쇄 준비가 완료되었습니다!')}
+                onClick={handlePrint}
                 style={{ backgroundColor: '#007BED' }}
                 size="small"
               >
