@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Table, Button, Breadcrumb, Tag, Card, Space, Row, Col, Statistic, Input, Select } from 'antd'
-import { SearchOutlined, FilterOutlined, DownloadOutlined, WarningOutlined } from '@ant-design/icons'
+import { Table, Button, Breadcrumb, Tag, Card, Space, Row, Col, Statistic, Input, Select, message } from 'antd'
+import { SearchOutlined, FilterOutlined, DownloadOutlined, WarningOutlined, ReloadOutlined } from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
 
 interface StockItem {
@@ -21,6 +21,7 @@ interface StockItem {
 export default function StockStatusPage() {
   const [searchText, setSearchText] = useState('')
   const [warehouseFilter, setWarehouseFilter] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
 
   const stockData: StockItem[] = [
     {
@@ -61,11 +62,36 @@ export default function StockStatusPage() {
     },
   ]
 
+  // 필터링 로직
+  const filteredData = stockData.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.sku.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.productName.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesWarehouse = warehouseFilter === null || item.warehouse === warehouseFilter
+    const matchesStatus = statusFilter === null || item.status === statusFilter
+    
+    return matchesSearch && matchesWarehouse && matchesStatus
+  })
+
   const stats = {
-    totalItems: stockData.length,
-    inStock: stockData.filter(s => s.status === 'in_stock').length,
-    lowStock: stockData.filter(s => s.status === 'low_stock').length,
-    outOfStock: stockData.filter(s => s.status === 'out_of_stock').length,
+    totalItems: filteredData.length,
+    inStock: filteredData.filter(s => s.status === 'in_stock').length,
+    lowStock: filteredData.filter(s => s.status === 'low_stock').length,
+    outOfStock: filteredData.filter(s => s.status === 'out_of_stock').length,
+  }
+
+  // 핸들러 함수들
+  const handleRefresh = () => {
+    message.success('데이터가 새로고침되었습니다.')
+    setSearchText('')
+    setWarehouseFilter(null)
+    setStatusFilter(null)
+  }
+
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   const columns: TableColumnsType<StockItem> = [
@@ -151,11 +177,6 @@ export default function StockStatusPage() {
     },
   ]
 
-  const filteredData = stockData.filter(item =>
-    (!warehouseFilter || item.warehouse === warehouseFilter) &&
-    (!searchText || item.productName.includes(searchText) || item.sku.includes(searchText))
-  )
-
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#F8F9FA' }}>
       <div style={{ padding: '40px', maxWidth: '1600px', margin: '0 auto' }}>
@@ -228,9 +249,10 @@ export default function StockStatusPage() {
         <Card style={{ marginBottom: '24px', borderRadius: '10px', border: '1px solid #E5E7EB' }}>
           <Space wrap>
             <Input.Search
-              placeholder="상품명 또는 SKU 검색..."
+              placeholder="상품명, SKU, 위치 검색..."
               prefix={<SearchOutlined />}
-              style={{ width: 250 }}
+              allowClear
+              style={{ width: 280 }}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
@@ -238,6 +260,7 @@ export default function StockStatusPage() {
               placeholder="창고 필터"
               allowClear
               style={{ width: 200 }}
+              value={warehouseFilter}
               options={[
                 { value: '서울 센터', label: '서울 센터' },
                 { value: '인천 센터', label: '인천 센터' },
@@ -245,8 +268,20 @@ export default function StockStatusPage() {
               ]}
               onChange={setWarehouseFilter}
             />
-            <Button icon={<FilterOutlined />}>필터 초기화</Button>
-            <Button icon={<DownloadOutlined />}>내보내기</Button>
+            <Select
+              placeholder="상태 필터"
+              allowClear
+              style={{ width: 180 }}
+              value={statusFilter}
+              options={[
+                { value: 'in_stock', label: '재고충분' },
+                { value: 'low_stock', label: '적은재고' },
+                { value: 'out_of_stock', label: '재고없음' },
+              ]}
+              onChange={setStatusFilter}
+            />
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh}>초기화</Button>
+            <Button icon={<DownloadOutlined />} type="primary" onClick={handleExport}>내보내기</Button>
           </Space>
         </Card>
 

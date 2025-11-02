@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Table, Button, Breadcrumb, Tag, Card, Space, Modal, Form, Input, Select, Row, Col, Statistic, DatePicker, message } from 'antd'
-import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, ArrowRightOutlined, SwapOutlined, HistoryOutlined } from '@ant-design/icons'
+import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, ArrowRightOutlined, SwapOutlined, HistoryOutlined, DownloadOutlined } from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
 
 interface StockMoveData {
@@ -31,20 +31,11 @@ export default function StockMoveManagementPage() {
   const [selectedRecord, setSelectedRecord] = useState<StockMoveData | null>(null)
   const [form] = Form.useForm()
   const [addForm] = Form.useForm()
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
+  const [moveTypeFilter, setMoveTypeFilter] = useState<string | null>(null)
 
-  const moveTypeConfig = {
-    internal: { text: '내부이동', color: 'blue', icon: '↔️' },
-    incoming: { text: '입고', color: 'green', icon: '📥' },
-    outgoing: { text: '출고', color: 'red', icon: '📤' },
-  }
-
-  const statusConfig = {
-    pending: { text: '대기중', color: 'orange' },
-    completed: { text: '완료', color: 'green' },
-    cancelled: { text: '취소', color: 'red' },
-  }
-
-  const stockMoveData: StockMoveData[] = [
+  const [stockMoveList, setStockMoveList] = useState<StockMoveData[]>([
     {
       id: 1,
       moveId: 'MV-001',
@@ -98,13 +89,40 @@ export default function StockMoveManagementPage() {
       movedBy: '박관리',
       reason: '신규 입고',
     },
-  ]
+  ])
+
+  const moveTypeConfig = {
+    internal: { text: '내부이동', color: 'blue', icon: '↔️' },
+    incoming: { text: '입고', color: 'green', icon: '📥' },
+    outgoing: { text: '출고', color: 'red', icon: '📤' },
+  }
+
+  const statusConfig = {
+    pending: { text: '대기중', color: 'orange' },
+    completed: { text: '완료', color: 'green' },
+    cancelled: { text: '취소', color: 'red' },
+  }
+
+  // 필터링 로직
+  const filteredData = stockMoveList.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.moveId.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.sku.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.productName.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.fromLocation.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.toLocation.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesStatus = statusFilter === null || item.status === statusFilter
+    const matchesMoveType = moveTypeFilter === null || item.moveType === moveTypeFilter
+    
+    return matchesSearch && matchesStatus && matchesMoveType
+  })
 
   const stats = {
-    totalMoves: stockMoveData.length,
-    completedMoves: stockMoveData.filter(m => m.status === 'completed').length,
-    pendingMoves: stockMoveData.filter(m => m.status === 'pending').length,
-    totalQuantity: stockMoveData.reduce((sum, m) => sum + m.quantity, 0),
+    totalMoves: filteredData.length,
+    completedMoves: filteredData.filter(m => m.status === 'completed').length,
+    pendingMoves: filteredData.filter(m => m.status === 'pending').length,
+    totalQuantity: filteredData.reduce((sum, m) => sum + m.quantity, 0),
   }
 
   const handleEdit = (record: StockMoveData) => {
@@ -114,6 +132,7 @@ export default function StockMoveManagementPage() {
       fromLocation: record.fromLocation,
       toLocation: record.toLocation,
       quantity: record.quantity,
+      status: record.status,
     })
     setIsEditModalOpen(true)
   }
@@ -129,22 +148,72 @@ export default function StockMoveManagementPage() {
   }
 
   const handleEditOk = () => {
-    form.validateFields().then(() => {
-      setIsEditModalOpen(false)
-      message.success('이동 정보가 수정되었습니다.')
+    form.validateFields().then((values) => {
+      if (selectedRecord) {
+        const statusData = statusConfig[values.status as keyof typeof statusConfig]
+        setStockMoveList(prev => prev.map(item =>
+          item.id === selectedRecord.id
+            ? { 
+                ...item, 
+                fromLocation: values.fromLocation,
+                toLocation: values.toLocation,
+                quantity: values.quantity,
+                status: values.status as 'pending' | 'completed' | 'cancelled',
+                statusText: statusData.text,
+                statusColor: statusData.color as 'orange' | 'green' | 'red',
+              }
+            : item
+        ))
+        setIsEditModalOpen(false)
+        message.success('이동 정보가 수정되었습니다.')
+      }
     })
   }
 
   const handleDeleteOk = () => {
-    setIsDeleteModalOpen(false)
-    message.success('이동 기록이 삭제되었습니다.')
+    if (selectedRecord) {
+      setStockMoveList(prev => prev.filter(item => item.id !== selectedRecord.id))
+      setIsDeleteModalOpen(false)
+      message.success('이동 기록이 삭제되었습니다.')
+    }
   }
 
   const handleAddOk = () => {
-    addForm.validateFields().then(() => {
+    addForm.validateFields().then((values) => {
+      const moveTypeData = moveTypeConfig[values.moveType as keyof typeof moveTypeConfig]
+      const newMove: StockMoveData = {
+        id: stockMoveList.length + 1,
+        moveId: `MV-${String(stockMoveList.length + 1).padStart(3, '0')}`,
+        fromLocation: values.fromLocation,
+        toLocation: values.toLocation,
+        quantity: values.quantity,
+        sku: values.sku || 'SKU-NEW',
+        productName: values.productName || '신규 상품',
+        moveType: values.moveType as 'internal' | 'incoming' | 'outgoing',
+        moveTypeText: moveTypeData.text,
+        moveTypeColor: moveTypeData.color as 'blue' | 'green' | 'red',
+        status: 'pending',
+        statusText: '대기중',
+        statusColor: 'orange',
+        moveDate: new Date().toISOString().split('T')[0],
+        movedBy: '관리자',
+        reason: values.reason,
+      }
+      setStockMoveList(prev => [...prev, newMove])
       setIsAddModalOpen(false)
       message.success('재고 이동이 등록되었습니다.')
     })
+  }
+
+  const handleRefresh = () => {
+    setSearchText('')
+    setStatusFilter(null)
+    setMoveTypeFilter(null)
+    message.success('필터가 초기화되었습니다.')
+  }
+
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   const columns: TableColumnsType<StockMoveData> = [
@@ -322,10 +391,42 @@ export default function StockMoveManagementPage() {
         {/* 컨트롤 */}
         <Card style={{ marginBottom: '24px', borderRadius: '10px', border: '1px solid #E5E7EB' }}>
           <Space wrap>
+            <Input.Search
+              placeholder="이동ID, SKU, 상품명, 위치 검색..."
+              allowClear
+              style={{ width: 300 }}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Select
+              placeholder="상태 필터"
+              allowClear
+              style={{ width: 150 }}
+              value={statusFilter}
+              options={[
+                { value: 'pending', label: '대기중' },
+                { value: 'completed', label: '완료' },
+                { value: 'cancelled', label: '취소' },
+              ]}
+              onChange={setStatusFilter}
+            />
+            <Select
+              placeholder="이동 유형"
+              allowClear
+              style={{ width: 150 }}
+              value={moveTypeFilter}
+              options={[
+                { value: 'internal', label: '내부이동' },
+                { value: 'incoming', label: '입고' },
+                { value: 'outgoing', label: '출고' },
+              ]}
+              onChange={setMoveTypeFilter}
+            />
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} style={{ backgroundColor: '#007BED' }}>
               이동 등록
             </Button>
-            <Button icon={<HistoryOutlined />}>이동 기록</Button>
+            <Button icon={<HistoryOutlined />} onClick={handleRefresh}>필터 초기화</Button>
+            <Button icon={<DownloadOutlined />} onClick={handleExport}>내보내기</Button>
           </Space>
         </Card>
 
@@ -333,8 +434,8 @@ export default function StockMoveManagementPage() {
         <Card style={{ borderRadius: '10px', border: '1px solid #E5E7EB' }}>
           <Table
             columns={columns}
-            dataSource={stockMoveData}
-            pagination={{ pageSize: 10, total: stockMoveData.length }}
+            dataSource={filteredData}
+            pagination={{ pageSize: 10, total: filteredData.length }}
             rowKey="id"
             scroll={{ x: 1200 }}
           />
@@ -356,17 +457,26 @@ export default function StockMoveManagementPage() {
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item label="이동 ID" name="moveId" rules={[{ required: true }]}>
+          <Form.Item label="이동 ID" name="moveId">
             <Input disabled />
           </Form.Item>
-          <Form.Item label="출발 위치" name="fromLocation" rules={[{ required: true }]}>
+          <Form.Item label="출발 위치" name="fromLocation" rules={[{ required: true, message: '출발 위치를 입력하세요' }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="도착 위치" name="toLocation" rules={[{ required: true }]}>
+          <Form.Item label="도착 위치" name="toLocation" rules={[{ required: true, message: '도착 위치를 입력하세요' }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="수량" name="quantity" rules={[{ required: true }]}>
+          <Form.Item label="수량" name="quantity" rules={[{ required: true, message: '수량을 입력하세요' }]}>
             <Input type="number" />
+          </Form.Item>
+          <Form.Item label="상태" name="status" rules={[{ required: true, message: '상태를 선택하세요' }]}>
+            <Select
+              options={[
+                { value: 'pending', label: '대기중' },
+                { value: 'completed', label: '완료' },
+                { value: 'cancelled', label: '취소' },
+              ]}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -386,12 +496,6 @@ export default function StockMoveManagementPage() {
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
         <Form form={addForm} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item label="출발 위치" name="fromLocation" rules={[{ required: true, message: '출발 위치를 입력하세요' }]}>
-            <Input placeholder="예: LOC-A1-01" />
-          </Form.Item>
-          <Form.Item label="도착 위치" name="toLocation" rules={[{ required: true, message: '도착 위치를 입력하세요' }]}>
-            <Input placeholder="예: LOC-A1-02" />
-          </Form.Item>
           <Form.Item label="이동 유형" name="moveType" rules={[{ required: true, message: '이동 유형을 선택하세요' }]}>
             <Select
               options={[
@@ -401,8 +505,23 @@ export default function StockMoveManagementPage() {
               ]}
             />
           </Form.Item>
+          <Form.Item label="SKU" name="sku" rules={[{ required: true, message: 'SKU를 입력하세요' }]}>
+            <Input placeholder="예: SKU-001" />
+          </Form.Item>
+          <Form.Item label="상품명" name="productName" rules={[{ required: true, message: '상품명을 입력하세요' }]}>
+            <Input placeholder="예: LCD 모니터 24인치" />
+          </Form.Item>
+          <Form.Item label="출발 위치" name="fromLocation" rules={[{ required: true, message: '출발 위치를 입력하세요' }]}>
+            <Input placeholder="예: LOC-A1-01" />
+          </Form.Item>
+          <Form.Item label="도착 위치" name="toLocation" rules={[{ required: true, message: '도착 위치를 입력하세요' }]}>
+            <Input placeholder="예: LOC-A1-02" />
+          </Form.Item>
           <Form.Item label="수량" name="quantity" rules={[{ required: true, message: '수량을 입력하세요' }]}>
             <Input type="number" placeholder="100" />
+          </Form.Item>
+          <Form.Item label="사유" name="reason">
+            <Input.TextArea placeholder="이동 사유를 입력하세요 (선택)" rows={3} />
           </Form.Item>
         </Form>
       </Modal>

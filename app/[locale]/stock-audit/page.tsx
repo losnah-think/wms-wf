@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Table, Button, Breadcrumb, Tag, Card, Space, Modal, Form, Input, Row, Col, Statistic, DatePicker, message } from 'antd'
-import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { Table, Button, Breadcrumb, Tag, Card, Space, Modal, Form, Input, Row, Col, Statistic, DatePicker, message, Select } from 'antd'
+import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
 
 interface AuditData {
@@ -27,8 +27,10 @@ export default function StockAuditPage() {
   const [selectedRecord, setSelectedRecord] = useState<AuditData | null>(null)
   const [form] = Form.useForm()
   const [addForm] = Form.useForm()
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
 
-  const auditData: AuditData[] = [
+  const [auditList, setAuditList] = useState<AuditData[]>([
     {
       id: 1,
       auditId: 'AU-001',
@@ -71,13 +73,26 @@ export default function StockAuditPage() {
       status: 'completed',
       statusText: '완료',
     },
-  ]
+  ])
+
+  // 필터링 로직
+  const filteredData = auditList.filter((item) => {
+    const matchesSearch = searchText === '' || 
+      item.auditId.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.sku.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.productName.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchText.toLowerCase())
+    
+    const matchesStatus = statusFilter === null || item.status === statusFilter
+    
+    return matchesSearch && matchesStatus
+  })
 
   const stats = {
-    totalAudits: auditData.length,
-    completedAudits: auditData.filter(a => a.status === 'completed').length,
-    discrepancies: auditData.filter(a => a.status === 'discrepancy').length,
-    avgVariance: Math.abs(Math.round(auditData.reduce((sum, a) => sum + a.variance, 0) / auditData.length)),
+    totalAudits: filteredData.length,
+    completedAudits: filteredData.filter(a => a.status === 'completed').length,
+    discrepancies: filteredData.filter(a => a.status === 'discrepancy').length,
+    avgVariance: filteredData.length > 0 ? Math.abs(Math.round(filteredData.reduce((sum, a) => sum + a.variance, 0) / filteredData.length)) : 0,
   }
 
   const handleEdit = (record: AuditData) => {
@@ -85,6 +100,7 @@ export default function StockAuditPage() {
     form.setFieldsValue({
       auditId: record.auditId,
       actualQty: record.actualQty,
+      status: record.status,
     })
     setIsEditModalOpen(true)
   }
@@ -100,22 +116,67 @@ export default function StockAuditPage() {
   }
 
   const handleEditOk = () => {
-    form.validateFields().then(() => {
-      setIsEditModalOpen(false)
-      message.success('조정 정보가 수정되었습니다.')
+    form.validateFields().then((values) => {
+      if (selectedRecord) {
+        setAuditList(prev => prev.map(item =>
+          item.id === selectedRecord.id
+            ? { 
+                ...item, 
+                actualQty: values.actualQty,
+                variance: values.actualQty - item.systemQty,
+                status: values.status as 'pending' | 'completed' | 'discrepancy',
+                statusText: values.status === 'completed' ? '완료' : values.status === 'discrepancy' ? '불일치' : '대기중',
+              }
+            : item
+        ))
+        setIsEditModalOpen(false)
+        message.success('조정 정보가 수정되었습니다.')
+      }
     })
   }
 
   const handleDeleteOk = () => {
-    setIsDeleteModalOpen(false)
-    message.success('조정 기록이 삭제되었습니다.')
+    if (selectedRecord) {
+      setAuditList(prev => prev.filter(item => item.id !== selectedRecord.id))
+      setIsDeleteModalOpen(false)
+      message.success('조정 기록이 삭제되었습니다.')
+    }
   }
 
   const handleAddOk = () => {
-    addForm.validateFields().then(() => {
+    addForm.validateFields().then((values) => {
+      const systemQty = values.systemQty || 0
+      const actualQty = values.actualQty
+      const variance = actualQty - systemQty
+      
+      const newAudit: AuditData = {
+        id: auditList.length + 1,
+        auditId: `AU-${String(auditList.length + 1).padStart(3, '0')}`,
+        sku: values.sku,
+        productName: values.productName,
+        systemQty,
+        actualQty,
+        variance,
+        location: values.location,
+        auditDate: new Date().toISOString().split('T')[0],
+        auditor: '관리자',
+        status: variance === 0 ? 'completed' : 'discrepancy',
+        statusText: variance === 0 ? '완료' : '불일치',
+      }
+      setAuditList(prev => [...prev, newAudit])
       setIsAddModalOpen(false)
       message.success('조정이 등록되었습니다.')
     })
+  }
+
+  const handleRefresh = () => {
+    setSearchText('')
+    setStatusFilter(null)
+    message.success('필터가 초기화되었습니다.')
+  }
+
+  const handleExport = () => {
+    message.success('엑셀 파일 다운로드를 시작합니다.')
   }
 
   const columns: TableColumnsType<AuditData> = [
@@ -297,9 +358,30 @@ export default function StockAuditPage() {
         {/* 컨트롤 */}
         <Card style={{ marginBottom: '24px', borderRadius: '10px', border: '1px solid #E5E7EB' }}>
           <Space wrap>
+            <Input.Search
+              placeholder="조정ID, SKU, 상품명, 위치 검색..."
+              allowClear
+              style={{ width: 300 }}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Select
+              placeholder="상태 필터"
+              allowClear
+              style={{ width: 150 }}
+              value={statusFilter}
+              options={[
+                { value: 'completed', label: '완료' },
+                { value: 'discrepancy', label: '불일치' },
+                { value: 'pending', label: '대기중' },
+              ]}
+              onChange={setStatusFilter}
+            />
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} style={{ backgroundColor: '#007BED' }}>
               조정 등록
             </Button>
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh}>필터 초기화</Button>
+            <Button icon={<DownloadOutlined />} onClick={handleExport}>내보내기</Button>
           </Space>
         </Card>
 
@@ -307,8 +389,8 @@ export default function StockAuditPage() {
         <Card style={{ borderRadius: '10px', border: '1px solid #E5E7EB' }}>
           <Table
             columns={columns}
-            dataSource={auditData}
-            pagination={{ pageSize: 10, total: auditData.length }}
+            dataSource={filteredData}
+            pagination={{ pageSize: 10, total: filteredData.length }}
             rowKey="id"
             scroll={{ x: 1200 }}
           />
@@ -330,11 +412,20 @@ export default function StockAuditPage() {
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item label="조정 ID" name="auditId" rules={[{ required: true }]}>
+          <Form.Item label="조정 ID" name="auditId">
             <Input disabled />
           </Form.Item>
           <Form.Item label="실제 수량" name="actualQty" rules={[{ required: true, message: '실제 수량을 입력하세요' }]}>
             <Input type="number" />
+          </Form.Item>
+          <Form.Item label="상태" name="status" rules={[{ required: true, message: '상태를 선택하세요' }]}>
+            <Select
+              options={[
+                { value: 'pending', label: '대기중' },
+                { value: 'completed', label: '완료' },
+                { value: 'discrepancy', label: '불일치' },
+              ]}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -354,14 +445,23 @@ export default function StockAuditPage() {
         okButtonProps={{ style: { backgroundColor: '#007BED' } }}
       >
         <Form form={addForm} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item label="상품 SKU" name="sku" rules={[{ required: true, message: 'SKU를 입력하세요' }]}>
+          <Form.Item label="SKU" name="sku" rules={[{ required: true, message: 'SKU를 입력하세요' }]}>
             <Input placeholder="예: SKU-001" />
           </Form.Item>
-          <Form.Item label="실제 수량" name="actualQty" rules={[{ required: true, message: '실제 수량을 입력하세요' }]}>
-            <Input type="number" placeholder="0" />
+          <Form.Item label="상품명" name="productName" rules={[{ required: true, message: '상품명을 입력하세요' }]}>
+            <Input placeholder="예: LCD 모니터 24인치" />
           </Form.Item>
-          <Form.Item label="조정 사유" name="reason" rules={[{ required: true, message: '조정 사유를 입력하세요' }]}>
-            <Input.TextArea rows={3} placeholder="조정 사유를 입력하세요" />
+          <Form.Item label="위치" name="location" rules={[{ required: true, message: '위치를 입력하세요' }]}>
+            <Input placeholder="예: LOC-A1-01" />
+          </Form.Item>
+          <Form.Item label="시스템 수량" name="systemQty" rules={[{ required: true, message: '시스템 수량을 입력하세요' }]}>
+            <Input type="number" placeholder="250" />
+          </Form.Item>
+          <Form.Item label="실제 수량" name="actualQty" rules={[{ required: true, message: '실제 수량을 입력하세요' }]}>
+            <Input type="number" placeholder="248" />
+          </Form.Item>
+          <Form.Item label="조정 사유" name="reason">
+            <Input.TextArea rows={3} placeholder="조정 사유를 입력하세요 (선택)" />
           </Form.Item>
         </Form>
       </Modal>
