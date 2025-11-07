@@ -23,7 +23,7 @@ const antdTheme = {
   },
 }
 
-const locales = ['en', 'ko', 'vi']
+const locales = ['en', 'ko']
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))

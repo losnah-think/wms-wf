@@ -1,13 +1,13 @@
 import { getRequestConfig } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
-const locales = ['en', 'ko', 'vi']
+const locales = ['en', 'ko']
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale
 
   if (!locale || !locales.includes(locale)) {
-    locale = 'en'
+    locale = 'ko'
   }
 
   return {
