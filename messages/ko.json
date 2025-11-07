@@ -2,7 +2,8 @@
   "nav": {
     "section": {
       "warehouse": "창고 관리",
-      "inventory": "재고 관리"
+      "inventory": "재고 관리",
+      "statistics": "통계 관리"
     },
     "item": {
       "warehouseInfo": "창고 정보",
@@ -10,9 +11,34 @@
       "locationMgmt": "위치 관리",
       "barcodeMgmt": "바코드 관리",
       "stockStatus": "재고 현황",
+      "stockStatusByProduct": "상품별 현황",
+      "stockStatusByOption": "옵션별 현황",
+      "stockStatusByWarehouse": "창고별 분포",
+      "stockStatusByLocation": "위치별 분포",
       "stockAudit": "재고 실사",
       "stockMovement": "재고 이동",
-      "externalLink": "연동 관리"
+      "externalLink": "연동 관리",
+      "statisticsDetail": "상세 분석",
+      "statisticsAnalysis": "상세 분석",
+      "statisticsProduct": "상품별 통계",
+      "statisticsOption": "옵션별 통계",
+      "statisticsWarehouse": "창고별 통계",
+      "statisticsLocation": "위치별 통계",
+      "reportsProduct": "상품 기준",
+      "reportsSummary": "종합영업일보",
+      "reportsDailySalesGraph": "일별매출 그래프",
+      "reportsMonthlySalesGraph": "월별매출 그래프",
+      "reportsVendorSales": "판매처별 매출 통계",
+      "reportsProductSales": "제품별 매출 통계",
+      "reportsUnsent": "미발송 주문 통계",
+      "reportsSent": "발송 주문 통계",
+      "reportsOption": "옵션 기준",
+      "reportsStockShipment": "재고발송 통계",
+      "reportsOptionOrders": "재고옵션 주문 통계",
+      "reportsSupplierInbound": "공급처별 입고 통계",
+      "reportsInboundOutbound": "입고 출고 통계",
+      "reportsDateOptionInOutbound": "일자별 옵션 입출고 내역",
+      "reportsOptionSales": "상품별 매출 통계"
     }
   },
   "common": {

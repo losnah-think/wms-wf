@@ -2,7 +2,8 @@
   "nav": {
     "section": {
       "warehouse": "Warehouse",
-      "inventory": "Inventory"
+      "inventory": "Inventory",
+      "statistics": "Statistics"
     },
     "item": {
       "warehouseInfo": "Warehouse Info",
@@ -10,9 +11,34 @@
       "locationMgmt": "Location Management",
       "barcodeMgmt": "Barcode Management",
       "stockStatus": "Stock Status",
+      "stockStatusByProduct": "By Product",
+      "stockStatusByOption": "By Option",
+      "stockStatusByWarehouse": "By Warehouse",
+      "stockStatusByLocation": "By Location",
       "stockAudit": "Stock Audit",
       "stockMovement": "Stock Movement",
-      "externalLink": "External Links"
+      "externalLink": "External Links",
+      "statisticsDetail": "Detailed Analysis",
+      "statisticsAnalysis": "Detailed Analysis",
+      "statisticsProduct": "Product Statistics",
+      "statisticsOption": "Option Statistics",
+      "statisticsWarehouse": "Warehouse Statistics",
+      "statisticsLocation": "Location Statistics",
+      "reportsProduct": "Product Reports",
+      "reportsSummary": "Sales Summary",
+      "reportsDailySalesGraph": "Daily Sales Graph",
+      "reportsMonthlySalesGraph": "Monthly Sales Graph",
+      "reportsVendorSales": "Vendor Sales",
+      "reportsProductSales": "Product Sales",
+      "reportsUnsent": "Unsent Orders",
+      "reportsSent": "Sent Orders",
+      "reportsOption": "Option Reports",
+      "reportsStockShipment": "Stock Shipment",
+      "reportsOptionOrders": "Option Orders",
+      "reportsSupplierInbound": "Supplier Inbound",
+      "reportsInboundOutbound": "Inbound/Outbound",
+      "reportsDateOptionInOutbound": "Daily Option Movement",
+      "reportsOptionSales": "Option Sales"
     }
   },
   "common": {

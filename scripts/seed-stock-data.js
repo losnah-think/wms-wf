@@ -3,24 +3,24 @@ const prisma = new PrismaClient();
 
 async function seedStockData() {
   try {
-    console.log('🌱 시작: Stock 데이터 생성...\n');
+    console.log('[START] 시작: Stock 데이터 생성...\n');
 
     // 1. 기존 데이터 확인
     const warehouse = await prisma.warehouse.findFirst();
     const products = await prisma.product.findMany({ take: 10 });
 
     if (!warehouse) {
-      console.log('❌ 창고 데이터가 없습니다.');
+      console.log('[ERROR] 창고 데이터가 없습니다.');
       return;
     }
 
     if (products.length === 0) {
-      console.log('❌ 상품 데이터가 없습니다.');
+      console.log('[ERROR] 상품 데이터가 없습니다.');
       return;
     }
 
-    console.log(`✅ 창고: ${warehouse.name}`);
-    console.log(`✅ 상품: ${products.length}개\n`);
+    console.log(`[SUCCESS] 창고: ${warehouse.name}`);
+    console.log(`[SUCCESS] 상품: ${products.length}개\n`);
 
     // 2. WarehouseProduct 데이터 생성 (또는 기존 데이터 조회)
     let existingStocks = await prisma.warehouseProduct.findMany({
@@ -48,10 +48,10 @@ async function seedStockData() {
         data: stocks,
       });
 
-      console.log(`✅ ${createdStocks.count}개의 재고 정보 생성됨\n`);
+      console.log(`[SUCCESS] ${createdStocks.count}개의 재고 정보 생성됨\n`);
       existingStocks = stocks;
     } else {
-      console.log(`✅ 기존 ${existingStocks.length}개의 재고 정보 사용됨\n`);
+      console.log(`[SUCCESS] 기존 ${existingStocks.length}개의 재고 정보 사용됨\n`);
     }
 
     // 3. 생성된 데이터 확인
@@ -66,7 +66,7 @@ async function seedStockData() {
       },
     });
 
-    console.log('📦 생성된 재고 샘플:');
+    console.log('[INFO] 생성된 재고 샘플:');
     samples.forEach((s) => {
       console.log(
         `  • ${s.product.name} (${s.warehouse.name}): ${s.quantity}개`
@@ -114,9 +114,9 @@ async function seedStockData() {
         data: auditLogs,
       });
 
-      console.log(`\n✅ ${createdLogs.count}개의 감사 로그 생성됨\n`);
+      console.log(`\n[SUCCESS] ${createdLogs.count}개의 감사 로그 생성됨\n`);
     } else {
-      console.log(`\n✅ 기존 ${existingLogCount}개의 감사 로그 사용됨\n`);
+      console.log(`\n[SUCCESS] 기존 ${existingLogCount}개의 감사 로그 사용됨\n`);
     }
 
     // 5. 최종 통계
@@ -127,12 +127,12 @@ async function seedStockData() {
       },
     });
 
-    console.log('📊 최종 데이터 현황:');
+    console.log('[INFO] 최종 데이터 현황:');
     console.log(`  • WarehouseProduct: ${finalWarehouseProductCount}개`);
     console.log(`  • AuditLog: ${finalAuditLogCount}개`);
-    console.log('\n✨ 데이터 생성 완료!\n');
+    console.log('\n[COMPLETE] 데이터 생성 완료!\n');
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('[ERROR] Error:', error);
   } finally {
     await prisma.$disconnect();
   }

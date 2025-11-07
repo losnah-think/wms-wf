@@ -7,6 +7,7 @@ export interface MenuItem {
   labelKey: string  // Translation key for the label
   href: string
   icon?: string
+  children?: MenuItem[]  // Support for 3-level menus
 }
 
 export interface MenuSection {
@@ -44,8 +45,32 @@ export const menuSections: MenuSection[] = [
   {
     titleKey: 'inventory',
     items: [
-      { labelKey: 'stockStatus', href: '/stock-status' },
+      {
+        labelKey: 'stockStatus',
+        href: '/stock-status',
+        children: [
+          { labelKey: 'stockStatusByProduct', href: '/stock-status/by-product' },
+          { labelKey: 'stockStatusByOption', href: '/stock-status/by-option' },
+          { labelKey: 'stockStatusByWarehouse', href: '/stock-status/by-warehouse' },
+          { labelKey: 'stockStatusByLocation', href: '/stock-status/by-location' },
+        ],
+      },
       { labelKey: 'stockAudit', href: '/stock-audit' },
+    ],
+  },
+  {
+    titleKey: 'statistics',
+    items: [
+      {
+        labelKey: 'statisticsDetail',
+        href: '/statistics',
+        children: [
+          { labelKey: 'statisticsProduct', href: '/statistics/product' },
+          { labelKey: 'statisticsOption', href: '/statistics/option' },
+          { labelKey: 'statisticsWarehouse', href: '/statistics/warehouse' },
+          { labelKey: 'statisticsLocation', href: '/statistics/location' },
+        ],
+      },
     ],
   },
 ]

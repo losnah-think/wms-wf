@@ -2,7 +2,8 @@
   "nav": {
     "section": {
       "warehouse": "Quản lý kho",
-      "inventory": "Quản lý hàng tồn"
+      "inventory": "Quản lý hàng tồn",
+      "statistics": "Quản lý thống kê"
     },
     "item": {
       "warehouseInfo": "Thông tin kho",
@@ -10,9 +11,34 @@
       "locationMgmt": "Quản lý vị trí",
       "barcodeMgmt": "Quản lý mã vạch",
       "stockStatus": "Trạng thái tồn kho",
+      "stockStatusByProduct": "Theo sản phẩm",
+      "stockStatusByOption": "Theo tùy chọn",
+      "stockStatusByWarehouse": "Theo kho",
+      "stockStatusByLocation": "Theo vị trí",
       "stockAudit": "Kiểm toán tồn kho",
       "stockMovement": "Di chuyển tồn kho",
-      "externalLink": "Quản lý liên kết"
+      "externalLink": "Quản lý liên kết",
+      "statisticsDetail": "Phân tích chi tiết",
+      "statisticsAnalysis": "Phân tích chi tiết",
+      "statisticsProduct": "Thống kê sản phẩm",
+      "statisticsOption": "Thống kê tùy chọn",
+      "statisticsWarehouse": "Thống kê kho",
+      "statisticsLocation": "Thống kê vị trí",
+      "reportsProduct": "Báo cáo sản phẩm",
+      "reportsSummary": "Báo cáo tổng hợp bán hàng",
+      "reportsDailySalesGraph": "Biểu đồ bán hàng hàng ngày",
+      "reportsMonthlySalesGraph": "Biểu đồ bán hàng hàng tháng",
+      "reportsVendorSales": "Bán hàng theo nhà cung cấp",
+      "reportsProductSales": "Bán hàng theo sản phẩm",
+      "reportsUnsent": "Đơn hàng chưa gửi",
+      "reportsSent": "Đơn hàng đã gửi",
+      "reportsOption": "Báo cáo tùy chọn",
+      "reportsStockShipment": "Thống kê gửi hàng",
+      "reportsOptionOrders": "Thống kê đơn hàng tùy chọn",
+      "reportsSupplierInbound": "Thống kê nhập hàng từ nhà cung cấp",
+      "reportsInboundOutbound": "Thống kê nhập/xuất",
+      "reportsDateOptionInOutbound": "Chi tiết di chuyển tùy chọn hàng ngày",
+      "reportsOptionSales": "Bán hàng theo tùy chọn"
     }
   },
   "common": {
