@@ -11,6 +11,8 @@
       "locationMgmt": "Location Management",
       "barcodeMgmt": "Barcode Management",
       "stockStatus": "Stock Status",
+      "stockTransfer": "Stock Transfer",
+      "stockTransferHistory": "Transfer History",
       "stockStatusByProduct": "By Product",
       "stockStatusByOption": "By Option",
       "stockStatusByWarehouse": "By Warehouse",

@@ -11,6 +11,8 @@
       "locationMgmt": "위치 관리",
       "barcodeMgmt": "바코드 관리",
       "stockStatus": "재고 현황",
+      "stockTransfer": "재고 이동",
+      "stockTransferHistory": "이동 이력",
       "stockStatusByProduct": "상품별 현황",
       "stockStatusByOption": "옵션별 현황",
       "stockStatusByWarehouse": "창고별 분포",

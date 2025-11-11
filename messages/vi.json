@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "section": {
+      "warehouse": "Quản lý kho",
+      "inventory": "Quản lý hàng tồn",
+      "statistics": "Quản lý thống kê"
+    },
+    "item": {
+      "warehouseInfo": "Thông tin kho",
+      "warehouseLayout": "Bố cục kho",
+      "locationMgmt": "Quản lý vị trí",
+      "barcodeMgmt": "Quản lý mã vạch",
+      "stockStatus": "Trạng thái tồn kho",
+      "stockStatusByProduct": "Theo sản phẩm",
+      "stockStatusByOption": "Theo tùy chọn",
+      "stockStatusByWarehouse": "Theo kho",
+      "stockStatusByLocation": "Theo vị trí",
+      "stockAudit": "Kiểm toán tồn kho",
+      "stockMovement": "Di chuyển tồn kho",
+      "externalLink": "Quản lý liên kết",
+      "statisticsDetail": "Phân tích chi tiết",
+      "statisticsAnalysis": "Phân tích chi tiết",
+      "statisticsProduct": "Thống kê sản phẩm",
+      "statisticsOption": "Thống kê tùy chọn",
+      "statisticsWarehouse": "Thống kê kho",
+      "statisticsLocation": "Thống kê vị trí",
+      "reportsProduct": "Báo cáo sản phẩm",
+      "reportsSummary": "Báo cáo tổng hợp bán hàng",
+      "reportsDailySalesGraph": "Biểu đồ bán hàng hàng ngày",
+      "reportsMonthlySalesGraph": "Biểu đồ bán hàng hàng tháng",
+      "reportsVendorSales": "Bán hàng theo nhà cung cấp",
+      "reportsProductSales": "Bán hàng theo sản phẩm",
+      "reportsUnsent": "Đơn hàng chưa gửi",
+      "reportsSent": "Đơn hàng đã gửi",
+      "reportsOption": "Báo cáo tùy chọn",
+      "reportsStockShipment": "Thống kê gửi hàng",
+      "reportsOptionOrders": "Thống kê đơn hàng tùy chọn",
+      "reportsSupplierInbound": "Thống kê nhập hàng từ nhà cung cấp",
+      "reportsInboundOutbound": "Thống kê nhập/xuất",
+      "reportsDateOptionInOutbound": "Chi tiết di chuyển tùy chọn hàng ngày",
+      "reportsOptionSales": "Bán hàng theo tùy chọn"
+    }
+  },
+  "common": {
+    "welcome": "Chào mừng đến WMS",
+    "selectMenu": "Chọn một mục menu để bắt đầu",
+    "mainFeatures": "Các tính năng chính",
+    "view": "Xem",
+    "actions": "Hành động",
+    "status": "Trạng thái",
+    "quantity": "Số lượng",
+    "total": "Tổng cộng",
+    "all": "Tất cả",
+    "active": "Hoạt động",
+    "loading": "Đang tải...",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "rejected": "Bị từ chối"
+  },
+  "warehouse": {
+    "overview": "Tổng quan kho",
+    "allWarehouses": "Tất cả các kho",
+    "filterByWarehouse": "Lọc theo kho",
+    "warehouse": "Kho",
+    "location": "Vị trí",
+    "locations": "Các vị trí",
+    "capacity": "Công suất",
+    "occupied": "Đã chiếm dụng",
+    "aisle": "Lối đi",
+    "rack": "Kệ",
+    "zone": "Khu vực",
+    "name": "Tên"
+  },
+  "stockStatus": {
+    "title": "Trạng thái tồn kho",
+    "searchPlaceholder": "Tìm kiếm theo tên sản phẩm hoặc ID",
+    "productName": "Tên sản phẩm",
+    "barcode": "Mã vạch",
+    "available": "Có sẵn",
+    "inStock": "Có tồn kho",
+    "lowStock": "Tồn kho thấp",
+    "outOfStock": "Hết hàng"
+  },
+  "error": {
+    "404": {
+      "title": "Không tìm thấy trang",
+      "description": "Trang bạn tìm kiếm không tồn tại."
+    },
+    "500": {
+      "title": "Lỗi máy chủ",
+      "description": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
+    },
+    "backHome": "Quay lại trang chủ",
+    "backDashboard": "Quay lại bảng điều khiển",
+    "retry": "Thử lại",
+    "contactSupport": "Liên hệ hỗ trợ",
+    "needHelp": "Cần giúp đỡ?",
+    "errorId": "ID lỗi",
+    "details": "Chi tiết"
+  },
+  "inboundApproval": {
+    "requestedStatus": "Đã yêu cầu",
+    "approvalPendingStatus": "Chờ phê duyệt",
+    "approvedStatus": "Đã phê duyệt",
+    "zoneAllocatedStatus": "Đã phân bổ khu vực",
+    "inboundCompletedStatus": "Hoàn thành",
+    "requestStatus": "Yêu cầu",
+    "approvalPending": "Chờ phê duyệt",
+    "approved": "Đã phê duyệt",
+    "zoneAllocated": "Phân bổ khu vực",
+    "inboundCompleted": "Hoàn thành",
+    "zoneAutoAllocated": "Khu vực được phân bổ tự động",
+    "approvalError": "Lỗi xử lý phê duyệt",
+    "rejectionComplete": "Từ chối hoàn tất",
+    "rejectionError": "Lỗi xử lý từ chối",
+    "approvalNumber": "Số phê duyệt",
+    "requestId": "ID yêu cầu",
+    "clientName": "Tên khách hàng",
+    "item": "Mục"
+  }
+}

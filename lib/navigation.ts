@@ -48,28 +48,18 @@ export const menuSections: MenuSection[] = [
       {
         labelKey: 'stockStatus',
         href: '/stock-status',
-        children: [
-          { labelKey: 'stockStatusByProduct', href: '/stock-status/by-product' },
-          { labelKey: 'stockStatusByOption', href: '/stock-status/by-option' },
-          { labelKey: 'stockStatusByWarehouse', href: '/stock-status/by-warehouse' },
-          { labelKey: 'stockStatusByLocation', href: '/stock-status/by-location' },
-        ],
       },
-      { labelKey: 'stockAudit', href: '/stock-audit' },
-    ],
-  },
-  {
-    titleKey: 'statistics',
-    items: [
       {
-        labelKey: 'statisticsDetail',
-        href: '/statistics',
-        children: [
-          { labelKey: 'statisticsProduct', href: '/statistics/product' },
-          { labelKey: 'statisticsOption', href: '/statistics/option' },
-          { labelKey: 'statisticsWarehouse', href: '/statistics/warehouse' },
-          { labelKey: 'statisticsLocation', href: '/statistics/location' },
-        ],
+        labelKey: 'stockMovement',
+        href: '/stock-movement',
+      },
+      {
+        labelKey: 'stockTransfer',
+        href: '/stock-transfer',
+      },
+      {
+        labelKey: 'stockTransferHistory',
+        href: '/stock-transfer-history',
       },
     ],
   },
