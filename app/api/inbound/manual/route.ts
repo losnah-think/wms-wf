@@ -148,7 +148,6 @@ export async function POST(request: NextRequest) {
       await tx.auditLog.create({
         data: {
           action: 'INBOUND_MANUAL',
-          entity: 'InboundRequest',
           entityId: inboundRequest.id,
           userId: handledBy,
           changes: JSON.stringify({

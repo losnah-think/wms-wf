@@ -78,7 +78,6 @@ export async function POST(request: NextRequest) {
     await prisma.auditLog.create({
       data: {
         action: 'STOCK_RESERVE',
-        entity: 'WarehouseProduct',
         entityId: stocks[0].id,
         userId,
         changes: JSON.stringify({
@@ -150,7 +149,6 @@ export async function DELETE(request: NextRequest) {
     await prisma.auditLog.create({
       data: {
         action: 'STOCK_UNRESERVE',
-        entity: 'Reservation',
         entityId: reservationId,
         userId,
         changes: JSON.stringify({
