@@ -1,44 +1,26 @@
 {
   "nav": {
     "section": {
-      "warehouse": "Quản lý kho",
-      "inventory": "Quản lý hàng tồn",
-      "statistics": "Quản lý thống kê"
+      "warehouseManagement": "Quản lý kho",
+      "inventoryManagement": "Quản lý hàng tồn",
+      "stockMovement": "Di chuyển tồn kho",
+      "inbound": "Nhập hàng"
     },
     "item": {
-      "warehouseInfo": "Thông tin kho",
-      "warehouseLayout": "Bố cục kho",
+      "warehouseInfoMgmt": "Quản lý thông tin kho",
+      "warehouseLayoutMgmt": "Quản lý bố cục kho",
       "locationMgmt": "Quản lý vị trí",
-      "barcodeMgmt": "Quản lý mã vạch",
+      "barcodeConfig": "Cấu hình mã vạch",
       "stockStatus": "Trạng thái tồn kho",
-      "stockStatusByProduct": "Theo sản phẩm",
-      "stockStatusByOption": "Theo tùy chọn",
-      "stockStatusByWarehouse": "Theo kho",
-      "stockStatusByLocation": "Theo vị trí",
-      "stockAudit": "Kiểm toán tồn kho",
-      "stockMovement": "Di chuyển tồn kho",
-      "externalLink": "Quản lý liên kết",
-      "statisticsDetail": "Phân tích chi tiết",
-      "statisticsAnalysis": "Phân tích chi tiết",
-      "statisticsProduct": "Thống kê sản phẩm",
-      "statisticsOption": "Thống kê tùy chọn",
-      "statisticsWarehouse": "Thống kê kho",
-      "statisticsLocation": "Thống kê vị trí",
-      "reportsProduct": "Báo cáo sản phẩm",
-      "reportsSummary": "Báo cáo tổng hợp bán hàng",
-      "reportsDailySalesGraph": "Biểu đồ bán hàng hàng ngày",
-      "reportsMonthlySalesGraph": "Biểu đồ bán hàng hàng tháng",
-      "reportsVendorSales": "Bán hàng theo nhà cung cấp",
-      "reportsProductSales": "Bán hàng theo sản phẩm",
-      "reportsUnsent": "Đơn hàng chưa gửi",
-      "reportsSent": "Đơn hàng đã gửi",
-      "reportsOption": "Báo cáo tùy chọn",
-      "reportsStockShipment": "Thống kê gửi hàng",
-      "reportsOptionOrders": "Thống kê đơn hàng tùy chọn",
-      "reportsSupplierInbound": "Thống kê nhập hàng từ nhà cung cấp",
-      "reportsInboundOutbound": "Thống kê nhập/xuất",
-      "reportsDateOptionInOutbound": "Chi tiết di chuyển tùy chọn hàng ngày",
-      "reportsOptionSales": "Bán hàng theo tùy chọn"
+      "locationSuggestion": "Đề xuất vị trí",
+      "stockAudit": "Kiểm kê tồn kho",
+      "movementOrderList": "Danh sách lệnh di chuyển",
+      "movementDirection": "Chỉ dẫn di chuyển",
+      "movementExecution": "Thực hiện di chuyển",
+      "arbitraryMovement": "Di chuyển tùy ý",
+      "inboundOrderList": "Danh sách lệnh nhập",
+      "inboundDirection": "Chỉ dẫn nhập",
+      "inboundExecution": "Thực hiện nhập"
     }
   },
   "common": {
@@ -117,5 +99,29 @@
     "requestId": "ID yêu cầu",
     "clientName": "Tên khách hàng",
     "item": "Mục"
+  },
+  "inbound": {
+    "orderList": {
+      "title": "Danh sách lệnh nhập",
+      "subtitle": "Xem và quản lý các lệnh nhập",
+      "orderNo": "Số lệnh nhập",
+      "vendor": "Nhà cung cấp",
+      "inboundDate": "Ngày nhập",
+      "expectedDate": "Ngày dự kiến",
+      "confirmDate": "Ngày xác nhận",
+      "plannedQty": "Số lượng dự kiến",
+      "actualQty": "Số lượng thực tế",
+      "confirmQty": "Số lượng xác nhận",
+      "status": "Trạng thái",
+      "search": "Tìm kiếm",
+      "reset": "Đặt lại",
+      "createOrder": "Tạo lệnh",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc"
+    }
+  },
+  "common": {
+    "select": "Chọn",
+    "download": "Tải xuống"
   }
 }

@@ -1,46 +1,26 @@
 {
   "nav": {
     "section": {
-      "warehouse": "Warehouse",
-      "inventory": "Inventory",
-      "statistics": "Statistics"
+      "warehouseManagement": "Warehouse Management",
+      "inventoryManagement": "Inventory Management",
+      "stockMovement": "Stock Movement",
+      "inbound": "Inbound"
     },
     "item": {
-      "warehouseInfo": "Warehouse Info",
-      "warehouseLayout": "Warehouse Layout",
+      "warehouseInfoMgmt": "Warehouse Info Management",
+      "warehouseLayoutMgmt": "Warehouse Layout Management",
       "locationMgmt": "Location Management",
-      "barcodeMgmt": "Barcode Management",
+      "barcodeConfig": "Barcode Configuration",
       "stockStatus": "Stock Status",
-      "stockTransfer": "Stock Transfer",
-      "stockTransferHistory": "Transfer History",
-      "stockStatusByProduct": "By Product",
-      "stockStatusByOption": "By Option",
-      "stockStatusByWarehouse": "By Warehouse",
-      "stockStatusByLocation": "By Location",
+      "locationSuggestion": "Location Suggestion",
       "stockAudit": "Stock Audit",
-      "stockMovement": "Stock Movement",
-      "externalLink": "External Links",
-      "statisticsDetail": "Detailed Analysis",
-      "statisticsAnalysis": "Detailed Analysis",
-      "statisticsProduct": "Product Statistics",
-      "statisticsOption": "Option Statistics",
-      "statisticsWarehouse": "Warehouse Statistics",
-      "statisticsLocation": "Location Statistics",
-      "reportsProduct": "Product Reports",
-      "reportsSummary": "Sales Summary",
-      "reportsDailySalesGraph": "Daily Sales Graph",
-      "reportsMonthlySalesGraph": "Monthly Sales Graph",
-      "reportsVendorSales": "Vendor Sales",
-      "reportsProductSales": "Product Sales",
-      "reportsUnsent": "Unsent Orders",
-      "reportsSent": "Sent Orders",
-      "reportsOption": "Option Reports",
-      "reportsStockShipment": "Stock Shipment",
-      "reportsOptionOrders": "Option Orders",
-      "reportsSupplierInbound": "Supplier Inbound",
-      "reportsInboundOutbound": "Inbound/Outbound",
-      "reportsDateOptionInOutbound": "Daily Option Movement",
-      "reportsOptionSales": "Option Sales"
+      "movementOrderList": "Movement Order List",
+      "movementDirection": "Movement Direction",
+      "movementExecution": "Movement Execution",
+      "arbitraryMovement": "Arbitrary Movement",
+      "inboundOrderList": "Inbound Order List",
+      "inboundDirection": "Inbound Direction",
+      "inboundExecution": "Inbound Execution"
     }
   },
   "common": {
@@ -119,5 +99,29 @@
     "requestId": "Request ID",
     "clientName": "Client Name",
     "item": "Item"
+  },
+  "inbound": {
+    "orderList": {
+      "title": "Inbound Order List",
+      "subtitle": "View and manage inbound orders",
+      "orderNo": "Inbound Order No",
+      "vendor": "Vendor",
+      "inboundDate": "Inbound Date",
+      "expectedDate": "Expected Date",
+      "confirmDate": "Confirm Date",
+      "plannedQty": "Planned Qty",
+      "actualQty": "Actual Qty",
+      "confirmQty": "Confirm Qty",
+      "status": "Status",
+      "search": "Search",
+      "reset": "Reset",
+      "createOrder": "Create Order",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    }
+  },
+  "common": {
+    "select": "Select",
+    "download": "Download"
   }
 }

@@ -1,46 +1,26 @@
 {
   "nav": {
     "section": {
-      "warehouse": "창고 관리",
-      "inventory": "재고 관리",
-      "statistics": "통계 관리"
+      "warehouseManagement": "창고관리",
+      "inventoryManagement": "재고 관리",
+      "stockMovement": "재고 이동",
+      "inbound": "입고"
     },
     "item": {
-      "warehouseInfo": "창고 정보",
-      "warehouseLayout": "창고 레이아웃",
-      "locationMgmt": "위치 관리",
-      "barcodeMgmt": "바코드 관리",
+      "warehouseInfoMgmt": "창고 정보 관리",
+      "warehouseLayoutMgmt": "창고 레이아웃 관리",
+      "locationMgmt": "로케이션 관리",
+      "barcodeConfig": "바코드 환경설정",
       "stockStatus": "재고 현황",
-      "stockTransfer": "재고 이동",
-      "stockTransferHistory": "이동 이력",
-      "stockStatusByProduct": "상품별 현황",
-      "stockStatusByOption": "옵션별 현황",
-      "stockStatusByWarehouse": "창고별 분포",
-      "stockStatusByLocation": "위치별 분포",
-      "stockAudit": "재고 실사",
-      "stockMovement": "재고 이동",
-      "externalLink": "연동 관리",
-      "statisticsDetail": "상세 분석",
-      "statisticsAnalysis": "상세 분석",
-      "statisticsProduct": "상품별 통계",
-      "statisticsOption": "옵션별 통계",
-      "statisticsWarehouse": "창고별 통계",
-      "statisticsLocation": "위치별 통계",
-      "reportsProduct": "상품 기준",
-      "reportsSummary": "종합영업일보",
-      "reportsDailySalesGraph": "일별매출 그래프",
-      "reportsMonthlySalesGraph": "월별매출 그래프",
-      "reportsVendorSales": "판매처별 매출 통계",
-      "reportsProductSales": "제품별 매출 통계",
-      "reportsUnsent": "미발송 주문 통계",
-      "reportsSent": "발송 주문 통계",
-      "reportsOption": "옵션 기준",
-      "reportsStockShipment": "재고발송 통계",
-      "reportsOptionOrders": "재고옵션 주문 통계",
-      "reportsSupplierInbound": "공급처별 입고 통계",
-      "reportsInboundOutbound": "입고 출고 통계",
-      "reportsDateOptionInOutbound": "일자별 옵션 입출고 내역",
-      "reportsOptionSales": "상품별 매출 통계"
+      "locationSuggestion": "로케이션 제안",
+      "stockAudit": "재고 조사",
+      "movementOrderList": "이동 오더 목록",
+      "movementDirection": "이동 지시",
+      "movementExecution": "이동 실행",
+      "arbitraryMovement": "임의 이동",
+      "inboundOrderList": "입고 오더 목록",
+      "inboundDirection": "입고 지시",
+      "inboundExecution": "입고 실행"
     }
   },
   "common": {
@@ -119,5 +99,29 @@
     "requestId": "요청 ID",
     "clientName": "고객명",
     "item": "항목"
+  },
+  "inbound": {
+    "orderList": {
+      "title": "입고 오더 목록",
+      "subtitle": "입고 오더 목록을 조회하고 관리할 수 있습니다",
+      "orderNo": "입고 오더번호",
+      "vendor": "공급처",
+      "inboundDate": "입고일",
+      "expectedDate": "예정일",
+      "confirmDate": "확인일",
+      "plannedQty": "계획수량",
+      "actualQty": "실수량",
+      "confirmQty": "확인수량",
+      "status": "상태",
+      "search": "검색",
+      "reset": "초기화",
+      "createOrder": "오더 생성",
+      "startDate": "시작일",
+      "endDate": "종료일"
+    }
+  },
+  "common": {
+    "select": "선택",
+    "download": "다운로드"
   }
 }

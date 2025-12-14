@@ -34,32 +34,22 @@ export function getItemTranslationKey(labelKey: string): string {
 
 export const menuSections: MenuSection[] = [
   {
-    titleKey: 'warehouse',
-    items: [
-      { labelKey: 'warehouseInfo', href: '/warehouse' },
-      { labelKey: 'warehouseLayout', href: '/warehouse/layout' },
-      { labelKey: 'locationMgmt', href: '/warehouse/location' },
-      { labelKey: 'barcodeMgmt', href: '/warehouse/barcode' },
-    ],
-  },
-  {
-    titleKey: 'inventory',
+    titleKey: 'inbound',
     items: [
       {
-        labelKey: 'stockStatus',
-        href: '/stock-status',
+        labelKey: 'inboundOrderList',
+        href: '/inbound/orders',
+        children: [],
       },
       {
-        labelKey: 'stockMovement',
-        href: '/stock-movement',
+        labelKey: 'inboundDirection',
+        href: '/inbound/direction',
+        children: [],
       },
       {
-        labelKey: 'stockTransfer',
-        href: '/stock-transfer',
-      },
-      {
-        labelKey: 'stockTransferHistory',
-        href: '/stock-transfer-history',
+        labelKey: 'inboundExecution',
+        href: '/inbound/execution',
+        children: [],
       },
     ],
   },
