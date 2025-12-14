@@ -540,7 +540,7 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
   })
   const [filteredProducts, setFilteredProducts] = useState(mockProducts)
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
-  const [selectedProductKey, setSelectedProductKey] = useState<string | null>(null)
+  const [selectedProductKeys, setSelectedProductKeys] = useState<string[]>([])
 
   const handleSearch = () => {
     const filtered = mockProducts.filter((product) => {
@@ -569,43 +569,56 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
   }, [filteredProducts, pagination])
 
   const handleAdd = () => {
-    if (!selectedProductKey) {
+    if (selectedProductKeys.length === 0) {
       message.warning('추가할 상품을 선택해주세요.')
       return
     }
 
-    const selectedProduct = filteredProducts.find((p) => p.key === selectedProductKey)
-    if (selectedProduct) {
-      const newItem: InboundItem = {
-        key: Date.now().toString(),
-        productCode: selectedProduct.productCode,
-        productName: selectedProduct.productName,
-        supplier: selectedProduct.supplier || '',
-        quantityMethod: selectedProduct.quantityMethod || '자동',
-        lotNumber: selectedProduct.lotNumber || '',
-        moveQty: '',
+    selectedProductKeys.forEach((selectedProductKey) => {
+      const selectedProduct = filteredProducts.find((p) => p.key === selectedProductKey)
+      if (selectedProduct) {
+        const newItem: InboundItem = {
+          key: Date.now().toString() + Math.random(),
+          productCode: selectedProduct.productCode,
+          productName: selectedProduct.productName,
+          supplier: selectedProduct.supplier || '',
+          quantityMethod: selectedProduct.quantityMethod || '자동',
+          lotNumber: selectedProduct.lotNumber || '',
+          moveQty: '',
+        }
+        onAdd(newItem)
       }
-      onAdd(newItem)
-      handleClear()
-      setSelectedProductKey(null)
-    }
+    })
+    handleClear()
+    setSelectedProductKeys([])
   }
 
   const columns: TableColumnsType<(typeof mockProducts)[0]> = [
     {
       title: (
         <Checkbox
-          checked={
-            selectedProductKey !== null && paginatedProducts.some((p) => p.key === selectedProductKey)
-          }
-          indeterminate={false}
+          indeterminate={selectedProductKeys.length > 0 && selectedProductKeys.length < paginatedProducts.length}
+          checked={selectedProductKeys.length === paginatedProducts.length && paginatedProducts.length > 0}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedProductKeys(paginatedProducts.map((p) => p.key))
+            } else {
+              setSelectedProductKeys([])
+            }
+          }}
         />
       ),
       width: 50,
       render: (_, record) => (
         <Checkbox
-          checked={selectedProductKey === record.key}
-          onChange={() => setSelectedProductKey(selectedProductKey === record.key ? null : record.key)}
+          checked={selectedProductKeys.includes(record.key)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedProductKeys([...selectedProductKeys, record.key])
+            } else {
+              setSelectedProductKeys(selectedProductKeys.filter((key) => key !== record.key))
+            }
+          }}
         />
       ),
     },
@@ -633,14 +646,14 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
       onCancel={() => {
         onCancel()
         handleClear()
-        setSelectedProductKey(null)
+        setSelectedProductKeys([])
       }}
       width={1000}
       footer={[
         <Button key="cancel" onClick={() => {
           onCancel()
           handleClear()
-          setSelectedProductKey(null)
+          setSelectedProductKeys([])
         }}>
           취소하기
         </Button>,
