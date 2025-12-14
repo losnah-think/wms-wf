@@ -124,7 +124,7 @@ const mockData: InboundDirection[] = [
 ]
 
 export default function InboundDirectionPage() {
-  const t = useTranslations()
+  const t = useTranslations('inbound.direction')
   const router = useRouter()
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const [directionData, setDirectionData] = useState<InboundDirection[]>(mockData)

@@ -144,6 +144,7 @@ const statusTabs = [
 export default function InboundExecutionPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const t = useTranslations('inbound.execution')
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const tabParam = searchParams.get('tab') || 'receipt'
   const [activeTab, setActiveTab] = useState(tabParam)

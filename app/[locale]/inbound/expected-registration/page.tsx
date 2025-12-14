@@ -82,6 +82,7 @@ const mockData: InboundItem[] = [
 
 export default function InboundExpectedRegistrationPage() {
   const router = useRouter()
+  const t = useTranslations('inbound.expectedRegistration')
   const [form] = Form.useForm()
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const [tableData, setTableData] = useState<InboundItem[]>(mockData)

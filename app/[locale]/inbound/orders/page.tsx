@@ -120,17 +120,8 @@ const statusColorMap: Record<string, string> = {
   completed: 'green',
 }
 
-const statusLabelMap: Record<string, string> = {
-  receipt: '검수 예정',
-  inspecting: '검수 중',
-  inspection_complete: '검수 완료',
-  pending: '적치 예정',
-  placed: '적치 중',
-  completed: '적치 완료',
-}
-
 export default function InboundOrdersPage() {
-  const t = useTranslations()
+  const t = useTranslations('inbound.orderList')
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
   const [filters, setFilters] = useState({
     vendor: '',
@@ -218,86 +209,86 @@ export default function InboundOrdersPage() {
 
   const columns: TableColumnsType<InboundOrder> = [
     {
-      title: '입고 오더',
+      title: t('orderId'),
       dataIndex: 'orderId',
       key: 'orderId',
       width: 150,
       render: (text) => <strong>{text}</strong>,
     },
     {
-      title: '화주명',
+      title: t('vendor'),
       dataIndex: 'vendor',
       key: 'vendor',
       width: 120,
     },
     {
-      title: '품목코드',
+      title: t('productCode'),
       dataIndex: 'productCode',
       key: 'productCode',
       width: 120,
     },
     {
-      title: '검수요청일',
+      title: t('inspectionRequestDate'),
       dataIndex: 'inspectionRequestDate',
       key: 'inspectionRequestDate',
       width: 100,
       render: (text) => <span>{text}</span>,
     },
     {
-      title: '검수완료일',
+      title: t('inspectionCompletionDate'),
       dataIndex: 'inspectionCompletionDate',
       key: 'inspectionCompletionDate',
       width: 100,
       render: (text) => <span>{text}</span>,
     },
     {
-      title: '적치요청일',
+      title: t('placementRequestDate'),
       dataIndex: 'placementRequestDate',
       key: 'placementRequestDate',
       width: 100,
       render: (text) => <span>{text}</span>,
     },
     {
-      title: '적치완료일',
+      title: t('placementCompletionDate'),
       dataIndex: 'placementCompletionDate',
       key: 'placementCompletionDate',
       width: 100,
       render: (text) => <span>{text}</span>,
     },
     {
-      title: '계획수량',
+      title: t('plannedQty'),
       dataIndex: 'plannedQty',
       key: 'plannedQty',
       width: 80,
       render: (text) => <span>{text}개</span>,
     },
     {
-      title: '검수완료수량',
+      title: t('inspectionCompletedQty'),
       dataIndex: 'inspectionCompletedQty',
       key: 'inspectionCompletedQty',
       width: 100,
       render: (text) => <span>{text}개</span>,
     },
     {
-      title: '적치완료수량',
+      title: t('placementCompletedQty'),
       dataIndex: 'placementCompletedQty',
       key: 'placementCompletedQty',
       width: 100,
       render: (text) => <span>{text}개</span>,
     },
     {
-      title: '상태',
+      title: t('status'),
       dataIndex: 'status',
       key: 'status',
       width: 100,
       render: (status) => (
         <Tag color={statusColorMap[status]}>
-          {statusLabelMap[status]}
+          {t(status)}
         </Tag>
       ),
     },
     {
-      title: '담당자',
+      title: t('worker'),
       dataIndex: 'worker',
       key: 'worker',
       width: 80,
@@ -311,8 +302,8 @@ export default function InboundOrdersPage() {
   return (
     <div style={{ padding: '20px' }}>
       <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: '0 0 10px 0' }}>입고 오더 목록</h1>
-        <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>입고 예정 오더를 확인하고 관리합니다</p>
+        <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: '0 0 10px 0' }}>{t('title')}</h1>
+        <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>{t('subtitle')}</p>
       </div>
 
       {/* Filter Section */}
@@ -321,7 +312,7 @@ export default function InboundOrdersPage() {
           <Col md={6} sm={12} xs={24}>
             <Select
               allowClear
-              placeholder="화주명"
+              placeholder={t('filterVendor')}
               style={{ width: '100%' }}
               value={filters.vendor || undefined}
               onChange={(value) => {
@@ -329,7 +320,7 @@ export default function InboundOrdersPage() {
                 setPagination({ ...pagination, current: 1 })
               }}
               options={[
-                { value: '', label: '전체' },
+                { value: '', label: t('all') },
                 ...vendors.map((vendor) => ({ value: vendor, label: vendor })),
               ]}
             />
@@ -337,7 +328,7 @@ export default function InboundOrdersPage() {
           <Col md={6} sm={12} xs={24}>
             <input
               type="text"
-              placeholder="입고 오더 번호"
+              placeholder={t('filterOrderId')}
               value={filters.orderId}
               onChange={(e) => {
                 setFilters({ ...filters, orderId: e.target.value })
@@ -355,7 +346,7 @@ export default function InboundOrdersPage() {
           <Col md={6} sm={12} xs={24}>
             <Select
               allowClear
-              placeholder="품목코드"
+              placeholder={t('filterProductCode')}
               style={{ width: '100%' }}
               value={filters.productCode || undefined}
               onChange={(value) => {
@@ -363,7 +354,7 @@ export default function InboundOrdersPage() {
                 setPagination({ ...pagination, current: 1 })
               }}
               options={[
-                { value: '', label: '전체' },
+                { value: '', label: t('all') },
                 ...productCodes.map((code) => ({ value: code, label: code })),
               ]}
             />
@@ -371,7 +362,7 @@ export default function InboundOrdersPage() {
           <Col md={6} sm={12} xs={24}>
             <Select
               allowClear
-              placeholder="상태"
+              placeholder={t('filterStatus')}
               style={{ width: '100%' }}
               value={filters.status || undefined}
               onChange={(value) => {
@@ -379,13 +370,13 @@ export default function InboundOrdersPage() {
                 setPagination({ ...pagination, current: 1 })
               }}
               options={[
-                { value: '', label: '전체' },
-                { value: 'receipt', label: '검수 예정' },
-                { value: 'inspecting', label: '검수 중' },
-                { value: 'inspection_complete', label: '검수 완료' },
-                { value: 'pending', label: '적치 예정' },
-                { value: 'placed', label: '적치 중' },
-                { value: 'completed', label: '적치 완료' },
+                { value: '', label: t('all') },
+                { value: 'receipt', label: t('receipt') },
+                { value: 'inspecting', label: t('inspecting') },
+                { value: 'inspection_complete', label: t('inspection_complete') },
+                { value: 'pending', label: t('pending') },
+                { value: 'placed', label: t('placed') },
+                { value: 'completed', label: t('completed') },
               ]}
             />
           </Col>
@@ -447,7 +438,7 @@ export default function InboundOrdersPage() {
       >
         <div>
           <span>
-            전체 상품 {filteredData.length} 건
+            {t('totalItems')} {filteredData.length} {t('items')}
           </span>
         </div>
       </div>
@@ -476,7 +467,7 @@ export default function InboundOrdersPage() {
           }}
           showSizeChanger
           pageSizeOptions={['10', '20', '50']}
-          showTotal={(total) => `총 ${total}건`}
+          showTotal={(total) => `${t('totalItems')} ${total}${t('items')}`}
         />
       </Card>
     </div>
