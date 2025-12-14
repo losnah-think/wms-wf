@@ -118,6 +118,79 @@
       "createOrder": "Tạo lệnh",
       "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc"
+    },
+    "direction": {
+      "title": "Chỉ dẫn nhập",
+      "subtitle": "Xem và quản lý các chỉ dẫn nhập",
+      "columns": {
+        "orderId": "Số lệnh nhập",
+        "vendor": "Nhà cung cấp",
+        "requestDate": "Ngày yêu cầu",
+        "expectedDate": "Ngày dự kiến",
+        "expectedTime": "Giờ dự kiến",
+        "transportType": "Loại vận chuyển",
+        "transportPrice": "Giá vận chuyển",
+        "action": "Vào"
+      },
+      "filters": {
+        "vendorName": "Tên nhà cung cấp",
+        "orderList": "Danh sách lệnh",
+        "productCode": "Mã sản phẩm",
+        "receiptDate": "Ngày nhận",
+        "expectedDate": "Ngày dự kiến",
+        "selectPlaceholder": "Chọn",
+        "searchPlaceholder": "Tìm kiếm"
+      },
+      "summary": {
+        "total": "Tổng sản phẩm",
+        "selected": "Đã chọn",
+        "items": "mục"
+      },
+      "buttons": {
+        "print": "In chỉ dẫn",
+        "registerExpected": "Đăng ký nhập dự kiến",
+        "executeDirection": "Thực hiện chỉ dẫn nhập"
+      },
+      "pagination": {
+        "total": "Tổng {total}"
+      },
+      "modal": {
+        "title": "Chỉ dẫn nhập",
+        "cancel": "Hủy nhập",
+        "back": "Quay lại",
+        "execute": "Thực hiện chỉ dẫn nhập",
+        "fields": {
+          "orderId": "Số lệnh",
+          "vendor": "Nhà cung cấp",
+          "requestDate": "Ngày yêu cầu",
+          "expectedDate": "Ngày dự kiến",
+          "expectedTime": "Giờ dự kiến",
+          "plannedQty": "Số lượng dự kiến",
+          "transportType": "Loại vận chuyển",
+          "transportPrice": "Giá vận chuyển"
+        },
+        "tabs": {
+          "items": "Chi tiết mục",
+          "history": "Lịch sử công việc"
+        },
+        "itemColumns": {
+          "barcode": "Mã vạch mục",
+          "productCode": "Mã sản phẩm",
+          "productName": "Tên sản phẩm",
+          "unitPrice": "Giá đơn vị",
+          "unit": "Đơn vị",
+          "quantity": "Số lượng"
+        },
+        "noHistory": "Không có lịch sử công việc"
+      },
+      "print": {
+        "title": "Biểu mẫu chỉ dẫn nhập"
+      },
+      "messages": {
+        "selectItemsForPrint": "Vui lòng chọn các mục để in.",
+        "newInboundRegistered": "Nhập mới đã được đăng ký.",
+        "directionCompleted": "Thực hiện chỉ dẫn nhập đã hoàn tất."
+      }
     }
   },
   "common": {

@@ -44,6 +44,13 @@ interface InboundDirection {
   }>
 }
 
+// Declare global to avoid TypeScript errors for localized dates
+declare global {
+  interface Date {
+    toLocaleDateString(locale?: string): string
+  }
+}
+
 const mockData: InboundDirection[] = [
   {
     key: '1',
@@ -152,7 +159,7 @@ export default function InboundDirectionPage() {
           const parsedOrders = JSON.parse(savedOrders)
           setDirectionData((prevData) => [...prevData, ...parsedOrders])
           localStorage.removeItem('registeredInboundOrders')
-          message.success('새로운 입고 예정이 등록되었습니다.')
+          message.success(t('messages.newInboundRegistered'))
         } catch (error) {
           console.error('Error loading saved orders:', error)
         }
@@ -203,7 +210,7 @@ export default function InboundDirectionPage() {
       ),
     },
     {
-      title: '입고 오더 번호',
+      title: t('columns.orderId'),
       dataIndex: 'orderId',
       key: 'orderId',
       render: (text: string, record) => (
@@ -220,37 +227,37 @@ export default function InboundDirectionPage() {
       ),
     },
     {
-      title: '화주사',
+      title: t('columns.vendor'),
       dataIndex: 'vendor',
       key: 'vendor',
     },
     {
-      title: '입고 요청일',
+      title: t('columns.requestDate'),
       dataIndex: 'inboundDate',
       key: 'inboundDate',
     },
     {
-      title: '입고 예정일',
+      title: t('columns.expectedDate'),
       dataIndex: 'inboundDate',
       key: 'inboundDate2',
     },
     {
-      title: '입고 예정 시간',
+      title: t('columns.expectedTime'),
       dataIndex: 'inboundTime',
       key: 'inboundTime',
     },
     {
-      title: '운송 유형',
+      title: t('columns.transportType'),
       dataIndex: 'transportType',
       key: 'transportType',
     },
     {
-      title: '운송비',
+      title: t('columns.transportPrice'),
       dataIndex: 'price',
       key: 'price',
     },
     {
-      title: '입',
+      title: t('columns.action'),
       key: 'action',
       width: 60,
       align: 'center',
@@ -262,7 +269,7 @@ export default function InboundDirectionPage() {
     <div style={{ padding: '20px' }}>
       {/* Header */}
       <div style={{ marginBottom: '20px' }}>
-        <h1>입고 지시</h1>
+        <h1>{t('title')}</h1>
       </div>
 
       {/* Filter Section */}
@@ -270,11 +277,11 @@ export default function InboundDirectionPage() {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>화주명</label>
+              <label>{t('filters.vendorName')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('filters.selectPlaceholder')}
               value={filters.vendor}
               onChange={(value) => setFilters({ ...filters, vendor: value })}
               options={[
@@ -288,11 +295,11 @@ export default function InboundDirectionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>입고 오더 목록</label>
+              <label>{t('filters.orderList')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('filters.selectPlaceholder')}
               value={filters.orderList}
               onChange={(value) => setFilters({ ...filters, orderList: value })}
               options={[
@@ -304,17 +311,17 @@ export default function InboundDirectionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>품목 코드</label>
+              <label>{t('filters.productCode')}</label>
             </div>
             <Input
-              placeholder="search"
+              placeholder={t('filters.searchPlaceholder')}
               value={filters.productCode as any}
               onChange={(e) => setFilters({ ...filters, productCode: e.target.value })}
             />
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>입고 접수일</label>
+              <label>{t('filters.receiptDate')}</label>
             </div>
             <DatePicker.RangePicker
               value={
@@ -334,7 +341,7 @@ export default function InboundDirectionPage() {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>입고 예정일</label>
+              <label>{t('filters.expectedDate')}</label>
             </div>
             <DatePicker.RangePicker
               value={
@@ -366,13 +373,13 @@ export default function InboundDirectionPage() {
       >
         <div>
           <span>
-            전체 상품 187 건 | 선택 32 건
+            {t('summary.total')} 187 {t('summary.items')} | {t('summary.selected')} 32 {t('summary.items')}
           </span>
         </div>
         <Space>
           <Button onClick={() => {
             if (selectedRows.length === 0) {
-              message.warning('출력할 항목을 선택해주세요.')
+              message.warning(t('messages.selectItemsForPrint'))
               return
             }
             
@@ -385,8 +392,8 @@ export default function InboundDirectionPage() {
               <html>
               <head>
                 <meta charset="UTF-8">
-                <title>입고 지시서</title>
-                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+                <title>${t('print.title')}</title>
+                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
                   <style>
                     * { margin: 0; padding: 0; }
                     body { font-family: Arial, sans-serif; padding: 20px; }
@@ -436,14 +443,14 @@ export default function InboundDirectionPage() {
                         </div>
                         <div class="barcode-item" style="text-align: center; margin-left: 30px;">
                           <div class="barcode-label">입고 바코드</div>
-                          <svg id="inbound-barcode-${index}"></svg>
+                          <svg id="inbound-barcode-${index}"><\/svg>
                         </div>
                       </div>
                       
                       <table>
                         <thead>
                           <tr>
-                            <th style="width: 50px;"></th>
+                            <th style="width: 50px;"><\/th>
                             <th style="width: 120px;">품목 바코드</th>
                             <th>품목명</th>
                             <th>상품명</th>
@@ -458,8 +465,8 @@ export default function InboundDirectionPage() {
                         <tbody>
                           ${order.items?.map((item, itemIndex) => `
                             <tr>
-                              <td><input type="checkbox"></td>
-                              <td><svg id="product-barcode-${index}-${itemIndex}" style="max-width: 80px; height: auto;"></svg></td>
+                              <td><input type="checkbox"><\/td>
+                              <td><svg id="product-barcode-${index}-${itemIndex}" style="max-width: 80px; height: auto;"><\/svg><\/td>
                               <td>${item.productCode}</td>
                               <td>${item.productName}</td>
                               <td>${item.unitPrice}</td>
@@ -476,7 +483,7 @@ export default function InboundDirectionPage() {
                       <div class="signature">
                         <p>담당자: ___________</p>
                         <p style="margin-top: 30px;">서명</p>
-                        <div class="signature-line"></div>
+                        <div class="signature-line"><\/div>
                       </div>
                     </div>
                   `).join('<hr style="page-break-after: always; border: none; margin: 40px 0;" />')}
@@ -515,7 +522,7 @@ export default function InboundDirectionPage() {
                       window.close();
                     };
                   }, 500);
-                </script>
+                <\/script>
               </body>
               </html>
             `
@@ -526,9 +533,9 @@ export default function InboundDirectionPage() {
               printWindow.document.write(printContent)
               printWindow.document.close()
             }
-          }}>지시서 출력</Button>
+          }}>{t('buttons.print')}</Button>
           <Button onClick={() => router.push('/inbound/expected-registration')}>
-            입고 예정 등록
+            {t('buttons.registerExpected')}
           </Button>
           <Button
             type="primary"
@@ -542,7 +549,7 @@ export default function InboundDirectionPage() {
               }
             }}
           >
-            입고 지시
+            {t('buttons.executeDirection')}
           </Button>
         </Space>
       </div>
@@ -571,29 +578,29 @@ export default function InboundDirectionPage() {
             total={filteredData.length}
             onChange={(page) => setPagination({ ...pagination, current: page })}
             showQuickJumper
-            showTotal={(total) => `총 ${total}개`}
+            showTotal={(total) => t('pagination.total', { total })}
           />
         </div>
       </Card>
 
       {/* Order Detail Modal */}
       <Modal
-        title="입고 지시"
+        title={t('modal.title')}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         width={800}
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
-            입고 취소
+            {t('modal.cancel')}
           </Button>,
           <Button key="back" onClick={() => setModalVisible(false)}>
-            뒤로가기
+            {t('modal.back')}
           </Button>,
           <Button key="submit" type="primary" onClick={() => {
-            message.success('입고 지시가 완료되었습니다.')
+            message.success(t('messages.directionCompleted'))
             setModalVisible(false)
           }}>
-            입고 지시
+            {t('modal.execute')}
           </Button>,
         ]}
       >
@@ -603,28 +610,28 @@ export default function InboundDirectionPage() {
             <Card style={{ marginBottom: '20px' }}>
               <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12}>
-                  <div><strong>오더번호:</strong> {selectedOrder.orderId}</div>
+                  <div><strong>{t('modal.fields.orderId')}:</strong> {selectedOrder.orderId}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>화주사:</strong> {selectedOrder.vendor}</div>
+                  <div><strong>{t('modal.fields.vendor')}:</strong> {selectedOrder.vendor}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>입고 요청일:</strong> {selectedOrder.inboundDate}</div>
+                  <div><strong>{t('modal.fields.requestDate')}:</strong> {selectedOrder.inboundDate}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>입고 예정일:</strong> {selectedOrder.inboundDate}</div>
+                  <div><strong>{t('modal.fields.expectedDate')}:</strong> {selectedOrder.inboundDate}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>입고 예정 시간:</strong> {selectedOrder.inboundTime}</div>
+                  <div><strong>{t('modal.fields.expectedTime')}:</strong> {selectedOrder.inboundTime}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>예정 수량:</strong> {selectedOrder.plannedQty}</div>
+                  <div><strong>{t('modal.fields.plannedQty')}:</strong> {selectedOrder.plannedQty}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>운송 유형:</strong> {selectedOrder.transportType}</div>
+                  <div><strong>{t('modal.fields.transportType')}:</strong> {selectedOrder.transportType}</div>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <div><strong>운송비:</strong> {selectedOrder.price}</div>
+                  <div><strong>{t('modal.fields.transportPrice')}:</strong> {selectedOrder.price}</div>
                 </Col>
               </Row>
             </Card>
@@ -636,40 +643,40 @@ export default function InboundDirectionPage() {
               items={[
                 {
                   key: 'items',
-                  label: '품목 상세',
+                  label: t('modal.tabs.items'),
                   children: (
                     <Table
                       columns={[
                         {
-                          title: '품목 바코드',
+                          title: t('modal.itemColumns.barcode'),
                           dataIndex: 'barcode',
                           key: 'barcode',
                           width: 100,
                         },
                         {
-                          title: '품목명',
+                          title: t('modal.itemColumns.productCode'),
                           dataIndex: 'productCode',
                           key: 'productCode',
                         },
                         {
-                          title: '상품명',
+                          title: t('modal.itemColumns.productName'),
                           dataIndex: 'productName',
                           key: 'productName',
                         },
                         {
-                          title: '단위 단가',
+                          title: t('modal.itemColumns.unitPrice'),
                           dataIndex: 'unitPrice',
                           key: 'unitPrice',
                           width: 100,
                         },
                         {
-                          title: '포장 단위',
+                          title: t('modal.itemColumns.unit'),
                           dataIndex: 'unit',
                           key: 'unit',
                           width: 100,
                         },
                         {
-                          title: '수량',
+                          title: t('modal.itemColumns.quantity'),
                           dataIndex: 'quantity',
                           key: 'quantity',
                           width: 80,
@@ -687,10 +694,10 @@ export default function InboundDirectionPage() {
                 },
                 {
                   key: 'history',
-                  label: '작업 내역',
+                  label: t('modal.tabs.history'),
                   children: (
                     <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-                      작업 내역이 없습니다.
+                      {t('modal.noHistory')}
                     </div>
                   ),
                 },

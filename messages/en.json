@@ -137,22 +137,80 @@
     "direction": {
       "title": "Inbound Direction",
       "subtitle": "View and manage inbound directions",
-      "orderId": "Inbound Order",
-      "vendor": "Vendor",
-      "inboundDate": "Inbound Date",
-      "productDetails": "Product Details",
-      "workHistory": "Work History",
-      "print": "Print",
-      "details": "Details",
-      "productCode": "Product Code",
-      "productName": "Product Name",
-      "quantity": "Quantity",
-      "barcode": "Barcode"
+      "columns": {
+        "orderId": "Inbound Order Number",
+        "vendor": "Vendor",
+        "requestDate": "Request Date",
+        "expectedDate": "Expected Date",
+        "expectedTime": "Expected Time",
+        "transportType": "Transport Type",
+        "transportPrice": "Transport Price",
+        "action": "In"
+      },
+      "filters": {
+        "vendorName": "Vendor Name",
+        "orderList": "Order List",
+        "productCode": "Product Code",
+        "receiptDate": "Receipt Date",
+        "expectedDate": "Expected Date",
+        "selectPlaceholder": "Select",
+        "searchPlaceholder": "Search"
+      },
+      "summary": {
+        "total": "Total Products",
+        "selected": "Selected",
+        "items": "items"
+      },
+      "buttons": {
+        "print": "Print Instruction",
+        "registerExpected": "Register Inbound Expected",
+        "executeDirection": "Execute Inbound Direction"
+      },
+      "pagination": {
+        "total": "Total {total}"
+      },
+      "modal": {
+        "title": "Inbound Direction",
+        "cancel": "Cancel Inbound",
+        "back": "Go Back",
+        "execute": "Execute Inbound Direction",
+        "fields": {
+          "orderId": "Order Number",
+          "vendor": "Vendor",
+          "requestDate": "Request Date",
+          "expectedDate": "Expected Date",
+          "expectedTime": "Expected Time",
+          "plannedQty": "Planned Quantity",
+          "transportType": "Transport Type",
+          "transportPrice": "Transport Price"
+        },
+        "tabs": {
+          "items": "Item Details",
+          "history": "Work History"
+        },
+        "itemColumns": {
+          "barcode": "Item Barcode",
+          "productCode": "Product Code",
+          "productName": "Product Name",
+          "unitPrice": "Unit Price",
+          "unit": "Unit",
+          "quantity": "Quantity"
+        },
+        "noHistory": "No work history"
+      },
+      "print": {
+        "title": "Inbound Direction Sheet"
+      },
+      "messages": {
+        "selectItemsForPrint": "Please select items to print.",
+        "newInboundRegistered": "New inbound has been registered.",
+        "directionCompleted": "Inbound direction execution completed."
+      }
     },
     "execution": {
       "title": "Inbound Execution",
       "subtitle": "Execute and manage inbound tasks",
-      "orderId": "Inbound Order",
+      "orderId": "Order ID",
       "vendor": "Vendor",
       "productCode": "Product Code",
       "status": "Status",
@@ -173,7 +231,27 @@
       "filterVendor": "Vendor",
       "filterOrderId": "Order Number",
       "filterProductCode": "Product Code",
-      "filterStatus": "Status"
+      "filterStatus": "Status",
+      "all": "All",
+      "search": "Search",
+      "reset": "Reset",
+      "selectDelete": "Delete Selected",
+      "noSelectedItems": "No items selected",
+      "deleteConfirm": "Are you sure you want to delete?",
+      "deleteSuccess": "Deleted successfully",
+      "taskDateRange": "Task Date Range",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "transportType": "Transport Type",
+      "transportPrice": "Transport Price",
+      "barcode": "Barcode",
+      "barcodeScanner": "Barcode Scanner",
+      "quantity": "Quantity",
+      "confirmQtySuccess": "Quantity confirmed successfully",
+      "inspectionCompleteSuccess": "Inspection completed successfully",
+      "placementSuccess": "Placement completed successfully",
+      "error": "An error occurred",
+      "selectAtLeastOne": "Select at least one item"
     },
     "expectedRegistration": {
       "title": "Inbound Expected Registration",

@@ -137,17 +137,75 @@
     "direction": {
       "title": "입고 지시",
       "subtitle": "입고 지시 내역을 확인하고 관리합니다",
-      "orderId": "입고 오더",
-      "vendor": "화주명",
-      "inboundDate": "입고일자",
-      "productDetails": "품목 상세",
-      "workHistory": "작업 기록",
-      "print": "인쇄",
-      "details": "상세정보",
-      "productCode": "품목 코드",
-      "productName": "품목명",
-      "quantity": "수량",
-      "barcode": "바코드"
+      "columns": {
+        "orderId": "입고 오더 번호",
+        "vendor": "화주사",
+        "requestDate": "입고 요청일",
+        "expectedDate": "입고 예정일",
+        "expectedTime": "입고 예정 시간",
+        "transportType": "운송 유형",
+        "transportPrice": "운송비",
+        "action": "입"
+      },
+      "filters": {
+        "vendorName": "화주명",
+        "orderList": "입고 오더 목록",
+        "productCode": "품목 코드",
+        "receiptDate": "입고 접수일",
+        "expectedDate": "입고 예정일",
+        "selectPlaceholder": "선택",
+        "searchPlaceholder": "검색"
+      },
+      "summary": {
+        "total": "전체 상품",
+        "selected": "선택",
+        "items": "건"
+      },
+      "buttons": {
+        "print": "지시서 출력",
+        "registerExpected": "입고 예정 등록",
+        "executeDirection": "입고 지시"
+      },
+      "pagination": {
+        "total": "총 {total}개"
+      },
+      "modal": {
+        "title": "입고 지시",
+        "cancel": "입고 취소",
+        "back": "뒤로가기",
+        "execute": "입고 지시",
+        "fields": {
+          "orderId": "오더번호",
+          "vendor": "화주사",
+          "requestDate": "입고 요청일",
+          "expectedDate": "입고 예정일",
+          "expectedTime": "입고 예정 시간",
+          "plannedQty": "예정 수량",
+          "transportType": "운송 유형",
+          "transportPrice": "운송비"
+        },
+        "tabs": {
+          "items": "품목 상세",
+          "history": "작업 내역"
+        },
+        "itemColumns": {
+          "barcode": "품목 바코드",
+          "productCode": "품목명",
+          "productName": "상품명",
+          "unitPrice": "단위 단가",
+          "unit": "포장 단위",
+          "quantity": "수량"
+        },
+        "noHistory": "작업 내역이 없습니다."
+      },
+      "print": {
+        "title": "입고 지시서"
+      },
+      "messages": {
+        "selectItemsForPrint": "출력할 항목을 선택해주세요.",
+        "newInboundRegistered": "새로운 입고 예정이 등록되었습니다.",
+        "directionCompleted": "입고 지시가 완료되었습니다."
+      }
     },
     "execution": {
       "title": "입고 실행",
