@@ -584,7 +584,7 @@ export default function InboundDirectionPage() {
         width={800}
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
-            이동 취소
+            입고 취소
           </Button>,
           <Button key="back" onClick={() => setModalVisible(false)}>
             뒤로가기
@@ -593,7 +593,7 @@ export default function InboundDirectionPage() {
             message.success('입고 지시가 완료되었습니다.')
             setModalVisible(false)
           }}>
-            이동 지시
+            입고 지시
           </Button>,
         ]}
       >
