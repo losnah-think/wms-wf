@@ -43,6 +43,8 @@ model User {
   alertAcknowledgedBy Alert[]              @relation("acknowledgedBy")
   alertResolvedBy     Alert[]              @relation("resolvedBy")
   auditLogsCreated    AuditLog[]           @relation("userId")
+  stockHistoryChangedBy StockHistory[]     @relation("stockHistoryChangedBy")
+  alertHistoryChangedBy AlertHistory[]     @relation("alertHistoryChangedBy")
 
   @@index([role])
   @@index([isActive])
@@ -263,6 +265,7 @@ model SKU {
   stocks          Stock[]
   stockMovements  StockMovement[]
   stockAudits     StockAudit[]
+  stockHistories  StockHistory[]        @relation("skuStockHistory")
 
   @@index([productId])
   @@index([skuCode])
@@ -361,7 +364,7 @@ model StockHistory {
   
   warehouseId     String
   skuId           String
-  sku             SKU       @relation(fields: [skuId], references: [id])
+  sku             SKU       @relation("skuStockHistory", fields: [skuId], references: [id])
   
   // 수량 변경
   previousQuantity Int?
@@ -374,7 +377,7 @@ model StockHistory {
   reason          String?   @db.Text
   
   changedById     String?
-  changedBy       User?     @relation("userId", fields: [changedById], references: [id])
+  changedBy       User?     @relation("stockHistoryChangedBy", fields: [changedById], references: [id])
   
   changedAt       DateTime  @default(now())
 
@@ -661,7 +664,7 @@ model AlertHistory {
   previousStatus  String?   @db.VarChar(50)
   newStatus       String    @db.VarChar(50)
   changedById     String?
-  changedBy       User?     @relation(fields: [changedById], references: [id])
+  changedBy       User?     @relation("alertHistoryChangedBy", fields: [changedById], references: [id])
   
   action          String?   @db.VarChar(255)
   notes           String?   @db.Text
