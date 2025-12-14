@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   Table,
   Tag,
@@ -132,7 +131,6 @@ const statusLabelMap: Record<string, string> = {
 
 export default function InboundOrdersPage() {
   const t = useTranslations()
-  const router = useRouter()
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
   const [filters, setFilters] = useState({
     vendor: '',
@@ -224,15 +222,7 @@ export default function InboundOrdersPage() {
       dataIndex: 'orderId',
       key: 'orderId',
       width: 150,
-      render: (text, record) => (
-        <Button
-          type="link"
-          style={{ color: '#0066cc', padding: 0 }}
-          onClick={() => router.push(`/inbound/orders/${record.orderId}`)}
-        >
-          <strong>{text}</strong>
-        </Button>
-      ),
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: '화주명',
