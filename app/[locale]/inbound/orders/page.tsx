@@ -301,6 +301,13 @@ export default function InboundOrdersPage() {
 
   return (
     <div style={{ padding: '20px' }}>
+      {/* Breadcrumb */}
+      <div style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
+        <span>{t('breadcrumb.inbound')}</span>
+        <span style={{ margin: '0 10px' }}>/</span>
+        <span>{t('breadcrumb.orders')}</span>
+      </div>
+
       <div style={{ marginBottom: '30px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: '0 0 10px 0' }}>{t('title')}</h1>
         <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>{t('subtitle')}</p>
