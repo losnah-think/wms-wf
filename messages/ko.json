@@ -142,7 +142,8 @@
       "pending": "적치 예정",
       "placed": "적치 중",
       "completed": "적치 완료",
-      "items": "건"
+      "items": "건",
+      "quantity": ""
     },
     "direction": {
       "title": "입고 지시",

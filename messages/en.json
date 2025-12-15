@@ -142,7 +142,8 @@
       "pending": "Placement Scheduled",
       "placed": "Placing",
       "completed": "Placement Complete",
-      "items": "items"
+      "items": "items",
+      "quantity": ""
     },
     "direction": {
       "title": "Inbound Direction",
