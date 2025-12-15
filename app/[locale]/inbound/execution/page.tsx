@@ -777,14 +777,9 @@ export default function InboundExecutionPage() {
             </Button>
           )}
           {activeTab === 'pending' && (
-            <>
-              <Button onClick={handlePlacementQuantityConfirmation} disabled={selectedRows.length === 0}>
-                수량 확인 후 확정
-              </Button>
-              <Button onClick={handlePlacementComplete} disabled={selectedRows.length === 0}>
-                적치 수량 확정
-              </Button>
-            </>
+            <Button onClick={handlePlacementQuantityConfirmation} disabled={selectedRows.length === 0}>
+              수량 확인 후 확정
+            </Button>
           )}
           {activeTab === 'placed' && (
             <Button onClick={handlePlacementComplete} disabled={selectedRows.length === 0}>
