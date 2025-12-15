@@ -240,6 +240,12 @@
     "execution": {
       "title": "Inbound Execution",
       "subtitle": "Execute and manage inbound tasks",
+      "breadcrumb": {
+        "inbound": "Inbound",
+        "execution": "Execution"
+      },
+      "selectPlaceholder": "Select",
+      "confirm": "Confirm",
       "orderId": "Order ID",
       "vendor": "Vendor",
       "productCode": "Product Code",
@@ -280,6 +286,9 @@
       "ordersMovedMessage": "orders moved to inbound execution",
       "loadingError": "Error processing orders",
       "loadingErrorDetail": "An error occurred while processing order data",
+      "pagination": {
+        "total": "Total {total}"
+      },
       "modal": {
         "title": "Inbound Order Details",
         "goBack": "Go Back",

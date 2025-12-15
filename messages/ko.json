@@ -240,6 +240,12 @@
     "execution": {
       "title": "입고 실행",
       "subtitle": "입고 작업을 실행하고 관리합니다",
+      "breadcrumb": {
+        "inbound": "입고",
+        "execution": "입고 실행"
+      },
+      "selectPlaceholder": "선택",
+      "confirm": "확정",
       "orderId": "입고 오더",
       "vendor": "화주명",
       "productCode": "품목코드",
@@ -262,6 +268,27 @@
       "filterOrderId": "입고 오더 번호",
       "filterProductCode": "품목코드",
       "filterStatus": "상태",
+      "all": "전체",
+      "items": "건",
+      "search": "검색",
+      "total": "총계",
+      "selectAtLeastOne": "최소 1개 이상의 항목을 선택해주세요",
+      "goBack": "이전",
+      "productDetails": "품목 상세",
+      "workHistory": "작업 기록",
+      "noWorkHistory": "작업 기록이 없습니다",
+      "inspectionCompleteMessage": "검수가 성공적으로 완료되었습니다",
+      "placementInstructionMessage": "적치 예정으로 이동되었습니다",
+      "selectOrderForPlacement": "적치할 오더를 선택해주세요",
+      "selectOrderForQuantity": "수량을 확인할 오더를 선택해주세요",
+      "selectOrderForCompletion": "적치를 완료할 오더를 선택해주세요",
+      "placementCompleteMessage": "적치가 성공적으로 완료되었습니다",
+      "ordersMovedMessage": "개의 오더가 입고 실행으로 이동되었습니다",
+      "loadingError": "오더 처리 중 오류가 발생했습니다",
+      "loadingErrorDetail": "오더 데이터 처리 중 오류가 발생했습니다",
+      "pagination": {
+        "total": "총 {total}개"
+      },
       "modal": {
         "title": "입고 오더",
         "goBack": "이전",

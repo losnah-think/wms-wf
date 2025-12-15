@@ -555,14 +555,14 @@ export default function InboundExecutionPage() {
     <div style={{ padding: '20px' }}>
       {/* Breadcrumb */}
       <div style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
-        <span>입고</span>
+        <span>{t('breadcrumb.inbound')}</span>
         <span style={{ margin: '0 10px' }}>/</span>
-        <span>입고 실행</span>
+        <span>{t('breadcrumb.execution')}</span>
       </div>
 
       {/* Header */}
       <div style={{ marginBottom: '20px' }}>
-        <h1>입고 실행</h1>
+        <h1>{t('title')}</h1>
       </div>
 
       {/* Filter Section */}
@@ -574,7 +574,7 @@ export default function InboundExecutionPage() {
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={filters.vendor}
               onChange={(value) => setFilters({ ...filters, vendor: value })}
               options={[
@@ -613,7 +613,7 @@ export default function InboundExecutionPage() {
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={filters.status}
               onChange={(value) => setFilters({ ...filters, status: value })}
               options={[
@@ -813,7 +813,7 @@ export default function InboundExecutionPage() {
             total={filteredData.length}
             onChange={(page) => setPagination({ ...pagination, current: page })}
             showQuickJumper
-            showTotal={(total) => `총 ${total}개`}
+            showTotal={(total) => t('pagination.total', { total })}
           />
         </div>
       </Card>
@@ -831,10 +831,10 @@ export default function InboundExecutionPage() {
             setIsModalVisible(false)
             setSelectedOrderDetail(null)
           }}>
-            {t('modal.goBack')}
+            {t('goBack')}
           </Button>,
           <Button key="confirm" type="primary">
-            {t('modal.confirm')}
+            {t('confirm')}
           </Button>,
         ]}
         width={800}
