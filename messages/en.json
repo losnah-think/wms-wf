@@ -203,7 +203,33 @@
         "noHistory": "No work history"
       },
       "print": {
-        "title": "Inbound Direction Sheet"
+        "title": "Inbound Direction Sheet",
+        "dateLabel": "Date:",
+        "orderNumber": "Order Number:",
+        "vendor": "Vendor:",
+        "requestDate": "Request Date:",
+        "expectedDate": "Expected Date:",
+        "expectedTime": "Expected Time:",
+        "plannedQty": "Planned Qty:",
+        "transportType": "Transport Type:",
+        "transportPrice": "Transport Price:",
+        "inboundBarcode": "Inbound Barcode",
+        "tableHeaders": {
+          "itemBarcode": "Item Barcode",
+          "productCode": "Product Code",
+          "productName": "Product Name",
+          "unitPrice": "Unit Price",
+          "packageUnit": "Package Unit",
+          "packPrice": "Pack Price",
+          "quantity": "Quantity",
+          "otherQty": "Other Qty",
+          "remark": "Remark",
+          "noProducts": "No product information"
+        },
+        "signature": {
+          "manager": "Manager:",
+          "signatureLabel": "Signature"
+        }
       },
       "messages": {
         "selectItemsForPrint": "Please select items to print.",

@@ -391,6 +391,46 @@ export default function InboundDirectionPage() {
             const selectedOrders = paginatedData.filter(item => selectedRows.includes(item.key))
             
             // 출력할 HTML 생성
+            const getDateLabel = () => {
+              // 현재 locale 확인 (ko 또는 en)
+              const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'ko'
+              return locale === 'ko' ? '작성일:' : 'Date:'
+            }
+            
+            const getOrderHeaderLabels = () => {
+              const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'ko'
+              return {
+                orderNumber: locale === 'ko' ? '오더번호:' : 'Order Number:',
+                vendor: locale === 'ko' ? '화주사:' : 'Vendor:',
+                requestDate: locale === 'ko' ? '입고 요청일:' : 'Request Date:',
+                expectedDate: locale === 'ko' ? '입고 예정일:' : 'Expected Date:',
+                expectedTime: locale === 'ko' ? '입고 예정 시간:' : 'Expected Time:',
+                plannedQty: locale === 'ko' ? '예정 수량:' : 'Planned Qty:',
+                transportType: locale === 'ko' ? '운송 유형:' : 'Transport Type:',
+                transportPrice: locale === 'ko' ? '운송비:' : 'Transport Price:',
+                inboundBarcode: locale === 'ko' ? '입고 바코드' : 'Inbound Barcode',
+                sheetTitle: locale === 'ko' ? '입고 지시서' : 'Inbound Direction Sheet',
+              }
+            }
+            
+            const tableHeaders = () => {
+              const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'ko'
+              return locale === 'ko' 
+                ? { checkbox: '', barcode: '품목 바코드', code: '품목명', name: '상품명', unitPrice: '단위 단가', unit: '포장 단위', packPrice: '포장 단가', qty: '수량', otherQty: '기타 수량', remark: '비고', noProducts: '상품 정보 없음' }
+                : { checkbox: '', barcode: 'Item Barcode', code: 'Product Code', name: 'Product Name', unitPrice: 'Unit Price', unit: 'Package Unit', packPrice: 'Pack Price', qty: 'Quantity', otherQty: 'Other Qty', remark: 'Remark', noProducts: 'No product information' }
+            }
+            
+            const signatureLabels = () => {
+              const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'ko'
+              return locale === 'ko'
+                ? { manager: '담당자:', signature: '서명' }
+                : { manager: 'Manager:', signature: 'Signature' }
+            }
+            
+            const labels = getOrderHeaderLabels()
+            const headers = tableHeaders()
+            const sigLabels = signatureLabels()
+            
             const printContent = `
               <!DOCTYPE html>
               <html>
@@ -428,25 +468,25 @@ export default function InboundDirectionPage() {
               <body>
                 <div class="print-container">
                   <div class="header">
-                    <h1>입고 지시서</h1>
-                    <p>작성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+                    <h1>${labels.sheetTitle}</h1>
+                    <p>${getDateLabel()} ${new Date().toLocaleDateString()}</p>
                   </div>
                   
                   ${selectedOrders.map((order, index) => `
                     <div class="order-section">
                       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <div class="order-info" style="flex: 1;">
-                          <p><span class="label">오더번호:</span> ${order.orderId}</p>
-                          <p><span class="label">화주사:</span> ${order.vendor}</p>
-                          <p><span class="label">입고 요청일:</span> ${order.inboundDate}</p>
-                          <p><span class="label">입고 예정일:</span> ${order.inboundDate}</p>
-                          <p><span class="label">입고 예정 시간:</span> ${order.inboundTime}</p>
-                          <p><span class="label">예정 수량:</span> ${order.plannedQty}</p>
-                          <p><span class="label">운송 유형:</span> ${order.transportType}</p>
-                          <p><span class="label">운송비:</span> ${order.price}</p>
+                          <p><span class="label">${labels.orderNumber}</span> ${order.orderId}</p>
+                          <p><span class="label">${labels.vendor}</span> ${order.vendor}</p>
+                          <p><span class="label">${labels.requestDate}</span> ${order.inboundDate}</p>
+                          <p><span class="label">${labels.expectedDate}</span> ${order.inboundDate}</p>
+                          <p><span class="label">${labels.expectedTime}</span> ${order.inboundTime}</p>
+                          <p><span class="label">${labels.plannedQty}</span> ${order.plannedQty}</p>
+                          <p><span class="label">${labels.transportType}</span> ${order.transportType}</p>
+                          <p><span class="label">${labels.transportPrice}</span> ${order.price}</p>
                         </div>
                         <div class="barcode-item" style="text-align: center; margin-left: 30px;">
-                          <div class="barcode-label">입고 바코드</div>
+                          <div class="barcode-label">${labels.inboundBarcode}</div>
                           <svg id="inbound-barcode-${index}"><\/svg>
                         </div>
                       </div>
@@ -455,15 +495,15 @@ export default function InboundDirectionPage() {
                         <thead>
                           <tr>
                             <th style="width: 50px;"><\/th>
-                            <th style="width: 120px;">품목 바코드</th>
-                            <th>품목명</th>
-                            <th>상품명</th>
-                            <th>단위 단가</th>
-                            <th>포장 단위</th>
-                            <th>포장 단가</th>
-                            <th style="width: 60px;">수량</th>
-                            <th style="width: 60px;">기타 수량</th>
-                            <th style="width: 50px;">비고</th>
+                            <th style="width: 120px;">${headers.barcode}</th>
+                            <th>${headers.code}</th>
+                            <th>${headers.name}</th>
+                            <th>${headers.unitPrice}</th>
+                            <th>${headers.unit}</th>
+                            <th>${headers.packPrice}</th>
+                            <th style="width: 60px;">${headers.qty}</th>
+                            <th style="width: 60px;">${headers.otherQty}</th>
+                            <th style="width: 50px;">${headers.remark}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -480,13 +520,13 @@ export default function InboundDirectionPage() {
                               <td>0</td>
                               <td>${item.remark}</td>
                             </tr>
-                          `).join('') || '<tr><td colspan="10">상품 정보 없음</td></tr>'}
+                          `).join('') || '<tr><td colspan="10">${headers.noProducts}</td></tr>'}
                         </tbody>
                       </table>
                       
                       <div class="signature">
-                        <p>담당자: ___________</p>
-                        <p style="margin-top: 30px;">서명</p>
+                        <p>${sigLabels.manager} ___________</p>
+                        <p style="margin-top: 30px;">${sigLabels.signature}</p>
                         <div class="signature-line"><\/div>
                       </div>
                     </div>

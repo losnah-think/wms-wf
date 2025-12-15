@@ -203,7 +203,33 @@
         "noHistory": "작업 내역이 없습니다."
       },
       "print": {
-        "title": "입고 지시서"
+        "title": "입고 지시서",
+        "dateLabel": "작성일:",
+        "orderNumber": "오더번호:",
+        "vendor": "화주사:",
+        "requestDate": "입고 요청일:",
+        "expectedDate": "입고 예정일:",
+        "expectedTime": "입고 예정 시간:",
+        "plannedQty": "예정 수량:",
+        "transportType": "운송 유형:",
+        "transportPrice": "운송비:",
+        "inboundBarcode": "입고 바코드",
+        "tableHeaders": {
+          "itemBarcode": "품목 바코드",
+          "productCode": "품목명",
+          "productName": "상품명",
+          "unitPrice": "단위 단가",
+          "packageUnit": "포장 단위",
+          "packPrice": "포장 단가",
+          "quantity": "수량",
+          "otherQty": "기타 수량",
+          "remark": "비고",
+          "noProducts": "상품 정보 없음"
+        },
+        "signature": {
+          "manager": "담당자:",
+          "signatureLabel": "서명"
+        }
       },
       "messages": {
         "selectItemsForPrint": "출력할 항목을 선택해주세요.",
