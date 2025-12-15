@@ -134,12 +134,12 @@ const mockData: InboundExecution[] = [
 ]
 
 const statusTabs = [
-  { key: 'receipt', label: '검수 예정', count: 5 },
-  { key: 'inspecting', label: '검수 중', count: 0 },
-  { key: 'inspection_complete', label: '검수 완료', count: 0 },
-  { key: 'pending', label: '적치 예정', count: 0 },
-  { key: 'placed', label: '적치 중', count: 0 },
-  { key: 'completed', label: '적치 완료', count: 0 },
+  { key: 'receipt', label: 'Inspection Scheduled', count: 5 },
+  { key: 'inspecting', label: 'Inspecting', count: 0 },
+  { key: 'inspection_complete', label: 'Inspection Complete', count: 0 },
+  { key: 'pending', label: 'Placement Scheduled', count: 0 },
+  { key: 'placed', label: 'Placing', count: 0 },
+  { key: 'completed', label: 'Placement Complete', count: 0 },
 ]
 
 export default function InboundExecutionPage() {
@@ -184,10 +184,10 @@ export default function InboundExecutionPage() {
           status: 'receipt' as const,
         }))
         setExecutionData(ordersWithStatus)
-        message.success(`${orders.length}개의 오더가 입고 실행으로 이동되었습니다.`)
+        message.success(`${orders.length} ${t('ordersMovedMessage')}`)
       } catch (error) {
         console.error('Error parsing orders:', error)
-        message.error('오더 데이터를 처리하는 중 오류가 발생했습니다.')
+        message.error(t('loadingErrorDetail'))
       }
     }
 
@@ -258,12 +258,12 @@ export default function InboundExecutionPage() {
 
     setExecutionData(updatedData)
     setSelectedRows([])
-    message.success('검수가 완료되었습니다.')
+    message.success(t('inspectionCompleteMessage'))
   }
 
   const handlePlacementInstruction = () => {
     if (selectedRows.length === 0) {
-      message.warning('적치할 오더를 선택해주세요.')
+      message.warning(t('selectOrderForPlacement'))
       return
     }
 
@@ -277,12 +277,12 @@ export default function InboundExecutionPage() {
 
     setExecutionData(updatedData)
     setSelectedRows([])
-    message.success('선택한 오더가 적치 예정으로 이동되었습니다.')
+    message.success(t('placementInstructionMessage'))
   }
 
   const handlePlacementQuantityConfirmation = () => {
     if (selectedRows.length === 0) {
-      message.warning('수량을 확인할 오더를 선택해주세요.')
+      message.warning(t('selectOrderForQuantity'))
       return
     }
 
@@ -308,7 +308,7 @@ export default function InboundExecutionPage() {
 
   const handlePlacementComplete = () => {
     if (selectedRows.length === 0) {
-      message.warning('적치를 완료할 오더를 선택해주세요.')
+      message.warning(t('selectOrderForCompletion'))
       return
     }
 
@@ -322,12 +322,12 @@ export default function InboundExecutionPage() {
 
     setExecutionData(updatedData)
     setSelectedRows([])
-    message.success('적치가 완료되었습니다.')
+    message.success(t('placementCompleteMessage'))
   }
 
   const handleQuantityConfirmation = () => {
     if (selectedRows.length === 0) {
-      message.warning('수량을 확인할 오더를 선택해주세요.')
+      message.warning(t('selectOrderForQuantity'))
       return
     }
 
@@ -752,38 +752,38 @@ export default function InboundExecutionPage() {
       >
         <div>
           <span>
-            전체 상품 {filteredData.length} 건 | 선택 {selectedRows.length} 건
+            {t('all')} {filteredData.length} {t('items')} | {t('search')} {selectedRows.length} {t('items')}
           </span>
         </div>
         <Space>
           {activeTab === 'receipt' && (
             <>
               <Button onClick={handleQuantityConfirmation} disabled={selectedRows.length === 0}>
-                수량 확인 후 확정
+                {t('confirmQuantity')}
               </Button>
               <Button onClick={handleInspectionComplete} disabled={selectedRows.length === 0}>
-                검수 확정
+                {t('inspectionComplete')}
               </Button>
             </>
           )}
           {activeTab === 'inspecting' && (
             <Button onClick={handleInspectionComplete} disabled={selectedRows.length === 0}>
-              검수 확정
+              {t('inspectionComplete')}
             </Button>
           )}
           {activeTab === 'inspection_complete' && (
             <Button type="primary" onClick={handlePlacementInstruction} disabled={selectedRows.length === 0}>
-              적치 지시
+              {t('placementInstruction')}
             </Button>
           )}
           {activeTab === 'pending' && (
             <Button onClick={handlePlacementQuantityConfirmation} disabled={selectedRows.length === 0}>
-              수량 확인 후 확정
+              {t('confirmQuantity')}
             </Button>
           )}
           {activeTab === 'placed' && (
             <Button onClick={handlePlacementComplete} disabled={selectedRows.length === 0}>
-              적치 수량 확정
+              {t('placementQuantity')}
             </Button>
           )}
         </Space>
@@ -831,10 +831,10 @@ export default function InboundExecutionPage() {
             setIsModalVisible(false)
             setSelectedOrderDetail(null)
           }}>
-            이전
+            {t('modal.goBack')}
           </Button>,
           <Button key="confirm" type="primary">
-            확정
+            {t('modal.confirm')}
           </Button>,
         ]}
         width={800}
@@ -846,25 +846,25 @@ export default function InboundExecutionPage() {
               <Row gutter={16}>
                 <Col span={12}>
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ color: '#666', fontSize: '12px' }}>입고 오더</label>
+                    <label style={{ color: '#666', fontSize: '12px' }}>{t('modal.fields.orderId')}</label>
                     <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{selectedOrderDetail.orderId}</div>
                   </div>
                 </Col>
                 <Col span={12}>
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ color: '#666', fontSize: '12px' }}>화주사</label>
+                    <label style={{ color: '#666', fontSize: '12px' }}>{t('modal.fields.vendor')}</label>
                     <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{selectedOrderDetail.vendor}</div>
                   </div>
                 </Col>
                 <Col span={12}>
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ color: '#666', fontSize: '12px' }}>입고 예정일</label>
+                    <label style={{ color: '#666', fontSize: '12px' }}>{t('modal.fields.plannedDate')}</label>
                     <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{selectedOrderDetail.expectedDate}</div>
                   </div>
                 </Col>
                 <Col span={12}>
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ color: '#666', fontSize: '12px' }}>검수 지시일</label>
+                    <label style={{ color: '#666', fontSize: '12px' }}>{t('modal.fields.inspectionDate')}</label>
                     <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{selectedOrderDetail.inspectionRequestDate}</div>
                   </div>
                 </Col>
@@ -877,7 +877,7 @@ export default function InboundExecutionPage() {
               items={[
                 {
                   key: '1',
-                  label: '품목 상세',
+                  label: t('modal.tabs.productDetails'),
                   children: (
                     <Table
                       dataSource={[
@@ -889,9 +889,9 @@ export default function InboundExecutionPage() {
                         },
                       ]}
                       columns={[
-                        { title: '상품코드', dataIndex: 'productCode', key: 'productCode' },
-                        { title: '상품명', dataIndex: 'productName', key: 'productName' },
-                        { title: '수량', dataIndex: 'quantity', key: 'quantity' },
+                        { title: t('modal.productColumns.productCode'), dataIndex: 'productCode', key: 'productCode' },
+                        { title: t('modal.productColumns.productName'), dataIndex: 'productName', key: 'productName' },
+                        { title: t('modal.productColumns.quantity'), dataIndex: 'quantity', key: 'quantity' },
                       ]}
                       pagination={false}
                     />
@@ -899,10 +899,10 @@ export default function InboundExecutionPage() {
                 },
                 {
                   key: '2',
-                  label: '작업 기록',
+                  label: t('modal.tabs.workHistory'),
                   children: (
                     <div style={{ color: '#999', textAlign: 'center', padding: '20px' }}>
-                      작업 기록이 없습니다.
+                      {t('modal.noHistory')}
                     </div>
                   ),
                 },

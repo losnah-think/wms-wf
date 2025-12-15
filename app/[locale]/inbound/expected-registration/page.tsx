@@ -111,25 +111,25 @@ export default function InboundExpectedRegistrationPage() {
     const key = Date.now().toString()
     setTableData([...tableData, { ...newItem, key }])
     setIsModalVisible(false)
-    message.success('품목이 등록되었습니다.')
+    message.success(t('itemAddedSuccess'))
   }
 
   const handleDeleteSelected = () => {
     if (selectedRows.length === 0) {
-      message.warning('삭제할 품목을 선택해주세요.')
+      message.warning(t('selectDelete'))
       return
     }
     Modal.confirm({
-      title: '품목 삭제',
-      content: `${selectedRows.length}개의 품목을 삭제하시겠습니까?`,
-      okText: '삭제',
-      cancelText: '취소',
+      title: t('registerItem'),
+      content: t('confirmDelete').replace('{count}', selectedRows.length.toString()),
+      okText: t('register'),
+      cancelText: t('selectCancel'),
       okButtonProps: { danger: true },
       onOk() {
         const newData = tableData.filter(item => !selectedRows.includes(item.key))
         setTableData(newData)
         setSelectedRows([])
-        message.success('품목이 삭제되었습니다.')
+        message.success(t('deleteSuccess'))
       },
     })
   }
@@ -137,46 +137,50 @@ export default function InboundExpectedRegistrationPage() {
   const handleRegister = () => {
     // 필수 필드 검증
     if (!formData.vendor) {
-      message.error('공급업체를 선택해주세요')
+      message.error(t('selectVendor'))
       return
     }
     if (!formData.inboundDate) {
-      message.error('입고일을 선택해주세요')
+      message.error(t('selectInboundDate'))
       return
     }
     if (!formData.inboundTime) {
-      message.error('입고시간을 선택해주세요')
+      message.error(t('selectInboundTime'))
       return
     }
     if (tableData.length === 0) {
-      message.error('최소 1개 이상의 품목을 등록해주세요')
+      message.error(t('noItems'))
       return
     }
 
-    // 새로운 입고 지시 데이터 생성
-    const newOrders = tableData.map((item, index) => ({
-      key: `direction-${Date.now()}-${index}`,
-      orderId: `RV-${formData.inboundDate.replace(/-/g, '')}-${String(index + 1).padStart(4, '0')}`,
+    // 모든 상품을 하나의 오더로 생성
+    const orderId = `RV-${formData.inboundDate.replace(/-/g, '')}-${String(1).padStart(4, '0')}`
+    const newOrder = {
+      key: `direction-${Date.now()}`,
+      orderId: orderId,
       vendor: formData.vendor,
       date: formData.inboundDate,
       time: formData.inboundTime,
-      quantity: parseInt(item.moveQty || '0') || 0,
+      items: tableData,
+      totalQuantity: tableData.reduce((sum, item) => sum + (parseInt(item.moveQty || '0') || 0), 0),
       status: 'pending' as const,
       expectedDate: formData.inboundDate,
       transportType: formData.transportType,
       transportPrice: formData.transportPrice,
       memo: formData.memo,
-    }))
+    }
 
     try {
       // localStorage에 저장
-      localStorage.setItem('registeredInboundOrders', JSON.stringify(newOrders))
-      message.success('입고 예정이 등록되었습니다')
+      const existingOrders = JSON.parse(localStorage.getItem('registeredInboundOrders') || '[]')
+      existingOrders.push(newOrder)
+      localStorage.setItem('registeredInboundOrders', JSON.stringify(existingOrders))
+      message.success(t('registerSuccess'))
       
       // 지시 페이지로 이동
       router.push('/inbound/direction')
     } catch (error) {
-      message.error('등록 중 오류가 발생했습니다')
+      message.error(t('registerError'))
       console.error(error)
     }
   }
@@ -215,33 +219,33 @@ export default function InboundExpectedRegistrationPage() {
       ),
     },
     {
-      title: '품목 코드',
+      title: t('productCode'),
       dataIndex: 'productCode',
       key: 'productCode',
     },
     {
-      title: '상품명/상품 속성',
+      title: t('productName'),
       dataIndex: 'productName',
       key: 'productName',
       render: (text: string) => <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>,
     },
     {
-      title: '공급처',
+      title: t('supplier'),
       dataIndex: 'supplier',
       key: 'supplier',
     },
     {
-      title: '검수 방법',
+      title: t('quantityMethod'),
       dataIndex: 'quantityMethod',
       key: 'quantityMethod',
     },
     {
-      title: '로트 번호',
+      title: t('lotNumber'),
       dataIndex: 'lotNumber',
       key: 'lotNumber',
     },
     {
-      title: '이동 수량',
+      title: t('moveQuantity'),
       dataIndex: 'moveQty',
       key: 'moveQty',
     },
@@ -251,29 +255,29 @@ export default function InboundExpectedRegistrationPage() {
     <div style={{ padding: '20px' }}>
       {/* Breadcrumb */}
       <div style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
-        <span>입고</span>
+        <span>{t('breadcrumb.inbound')}</span>
         <span style={{ margin: '0 10px' }}>/</span>
-        <span>입고 지시</span>
+        <span>{t('breadcrumb.direction')}</span>
         <span style={{ margin: '0 10px' }}>/</span>
-        <span>입고 예정 등록</span>
+        <span>{t('breadcrumb.registration')}</span>
       </div>
 
       {/* Header */}
       <div style={{ marginBottom: '20px' }}>
-        <h1>입고 예정 등록</h1>
+        <h1>{t('title')}</h1>
       </div>
 
       {/* Filter Section - Warehouse Info */}
       <Card style={{ marginBottom: '20px' }}>
-        <h3 style={{ marginBottom: '20px', fontWeight: 'bold' }}>화주사</h3>
+        <h3 style={{ marginBottom: '20px', fontWeight: 'bold' }}>{t('vendor')}</h3>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>* 화주명</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('requiredVendor')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={formData.vendor}
               onChange={(value) => setFormData({ ...formData, vendor: value })}
               options={[
@@ -285,11 +289,11 @@ export default function InboundExpectedRegistrationPage() {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>* 입고 예정일</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('requiredInboundDate')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={formData.inboundDate}
               onChange={(value) => setFormData({ ...formData, inboundDate: value })}
               options={[
@@ -301,11 +305,11 @@ export default function InboundExpectedRegistrationPage() {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>* 입고 예정 시간</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('requiredInboundTime')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={formData.inboundTime}
               onChange={(value) => setFormData({ ...formData, inboundTime: value })}
               options={[
@@ -318,27 +322,27 @@ export default function InboundExpectedRegistrationPage() {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>* 운송 유형</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('requiredTransportType')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
-              placeholder="select"
+              placeholder={t('selectPlaceholder')}
               value={formData.transportType}
               onChange={(value) => setFormData({ ...formData, transportType: value })}
               options={[
-                { label: '택배', value: 'delivery' },
-                { label: '퀵배송', value: 'quick' },
-                { label: '직접배송', value: 'direct' },
+                { label: t('deliveryType'), value: 'delivery' },
+                { label: t('quickType'), value: 'quick' },
+                { label: t('directType'), value: 'direct' },
               ]}
             />
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>* 운송비</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('requiredTransportPrice')}</label>
             </div>
             <InputNumber
               style={{ width: '100%' }}
-              placeholder="운송비 입력"
+              placeholder={t('transportPricePlaceholder')}
               value={formData.transportPrice as any}
               onChange={(value) => setFormData({ ...formData, transportPrice: value as any })}
               formatter={(value) => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -347,10 +351,10 @@ export default function InboundExpectedRegistrationPage() {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>메모</label>
+              <label>{t('memo')}</label>
             </div>
             <Input
-              placeholder="메모 입력"
+              placeholder={t('memoPlaceholder')}
               value={formData.memo as any}
               onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
             />
@@ -368,7 +372,7 @@ export default function InboundExpectedRegistrationPage() {
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ margin: 0, fontWeight: 'bold' }}>재고 이동 예정 목록</h3>
+          <h3 style={{ margin: 0, fontWeight: 'bold' }}>{t('inventory')}</h3>
           <Space>
             <Button
               type="text"
@@ -376,14 +380,14 @@ export default function InboundExpectedRegistrationPage() {
               onClick={handleDeleteSelected}
               disabled={selectedRows.length === 0}
             >
-              선택 삭제
+              {t('deleteSelected')}
             </Button>
             <Button
               type="text"
               style={{ color: '#0066cc' }}
               onClick={() => setIsModalVisible(true)}
             >
-              품목 등록
+              {t('registerItem')}
             </Button>
           </Space>
         </div>
@@ -412,7 +416,7 @@ export default function InboundExpectedRegistrationPage() {
               total={tableData.length}
               onChange={(page) => setPagination({ ...pagination, current: page })}
               showQuickJumper
-              showTotal={(total) => `총 ${total}개`}
+              showTotal={(total) => t('total').replace('{total}', total.toString())}
             />
           </div>
         )}
@@ -426,9 +430,9 @@ export default function InboundExpectedRegistrationPage() {
           gap: '10px',
         }}
       >
-        <Button onClick={handlePrevious}>이전</Button>
+        <Button onClick={handlePrevious}>{t('previous')}</Button>
         <Button type="primary" disabled={tableData.length === 0} onClick={handleRegister}>
-          등록
+          {t('register')}
         </Button>
       </div>
 
@@ -534,6 +538,7 @@ const mockProducts = [
 
 function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
   const [form] = Form.useForm()
+  const t = useTranslations('inbound.expectedRegistration')
   const [searchParams, setSearchParams] = useState({
     productName: '',
     productCode: '',
@@ -570,7 +575,7 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
 
   const handleAdd = () => {
     if (selectedProductKeys.length === 0) {
-      message.warning('추가할 상품을 선택해주세요.')
+      message.warning(t('selectProduct'))
       return
     }
 
@@ -623,17 +628,17 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
       ),
     },
     {
-      title: '상품명',
+      title: t('productName'),
       dataIndex: 'productName',
       key: 'productName',
     },
     {
-      title: '상품 옵션',
+      title: t('productOption'),
       dataIndex: 'productOption',
       key: 'productOption',
     },
     {
-      title: '상품 코드',
+      title: t('productCode'),
       dataIndex: 'productCode',
       key: 'productCode',
     },
@@ -641,7 +646,7 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
 
   return (
     <Modal
-      title="품목 검색"
+      title={t('productSearch')}
       open={visible}
       onCancel={() => {
         onCancel()
@@ -655,29 +660,29 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
           handleClear()
           setSelectedProductKeys([])
         }}>
-          취소하기
+          {t('selectCancel')}
         </Button>,
         <Button key="submit" type="primary" onClick={handleAdd}>
-          추가
+          {t('registerItem')}
         </Button>,
       ]}
     >
       {/* Search Section */}
       <div style={{ marginBottom: '20px' }}>
-        <h4 style={{ marginBottom: '15px', fontWeight: 'bold' }}>품목 검색</h4>
+        <h4 style={{ marginBottom: '15px', fontWeight: 'bold' }}>{t('productSearch')}</h4>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>화주명</label>
+              <label>{t('vendorName')}</label>
             </div>
             <Input disabled value="onedns_test" />
           </Col>
           <Col xs={24} sm={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>상품명</label>
+              <label>{t('productName')}</label>
             </div>
             <Input
-              placeholder="품목명을 입력해주세요"
+              placeholder={t('searchByName')}
               value={searchParams.productName}
               onChange={(e) => setSearchParams({ ...searchParams, productName: e.target.value })}
               suffix={
@@ -708,10 +713,10 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
           </Col>
           <Col xs={24} sm={8}>
             <div style={{ marginBottom: '8px' }}>
-              <label>상품 코드</label>
+              <label>{t('productCode')}</label>
             </div>
             <Input
-              placeholder="품목코드를 입력해주세요"
+              placeholder={t('searchByCode')}
               value={searchParams.productCode}
               onChange={(e) => setSearchParams({ ...searchParams, productCode: e.target.value })}
               suffix={
@@ -746,7 +751,7 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
       {/* Products List Section */}
       <div>
         <h4 style={{ marginBottom: '15px', fontWeight: 'bold' }}>
-          전체 상품 <span style={{ color: '#0066cc' }}>총 187 건</span>
+          {t('allProducts')} <span style={{ color: '#0066cc' }}>{t('total').replace('{total}', filteredProducts.length.toString())}</span>
         </h4>
         <Table
           columns={columns}
@@ -765,7 +770,7 @@ function AddItemModal({ visible, onCancel, onAdd }: AddItemModalProps) {
             total={filteredProducts.length}
             onChange={(page) => setPagination({ ...pagination, current: page })}
             showQuickJumper
-            showTotal={(total) => `총 ${total}개`}
+            showTotal={(total) => t('total').replace('{total}', total.toString())}
           />
         </div>
       </div>

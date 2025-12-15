@@ -121,7 +121,7 @@ const statusColorMap: Record<string, string> = {
 }
 
 export default function InboundOrdersPage() {
-  const t = useTranslations('inbound.orderList')
+  const t = useTranslations('inbound.orders')
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
   const [filters, setFilters] = useState({
     vendor: '',
@@ -260,21 +260,21 @@ export default function InboundOrdersPage() {
       dataIndex: 'plannedQty',
       key: 'plannedQty',
       width: 80,
-      render: (text) => <span>{text}개</span>,
+      render: (text) => <span>{text}{t('quantity')}</span>,
     },
     {
       title: t('inspectionCompletedQty'),
       dataIndex: 'inspectionCompletedQty',
       key: 'inspectionCompletedQty',
       width: 100,
-      render: (text) => <span>{text}개</span>,
+      render: (text) => <span>{text}{t('quantity')}</span>,
     },
     {
       title: t('placementCompletedQty'),
       dataIndex: 'placementCompletedQty',
       key: 'placementCompletedQty',
       width: 100,
-      render: (text) => <span>{text}개</span>,
+      render: (text) => <span>{text}{t('quantity')}</span>,
     },
     {
       title: t('status'),
@@ -310,6 +310,9 @@ export default function InboundOrdersPage() {
       <Card style={{ marginBottom: '20px' }}>
         <Row gutter={[16, 16]}>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterVendor')}
+            </div>
             <Select
               allowClear
               placeholder={t('filterVendor')}
@@ -326,6 +329,9 @@ export default function InboundOrdersPage() {
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterOrderId')}
+            </div>
             <input
               type="text"
               placeholder={t('filterOrderId')}
@@ -344,6 +350,9 @@ export default function InboundOrdersPage() {
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterProductCode')}
+            </div>
             <Select
               allowClear
               placeholder={t('filterProductCode')}
@@ -360,6 +369,9 @@ export default function InboundOrdersPage() {
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterStatus')}
+            </div>
             <Select
               allowClear
               placeholder={t('filterStatus')}
@@ -381,6 +393,9 @@ export default function InboundOrdersPage() {
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterInspectionRequestDate')}
+            </div>
             <DatePicker.RangePicker
               style={{ width: '100%' }}
               value={filters.inspectionRequestDateRange}
@@ -388,10 +403,13 @@ export default function InboundOrdersPage() {
                 setFilters({ ...filters, inspectionRequestDateRange: dates as [any, any] })
                 setPagination({ ...pagination, current: 1 })
               }}
-              placeholder={['검수요청일 시작', '검수요청일 끝']}
+              placeholder={[t('dateStart'), t('dateEnd')]}
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterInspectionCompletionDate')}
+            </div>
             <DatePicker.RangePicker
               style={{ width: '100%' }}
               value={filters.inspectionCompletionDateRange}
@@ -399,10 +417,13 @@ export default function InboundOrdersPage() {
                 setFilters({ ...filters, inspectionCompletionDateRange: dates as [any, any] })
                 setPagination({ ...pagination, current: 1 })
               }}
-              placeholder={['검수완료일 시작', '검수완료일 끝']}
+              placeholder={[t('dateStart'), t('dateEnd')]}
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterPlacementRequestDate')}
+            </div>
             <DatePicker.RangePicker
               style={{ width: '100%' }}
               value={filters.placementRequestDateRange}
@@ -410,10 +431,13 @@ export default function InboundOrdersPage() {
                 setFilters({ ...filters, placementRequestDateRange: dates as [any, any] })
                 setPagination({ ...pagination, current: 1 })
               }}
-              placeholder={['적치요청일 시작', '적치요청일 끝']}
+              placeholder={[t('dateStart'), t('dateEnd')]}
             />
           </Col>
           <Col md={6} sm={12} xs={24}>
+            <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: '500', color: '#666' }}>
+              {t('filterPlacementCompletionDate')}
+            </div>
             <DatePicker.RangePicker
               style={{ width: '100%' }}
               value={filters.placementCompletionDateRange}
@@ -421,7 +445,7 @@ export default function InboundOrdersPage() {
                 setFilters({ ...filters, placementCompletionDateRange: dates as [any, any] })
                 setPagination({ ...pagination, current: 1 })
               }}
-              placeholder={['적치완료일 시작', '적치완료일 끝']}
+              placeholder={[t('dateStart'), t('dateEnd')]}
             />
           </Col>
         </Row>

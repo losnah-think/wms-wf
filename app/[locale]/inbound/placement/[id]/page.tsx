@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Card,
   Button,
@@ -69,6 +70,7 @@ export default function InboundPlacementDetailPage() {
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('inbound.placement')
   const orderId = params.id as string
   const status = searchParams.get('status') || 'placed'
 
@@ -96,71 +98,71 @@ export default function InboundPlacementDetailPage() {
 
   const columns: TableColumnsType<PlacementItem> = [
     {
-      title: '품목 코드',
+      title: t('productCode'),
       dataIndex: 'productCode',
       key: 'productCode',
       width: 120,
     },
     {
-      title: '상품명/상품 속성',
+      title: t('productName'),
       dataIndex: 'productName',
       key: 'productName',
       render: (text: string) => <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>,
     },
     {
-      title: '공급처',
+      title: t('supplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 100,
     },
     {
-      title: '로케이션 설정',
+      title: t('locationSetting'),
       key: 'locationSetting',
       width: 300,
       render: () => (
         <div style={{ display: 'flex', gap: '8px' }}>
           <Select
             style={{ flex: 1, minWidth: '80px' }}
-            placeholder="창고"
+            placeholder={t('warehouse')}
             value={selectedLocation.warehouse}
             onChange={(value) => setSelectedLocation({ ...selectedLocation, warehouse: value })}
             options={[
-              { label: '창고 A', value: 'warehouse_a' },
-              { label: '창고 B', value: 'warehouse_b' },
+              { label: t('warehouseA'), value: 'warehouse_a' },
+              { label: t('warehouseB'), value: 'warehouse_b' },
             ]}
           />
           <Select
             style={{ flex: 1, minWidth: '80px' }}
-            placeholder="구역"
+            placeholder={t('zone')}
             value={selectedLocation.zone}
             onChange={(value) => setSelectedLocation({ ...selectedLocation, zone: value })}
             options={[
-              { label: '구역 1', value: 'zone_1' },
-              { label: '구역 2', value: 'zone_2' },
+              { label: t('zone1'), value: 'zone_1' },
+              { label: t('zone2'), value: 'zone_2' },
             ]}
           />
           <Select
             style={{ flex: 1, minWidth: '80px' }}
-            placeholder="로케이션"
+            placeholder={t('location')}
             value={selectedLocation.location}
             onChange={(value) => setSelectedLocation({ ...selectedLocation, location: value })}
             options={[
-              { label: '로케이션 1', value: 'location_1' },
-              { label: '로케이션 2', value: 'location_2' },
+              { label: t('location1'), value: 'location_1' },
+              { label: t('location2'), value: 'location_2' },
             ]}
           />
         </div>
       ),
     },
     {
-      title: '적치 대기',
+      title: t('placementWaiting'),
       dataIndex: 'plannedQty',
       key: 'plannedQty',
       width: 100,
       align: 'right' as const,
     },
     {
-      title: '적치 수량',
+      title: t('placementQty'),
       dataIndex: 'actualQty',
       key: 'actualQty',
       width: 100,
@@ -218,12 +220,12 @@ export default function InboundPlacementDetailPage() {
       completedPlacements.push(placementData)
       localStorage.setItem('completedPlacements', JSON.stringify(completedPlacements))
       
-      message.success('적치가 확정되었습니다.')
+      message.success(t('successMessage'))
       
       // 적치 완료 탭으로 이동
       router.push('/inbound/execution?tab=completed')
     } catch (error) {
-      message.error('적치 저장 중 오류가 발생했습니다.')
+      message.error(t('errorMessage'))
       console.error(error)
     }
   }
@@ -233,8 +235,8 @@ export default function InboundPlacementDetailPage() {
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
-          { title: '입고' },
-          { title: '입고 실행' },
+          { title: t('breadcrumb.inbound') },
+          { title: t('breadcrumb.inboundExecution') },
           { title: orderId },
         ]}
         style={{ marginBottom: '20px' }}
@@ -250,7 +252,7 @@ export default function InboundPlacementDetailPage() {
         {/* Left side - Location info (3) */}
         <div style={{ flex: '0 0 calc(25% - 6px)', minWidth: '150px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>로케이션 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationInfo')}</label>
           </div>
           <div style={{ 
             fontSize: '12px', 
@@ -267,17 +269,17 @@ export default function InboundPlacementDetailPage() {
             justifyContent: 'center',
             flex: 1
           }}>
-            바코드 스캔
+            {t('barcodeScan')}
           </div>
         </div>
 
         {/* Right side - Barcode input (9) */}
         <div style={{ flex: '0 0 calc(75% - 6px)', display: 'flex', flexDirection: 'column' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{'{로케이션 코드}'}</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationCode')}</label>
           </div>
           <Input
-            placeholder="입력한 클릭 후, 바코드를 스캔해주세요."
+            placeholder={t('barcodePlaceholder')}
             style={{
               borderColor: '#ffd666',
               backgroundColor: '#fffbe6',
@@ -294,7 +296,7 @@ export default function InboundPlacementDetailPage() {
         {/* Left side - Label (3) */}
         <div style={{ flex: '0 0 calc(25% - 6px)', minWidth: '150px' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>로케이션 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationInfo')}</label>
           </div>
           <div style={{ 
             fontSize: '12px', 
@@ -311,7 +313,7 @@ export default function InboundPlacementDetailPage() {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}>입고 오더</div>
+            <div style={{ marginBottom: '8px' }}>{t('breadcrumb.inbound')}</div>
             <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{orderId}</div>
           </div>
         </div>
@@ -319,7 +321,7 @@ export default function InboundPlacementDetailPage() {
         {/* Right side - Details (9) */}
         <div style={{ flex: '0 0 calc(75% - 6px)' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>상세 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('detailedInfo')}</label>
           </div>
           <div style={{
             backgroundColor: '#fff',
@@ -334,21 +336,21 @@ export default function InboundPlacementDetailPage() {
             <Row gutter={16} style={{ height: '100%' }}>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>입고 일자</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('inboundDate')}</label>
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '500' }}>2025.05.11</div>
               </Col>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>공급업체</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('supplier')}</label>
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '500' }}>(주)트렌드마켓</div>
               </Col>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>상태</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('status')}</label>
                 </div>
-                <div style={{ fontSize: '13px', fontWeight: '500' }}>적치 중</div>
+                <div style={{ fontSize: '13px', fontWeight: '500' }}>{t('placingStatus')}</div>
               </Col>
             </Row>
           </div>
@@ -365,9 +367,9 @@ export default function InboundPlacementDetailPage() {
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ margin: 0, fontWeight: 'bold' }}>적치 대상 품목</h3>
+          <h3 style={{ margin: 0, fontWeight: 'bold' }}>{t('placementItems')}</h3>
           <Button type="text" style={{ color: '#ff4d4f' }} disabled>
-            선택 삭제
+            {t('deleteSelected')}
           </Button>
         </div>
 
@@ -386,10 +388,10 @@ export default function InboundPlacementDetailPage() {
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>* 작업자</label>
+              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>{t('requiredWorker')}</label>
             </div>
             <Input
-              placeholder="작업자를 입력해주세요"
+              placeholder={t('workerPlaceholder')}
               value={worker}
               onChange={(e) => setWorker(e.target.value)}
               disabled
@@ -398,10 +400,10 @@ export default function InboundPlacementDetailPage() {
           </Col>
           <Col xs={24} sm={12}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>사유</label>
+              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>{t('reason')}</label>
             </div>
             <Input
-              placeholder="사유를 입력해주세요"
+              placeholder={t('reasonPlaceholder')}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               style={{ height: '36px' }}
@@ -418,9 +420,9 @@ export default function InboundPlacementDetailPage() {
           gap: '10px',
         }}
       >
-        <Button onClick={handlePrevious}>이전</Button>
+        <Button onClick={handlePrevious}>{t('previous')}</Button>
         <Button type="primary" onClick={handleConfirm}>
-          확정
+          {t('confirm')}
         </Button>
       </div>
     </div>

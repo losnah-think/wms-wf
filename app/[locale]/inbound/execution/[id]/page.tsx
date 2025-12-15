@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Card,
   Button,
@@ -66,6 +67,7 @@ const mockInspectionItems: InspectionItem[] = [
 ]
 
 export default function InboundExecutionDetailPage() {
+  const t = useTranslations('inbound.inspection')
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -89,48 +91,48 @@ export default function InboundExecutionDetailPage() {
 
   const columns: TableColumnsType<InspectionItem> = [
     {
-      title: '품목 코드',
+      title: t('productCode'),
       dataIndex: 'productCode',
       key: 'productCode',
       width: 120,
     },
     {
-      title: '상품명/상품 속성',
+      title: t('productName'),
       dataIndex: 'productName',
       key: 'productName',
       render: (text: string) => <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>,
     },
     {
-      title: '공급처',
+      title: t('supplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 100,
     },
     {
-      title: '검수 방법',
+      title: t('inspectionMethod'),
       dataIndex: 'inspectionMethod',
       key: 'inspectionMethod',
       width: 120,
       render: () => (
         <Select
           style={{ width: '100%' }}
-          placeholder="검수 방법"
+          placeholder={t('inspectionMethod')}
           options={[
-            { label: '검수 방법', value: 'method1' },
+            { label: t('inspectionMethod'), value: 'method1' },
             { label: '검사', value: 'method2' },
           ]}
         />
       ),
     },
     {
-      title: '검수 대기',
+      title: t('inspectionWaiting'),
       dataIndex: 'plannedQty',
       key: 'plannedQty',
       width: 100,
       align: 'right' as const,
     },
     {
-      title: '검수 수량',
+      title: t('inspectionQty'),
       dataIndex: 'actualQty',
       key: 'actualQty',
       width: 100,
@@ -182,12 +184,12 @@ export default function InboundExecutionDetailPage() {
       completedInspections.push(inspectionData)
       localStorage.setItem('completedInspections', JSON.stringify(completedInspections))
       
-      message.success('검수가 확정되었습니다.')
+      message.success(t('successMessage'))
       
       // 검수 완료 탭으로 이동
       router.push('/inbound/execution?tab=inspection_complete')
     } catch (error) {
-      message.error('검수 저장 중 오류가 발생했습니다.')
+      message.error(t('errorMessage'))
       console.error(error)
     }
   }
@@ -197,8 +199,8 @@ export default function InboundExecutionDetailPage() {
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
-          { title: '입고' },
-          { title: '입고 실행' },
+          { title: t('breadcrumb.inbound') },
+          { title: t('breadcrumb.execution') },
           { title: orderId },
         ]}
         style={{ marginBottom: '20px' }}
@@ -214,7 +216,7 @@ export default function InboundExecutionDetailPage() {
         {/* Left side - Location info (3) */}
         <div style={{ flex: '0 0 calc(25% - 6px)', minWidth: '150px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>로케이션 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationInfo')}</label>
           </div>
           <div style={{ 
             fontSize: '12px', 
@@ -231,17 +233,17 @@ export default function InboundExecutionDetailPage() {
             justifyContent: 'center',
             flex: 1
           }}>
-            바코드 스캔
+            {t('barcodeScan')}
           </div>
         </div>
 
         {/* Right side - Barcode input (9) */}
         <div style={{ flex: '0 0 calc(75% - 6px)', display: 'flex', flexDirection: 'column' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{'{로케이션 코드}'}</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationCode')}</label>
           </div>
           <Input
-            placeholder="입력한 클릭 후, 바코드를 스캔해주세요."
+            placeholder={t('barcodePlaceholder')}
             style={{
               borderColor: '#ffd666',
               backgroundColor: '#fffbe6',
@@ -258,7 +260,7 @@ export default function InboundExecutionDetailPage() {
         {/* Left side - Label (3) */}
         <div style={{ flex: '0 0 calc(25% - 6px)', minWidth: '150px' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>로케이션 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('locationInfo')}</label>
           </div>
           <div style={{ 
             fontSize: '12px', 
@@ -283,7 +285,7 @@ export default function InboundExecutionDetailPage() {
         {/* Right side - Details (9) */}
         <div style={{ flex: '0 0 calc(75% - 6px)' }}>
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>상세 정보</label>
+            <label style={{ color: '#999', fontSize: '12px', fontWeight: '500' }}>{t('detailedInfo')}</label>
           </div>
           <div style={{
             backgroundColor: '#fff',
@@ -298,21 +300,21 @@ export default function InboundExecutionDetailPage() {
             <Row gutter={16} style={{ height: '100%' }}>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>입고 일자</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('inboundDate')}</label>
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '500' }}>2025.05.11</div>
               </Col>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>공급업체</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('supplier')}</label>
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '500' }}>(주)트렌드마켓</div>
               </Col>
               <Col span={8}>
                 <div style={{ marginBottom: '4px' }}>
-                  <label style={{ color: '#999', fontSize: '11px' }}>상태</label>
+                  <label style={{ color: '#999', fontSize: '11px' }}>{t('status')}</label>
                 </div>
-                <div style={{ fontSize: '13px', fontWeight: '500' }}>검수 중</div>
+                <div style={{ fontSize: '13px', fontWeight: '500' }}>{t('inspectingStatus')}</div>
               </Col>
             </Row>
           </div>
@@ -329,9 +331,9 @@ export default function InboundExecutionDetailPage() {
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ margin: 0, fontWeight: 'bold' }}>검수 대상 품목</h3>
+          <h3 style={{ margin: 0, fontWeight: 'bold' }}>{t('inspectionItems')}</h3>
           <Button type="text" style={{ color: '#ff4d4f' }} disabled>
-            선택 삭제
+            {t('deleteSelected')}
           </Button>
         </div>
 
@@ -350,10 +352,10 @@ export default function InboundExecutionDetailPage() {
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>* 작업자</label>
+              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>{t('requiredWorker')}</label>
             </div>
             <Input
-              placeholder="작업자를 입력해주세요"
+              placeholder={t('workerPlaceholder')}
               defaultValue="로그인 사용자"
               disabled
               style={{ height: '36px' }}
@@ -361,10 +363,10 @@ export default function InboundExecutionDetailPage() {
           </Col>
           <Col xs={24} sm={12}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>사유</label>
+              <label style={{ color: '#666', fontSize: '12px', fontWeight: '500' }}>{t('reason')}</label>
             </div>
             <Input
-              placeholder="사유를 입력해주세요"
+              placeholder={t('reasonPlaceholder')}
               style={{ height: '36px' }}
             />
           </Col>
@@ -379,9 +381,9 @@ export default function InboundExecutionDetailPage() {
           gap: '10px',
         }}
       >
-        <Button onClick={handlePrevious}>이전</Button>
+        <Button onClick={handlePrevious}>{t('previous')}</Button>
         <Button type="primary" onClick={handleConfirm}>
-          확정
+          {t('confirm')}
         </Button>
       </div>
     </div>
