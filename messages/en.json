@@ -104,6 +104,10 @@
     "orderList": {
       "title": "Inbound Order List",
       "subtitle": "View and manage inbound orders",
+      "breadcrumb": {
+        "inbound": "Inbound",
+        "orders": "Order List"
+      },
       "orderId": "Inbound Order",
       "vendor": "Vendor",
       "productCode": "Product Code",

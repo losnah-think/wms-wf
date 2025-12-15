@@ -121,7 +121,7 @@ const statusColorMap: Record<string, string> = {
 }
 
 export default function InboundOrdersPage() {
-  const t = useTranslations('inbound.orders')
+  const t = useTranslations('inbound.orderList')
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
   const [filters, setFilters] = useState({
     vendor: '',

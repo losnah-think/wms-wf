@@ -104,6 +104,10 @@
     "orderList": {
       "title": "입고 오더 목록",
       "subtitle": "입고 예정 오더를 확인하고 관리합니다",
+      "breadcrumb": {
+        "inbound": "입고",
+        "orders": "오더 목록"
+      },
       "orderId": "입고 오더",
       "vendor": "화주명",
       "productCode": "품목코드",
