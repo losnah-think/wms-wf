@@ -75,6 +75,11 @@ export default function InboundPlacementDetailPage() {
   const [placementItems, setPlacementItems] = useState<PlacementItem[]>(mockPlacementItems)
   const [worker, setWorker] = useState('로그인 사용자')
   const [reason, setReason] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState({
+    warehouse: undefined as string | undefined,
+    zone: undefined as string | undefined,
+    location: undefined as string | undefined,
+  })
 
   // 로컬스토리지에서 적치 데이터 로드
   React.useEffect(() => {
@@ -109,19 +114,42 @@ export default function InboundPlacementDetailPage() {
       width: 100,
     },
     {
-      title: '적치 방법',
-      dataIndex: 'placementMethod',
-      key: 'placementMethod',
-      width: 120,
+      title: '로케이션 설정',
+      key: 'locationSetting',
+      width: 300,
       render: () => (
-        <Select
-          style={{ width: '100%' }}
-          placeholder="적치 방법"
-          options={[
-            { label: '적치 방법', value: 'method1' },
-            { label: '자동 배치', value: 'method2' },
-          ]}
-        />
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Select
+            style={{ flex: 1, minWidth: '80px' }}
+            placeholder="창고"
+            value={selectedLocation.warehouse}
+            onChange={(value) => setSelectedLocation({ ...selectedLocation, warehouse: value })}
+            options={[
+              { label: '창고 A', value: 'warehouse_a' },
+              { label: '창고 B', value: 'warehouse_b' },
+            ]}
+          />
+          <Select
+            style={{ flex: 1, minWidth: '80px' }}
+            placeholder="구역"
+            value={selectedLocation.zone}
+            onChange={(value) => setSelectedLocation({ ...selectedLocation, zone: value })}
+            options={[
+              { label: '구역 1', value: 'zone_1' },
+              { label: '구역 2', value: 'zone_2' },
+            ]}
+          />
+          <Select
+            style={{ flex: 1, minWidth: '80px' }}
+            placeholder="로케이션"
+            value={selectedLocation.location}
+            onChange={(value) => setSelectedLocation({ ...selectedLocation, location: value })}
+            options={[
+              { label: '로케이션 1', value: 'location_1' },
+              { label: '로케이션 2', value: 'location_2' },
+            ]}
+          />
+        </div>
       ),
     },
     {
