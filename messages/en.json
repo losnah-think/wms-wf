@@ -191,7 +191,11 @@
         "itemColumns": {
           "barcode": "Item Barcode",
           "productCode": "Product Code",
-          "productName": "Product Name",
+          "productName": "Product Name / Option Name",
+          "supplier": "Supplier",
+          "inspectionMethod": "Inspection Method",
+          "lotNumber": "Lot Number",
+          "moveQuantity": "Move Quantity",
           "unitPrice": "Unit Price",
           "unit": "Unit",
           "quantity": "Quantity"

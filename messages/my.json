@@ -140,7 +140,11 @@
         "itemColumns": {
           "barcode": "ကုန်ပစ္စည်း ဘားကုဒ်",
           "productCode": "ကုန်ပစ္စည်း ကုဒ်",
-          "productName": "ကုန်ပစ္စည်း အမည်",
+          "productName": "ကုန်ပစ္စည်း အမည် / အကြိုက်အစား အမည်",
+          "supplier": "ရောင်းချသူ",
+          "inspectionMethod": "စူးစမ်းစစ်ဆေးမှု နည်းလမ်း",
+          "lotNumber": "လောက်အမှတ်",
+          "moveQuantity": "ရွေ့လျားအရေအတွက်",
           "unitPrice": "ယူနစ် ဈေး",
           "unit": "ယူနစ်",
           "quantity": "အရေအတွက်"

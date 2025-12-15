@@ -41,6 +41,10 @@ interface InboundDirection {
     unitPrice: string
     quantity: string
     remark?: string
+    supplier?: string
+    inspectionMethod?: string
+    lotNumber?: string
+    moveQuantity?: string
   }>
 }
 
@@ -63,8 +67,8 @@ const mockData: InboundDirection[] = [
     price: '30,000원',
     productBarcode: '8809421080079',
     items: [
-      { productCode: '0000002001', productName: '상품정보입니다. 상품설명', barcode: '0-001', unit: '상품2', unitPrice: '0-0001', quantity: '10000', remark: '0' },
-      { productCode: '0000002002', productName: '상품정보입니다. 상품설명', barcode: '0-001', unit: '상품2', unitPrice: '0-0001', quantity: '10000', remark: '0' },
+      { productCode: '0000002001', productName: '상품정보입니다. 상품설명', barcode: '0-001', unit: '상품2', unitPrice: '0-0001', quantity: '10000', remark: '0', supplier: '공급처A', inspectionMethod: '외관검사', lotNumber: 'LOT001', moveQuantity: '100' },
+      { productCode: '0000002002', productName: '상품정보입니다. 상품설명', barcode: '0-001', unit: '상품2', unitPrice: '0-0001', quantity: '10000', remark: '0', supplier: '공급처A', inspectionMethod: '외관검사', lotNumber: 'LOT002', moveQuantity: '200' },
     ]
   },
   {
@@ -78,7 +82,7 @@ const mockData: InboundDirection[] = [
     price: '20,000원',
     productBarcode: '8809421080080',
     items: [
-      { productCode: '0000003001', productName: '상품정보입니다. 상품설명', barcode: '0-002', unit: '상품2', unitPrice: '0-0001', quantity: '5000', remark: '0' },
+      { productCode: '0000003001', productName: '상품정보입니다. 상품설명', barcode: '0-002', unit: '상품2', unitPrice: '0-0001', quantity: '5000', remark: '0', supplier: '공급처B', inspectionMethod: '품질검사', lotNumber: 'LOT003', moveQuantity: '150' },
     ]
   },
   {
@@ -92,9 +96,9 @@ const mockData: InboundDirection[] = [
     price: '25,000원',
     productBarcode: '8809421080081',
     items: [
-      { productCode: '0000004001', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '7500', remark: '0' },
-      { productCode: '0000004002', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '7500', remark: '0' },
-      { productCode: '0000004003', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '0', remark: '0' },
+      { productCode: '0000004001', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '7500', remark: '0', supplier: '공급처C', inspectionMethod: '외관검사', lotNumber: 'LOT004', moveQuantity: '75' },
+      { productCode: '0000004002', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '7500', remark: '0', supplier: '공급처C', inspectionMethod: '외관검사', lotNumber: 'LOT005', moveQuantity: '75' },
+      { productCode: '0000004003', productName: '상품정보입니다. 상품설명', barcode: '0-003', unit: '상품2', unitPrice: '0-0001', quantity: '0', remark: '0', supplier: '공급처C', inspectionMethod: '외관검사', lotNumber: 'LOT006', moveQuantity: '50' },
     ]
   },
   {
@@ -108,7 +112,7 @@ const mockData: InboundDirection[] = [
     price: '15,000원',
     productBarcode: '8809421080082',
     items: [
-      { productCode: '0000005001', productName: '상품정보입니다. 상품설명', barcode: '0-004', unit: '상품2', unitPrice: '0-0001', quantity: '3000', remark: '0' },
+      { productCode: '0000005001', productName: '상품정보입니다. 상품설명', barcode: '0-004', unit: '상품2', unitPrice: '0-0001', quantity: '3000', remark: '0', supplier: '공급처D', inspectionMethod: '품질검사', lotNumber: 'LOT007', moveQuantity: '100' },
     ]
   },
   {
@@ -122,10 +126,10 @@ const mockData: InboundDirection[] = [
     price: '50,000원',
     productBarcode: '8809421080083',
     items: [
-      { productCode: '0000006001', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0' },
-      { productCode: '0000006002', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0' },
-      { productCode: '0000006003', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0' },
-      { productCode: '0000006004', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0' },
+      { productCode: '0000006001', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0', supplier: '공급처E', inspectionMethod: '외관검사', lotNumber: 'LOT008', moveQuantity: '62.5' },
+      { productCode: '0000006002', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0', supplier: '공급처E', inspectionMethod: '외관검사', lotNumber: 'LOT009', moveQuantity: '62.5' },
+      { productCode: '0000006003', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0', supplier: '공급처E', inspectionMethod: '외관검사', lotNumber: 'LOT010', moveQuantity: '62.5' },
+      { productCode: '0000006004', productName: '상품정보입니다. 상품설명', barcode: '0-005', unit: '상품2', unitPrice: '0-0001', quantity: '8000', remark: '0', supplier: '공급처E', inspectionMethod: '외관검사', lotNumber: 'LOT011', moveQuantity: '62.5' },
     ]
   },
 ]
@@ -648,12 +652,6 @@ export default function InboundDirectionPage() {
                     <Table
                       columns={[
                         {
-                          title: t('modal.itemColumns.barcode'),
-                          dataIndex: 'barcode',
-                          key: 'barcode',
-                          width: 100,
-                        },
-                        {
                           title: t('modal.itemColumns.productCode'),
                           dataIndex: 'productCode',
                           key: 'productCode',
@@ -664,22 +662,24 @@ export default function InboundDirectionPage() {
                           key: 'productName',
                         },
                         {
-                          title: t('modal.itemColumns.unitPrice'),
-                          dataIndex: 'unitPrice',
-                          key: 'unitPrice',
-                          width: 100,
+                          title: t('modal.itemColumns.supplier'),
+                          dataIndex: 'supplier',
+                          key: 'supplier',
                         },
                         {
-                          title: t('modal.itemColumns.unit'),
-                          dataIndex: 'unit',
-                          key: 'unit',
-                          width: 100,
+                          title: t('modal.itemColumns.inspectionMethod'),
+                          dataIndex: 'inspectionMethod',
+                          key: 'inspectionMethod',
                         },
                         {
-                          title: t('modal.itemColumns.quantity'),
-                          dataIndex: 'quantity',
-                          key: 'quantity',
-                          width: 80,
+                          title: t('modal.itemColumns.lotNumber'),
+                          dataIndex: 'lotNumber',
+                          key: 'lotNumber',
+                        },
+                        {
+                          title: t('modal.itemColumns.moveQuantity'),
+                          dataIndex: 'moveQuantity',
+                          key: 'moveQuantity',
                           align: 'right',
                         },
                       ]}

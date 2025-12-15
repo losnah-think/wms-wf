@@ -190,8 +190,12 @@
         },
         "itemColumns": {
           "barcode": "품목 바코드",
-          "productCode": "품목명",
-          "productName": "상품명",
+          "productCode": "품목 코드",
+          "productName": "상품명 / 옵션명",
+          "supplier": "공급처",
+          "inspectionMethod": "검수 방법",
+          "lotNumber": "로트 번호",
+          "moveQuantity": "이동 수량",
           "unitPrice": "단위 단가",
           "unit": "포장 단위",
           "quantity": "수량"
