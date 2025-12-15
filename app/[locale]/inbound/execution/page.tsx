@@ -452,7 +452,7 @@ export default function InboundExecutionPage() {
         ),
       },
       {
-        title: '입고 오더 번호',
+        title: t('orderId'),
         dataIndex: 'orderId',
         key: 'orderId',
         width: 150,
@@ -470,76 +470,76 @@ export default function InboundExecutionPage() {
         ),
       },
       {
-        title: '화주사',
+        title: t('vendor'),
         dataIndex: 'vendor',
         key: 'vendor',
         width: 120,
       },
       {
-        title: '검수 요청일',
+        title: t('receipt'),
         dataIndex: 'inspectionRequestDate',
         key: 'inspectionRequestDate',
         width: 110,
       },
       {
-        title: '검수 완료일',
+        title: t('inspection_complete'),
         dataIndex: 'inspectionCompletionDate',
         key: 'inspectionCompletionDate',
         width: 110,
       },
       {
-        title: '적치 요청일',
+        title: t('pending'),
         dataIndex: 'placementRequestDate',
         key: 'placementRequestDate',
         width: 110,
       },
       {
-        title: '적치 완료일',
+        title: t('completed'),
         dataIndex: 'placementCompletionDate',
         key: 'placementCompletionDate',
         width: 110,
       },
       {
-        title: '입고 예정 수량',
+        title: t('plannedQty'),
         dataIndex: 'plannedQty',
         key: 'plannedQty',
         width: 110,
         align: 'right' as const,
       },
       {
-        title: '검수 완료 수량',
+        title: t('confirmedQty'),
         dataIndex: 'inspectionCompletedQty',
         key: 'inspectionCompletedQty',
         width: 120,
         align: 'right' as const,
       },
       {
-        title: '적치 완료 수량',
+        title: t('confirmedQty'),
         dataIndex: 'placementCompletedQty',
         key: 'placementCompletedQty',
         width: 120,
         align: 'right' as const,
       },
       {
-        title: '입고 오더 상태',
+        title: t('status'),
         dataIndex: 'status',
         key: 'status',
         width: 100,
         render: (status: string) => {
           const statusMap: Record<string, { label: string; color: string }> = {
-            'receipt': { label: '검수 예정', color: '#2db7f5' },
-            'inspecting': { label: '검수 중', color: '#f57602' },
-            'inspection_complete': { label: '검수 완료', color: '#87d068' },
-            'pending': { label: '적치 예정', color: '#2db7f5' },
-            'placed': { label: '적치 중', color: '#f57602' },
-            'completed': { label: '적치 완료', color: '#87d068' },
+            'receipt': { label: t('receipt'), color: '#2db7f5' },
+            'inspecting': { label: t('inspecting'), color: '#f57602' },
+            'inspection_complete': { label: t('inspection_complete'), color: '#87d068' },
+            'pending': { label: t('pending'), color: '#2db7f5' },
+            'placed': { label: t('placed'), color: '#f57602' },
+            'completed': { label: t('completed'), color: '#87d068' },
           }
           const info = statusMap[status] || { label: status, color: '#999' }
           return <Tag color={info.color}>{info.label}</Tag>
         },
       },
       {
-        title: '작업자',
+        title: t('worker'),
         dataIndex: 'worker',
         key: 'worker',
         width: 100,
@@ -570,7 +570,7 @@ export default function InboundExecutionPage() {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>화주명</label>
+              <label>{t('filterVendor')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
@@ -589,27 +589,27 @@ export default function InboundExecutionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>입고 오더 목록</label>
+              <label>{t('filterOrderId')}</label>
             </div>
             <Input
-              placeholder="오더 번호 검색"
+              placeholder={t('filterOrderId')}
               value={filters.orderId || ''}
               onChange={(e) => setFilters({ ...filters, orderId: e.target.value || undefined })}
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>품목 코드</label>
+              <label>{t('filterProductCode')}</label>
             </div>
             <Input
-              placeholder="품목 코드 검색"
+              placeholder={t('filterProductCode')}
               value={filters.productCode || ''}
               onChange={(e) => setFilters({ ...filters, productCode: e.target.value || undefined })}
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>오더 상태</label>
+              <label>{t('filterStatus')}</label>
             </div>
             <Select
               style={{ width: '100%' }}
@@ -617,19 +617,19 @@ export default function InboundExecutionPage() {
               value={filters.status}
               onChange={(value) => setFilters({ ...filters, status: value })}
               options={[
-                { label: '검수 예정', value: 'receipt' },
-                { label: '검수 중', value: 'inspecting' },
-                { label: '검수 완료', value: 'inspection_complete' },
-                { label: '적치 예정', value: 'pending' },
-                { label: '적치 중', value: 'placed' },
-                { label: '적치 완료', value: 'completed' },
+                { label: t('receipt'), value: 'receipt' },
+                { label: t('inspecting'), value: 'inspecting' },
+                { label: t('inspection_complete'), value: 'inspection_complete' },
+                { label: t('pending'), value: 'pending' },
+                { label: t('placed'), value: 'placed' },
+                { label: t('completed'), value: 'completed' },
               ]}
               allowClear
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>검수 요청일</label>
+              <label style={{ color: '#0066cc', fontWeight: 'bold' }}>{t('receipt')}</label>
             </div>
             <DatePicker.RangePicker
               value={
@@ -649,7 +649,7 @@ export default function InboundExecutionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>검수 완료일</label>
+              <label>{t('inspection_complete')}</label>
             </div>
             <DatePicker.RangePicker
               value={
@@ -669,7 +669,7 @@ export default function InboundExecutionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>적치 요청일</label>
+              <label>{t('pending')}</label>
             </div>
             <DatePicker.RangePicker
               value={
@@ -689,7 +689,7 @@ export default function InboundExecutionPage() {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <div style={{ marginBottom: '8px' }}>
-              <label>적치 완료일</label>
+              <label>{t('completed')}</label>
             </div>
             <DatePicker.RangePicker
               value={
